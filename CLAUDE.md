@@ -105,5 +105,11 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   (Pillow + numpy; `--sheet arquivo.png` gera uma folha de conferência).
 - `AvatarChooser` (foto no topo, "Enviar foto", abas com a grade) aparece na criação de perfil e, na aba Perfil,
   num BottomSheet aberto pelo botão "Foto ou avatar".
+- **Cordeirinho** (`components/Lamb.tsx`): companheiro das lições; a pomba segue como mascote da marca.
+  7 poses em `public/cordeirinho/` (acolhimento, sucesso, ops, aprendendo, descanso, fe, vamos), recortadas de
+  `imagens/Cordeirinho.jpg` por `scripts/crop-lamb.py` (Pillow + numpy + scipy). Aparece no rodapé de correção
+  (só Infantil e Juvenil), no fim da lição, sem chamas, sem revisão e na `CheerScreen` (`LessonPage.tsx`): tela
+  rápida entre perguntas só em marcos (3/5/8 seguidas, acerto após erro, metade, falta uma), nunca duas seguidas,
+  some em 1,8 s ou com um toque.
 - No dev, com `base: './'`, abra `http://localhost:5173/` (na raiz): em `/pequenos-discipulos/` os arquivos de
   `public/` caem no fallback do index.html. Em produção funciona normalmente.

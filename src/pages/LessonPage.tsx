@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { BookOpen, CheckCircle2, ChevronRight, Volume2, X, XCircle } from 'lucide-react';
 import type { AgeGroup, Exercise } from '../types';
 import { findExercise, findLevel } from '../data/curriculum';
@@ -26,7 +26,7 @@ import { WordBank } from '../components/exercises/WordBank';
 import { Speaking } from '../components/exercises/Speaking';
 import { MatchPairs } from '../components/exercises/MatchPairs';
 import { TypeAnswer } from '../components/exercises/TypeAnswer';
-import { Mascot } from '../components/Mascot';
+import { Lamb, usePreloadLamb, type LambPose } from '../components/Lamb';
 import { FlameIcon, RosaryProgress } from '../components/icons';
 import { BottomSheet } from '../components/BottomSheet';
 import { describeReference, sourceSummary } from '../lib/sources';
@@ -42,6 +42,34 @@ interface Props {
 }
 
 type Feedback = { correct: boolean; answer: string; exercise: Exercise } | null;
+
+/** Tela rápida de incentivo do Cordeirinho entre uma pergunta e outra (só em momentos especiais). */
+type Cheer = { pose: LambPose; title: string; text: string };
+
+const STREAK_CHEERS: Record<number, Cheer> = {
+  3: { pose: 'sucesso', title: '3 seguidas!', text: 'Você está indo muito bem!' },
+  5: { pose: 'sucesso', title: '5 seguidas!', text: 'Que beleza! Continue assim.' },
+  8: { pose: 'sucesso', title: '8 seguidas!', text: 'Impressionante! O Espírito Santo está com você.' },
+};
+
+/** Escolhe o incentivo depois de uma resposta certa (ou nenhum). Um por vez, nunca dois seguidos. */
+function pickCheer(o: {
+  combo: number;
+  afterMistake: boolean;
+  solved: number;
+  total: number;
+  remaining: number;
+  shown: Set<string>;
+}): [key: string, cheer: Cheer] | null {
+  if (STREAK_CHEERS[o.combo]) return [`combo-${o.combo}`, STREAK_CHEERS[o.combo]];
+  if (o.afterMistake && !o.shown.has('perseverou'))
+    return ['perseverou', { pose: 'fe', title: 'Perseverança!', text: 'Errar faz parte do caminho. Seguimos juntos!' }];
+  if (o.total >= 6 && o.solved === Math.ceil(o.total / 2) && !o.shown.has('metade'))
+    return ['metade', { pose: 'vamos', title: 'Metade do caminho!', text: 'Vamos em frente, falta pouco.' }];
+  if (o.total >= 4 && o.remaining === 1 && !o.shown.has('ultima'))
+    return ['ultima', { pose: 'vamos', title: 'Falta só uma!', text: 'Última pergunta. Vamos!' }];
+  return null;
+}
 
 export function LessonPage({ levelId, practice, review = false, onExit }: Props) {
   const { active, updateActive } = useStore();
@@ -79,6 +107,16 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
   // Acertos seguidos (para a missão "acerte N seguidas").
   const [combo, setCombo] = useState(0);
   const [questsDone, setQuestsDone] = useState<Quest[]>([]);
+  const [cheer, setCheer] = useState<Cheer | null>(null);
+  const [pendingCheer, setPendingCheer] = useState<Cheer | null>(null);
+  const [cheersShown, setCheersShown] = useState<Set<string>>(() => new Set());
+  // Depois de um incentivo, a resposta seguinte não ganha outro.
+  const [cheerCooldown, setCheerCooldown] = useState(false);
+  usePreloadLamb();
+  const endCheer = useCallback(() => {
+    setCheer(null);
+    setPendingCheer(null);
+  }, []);
 
   // setState com função precisa ser embrulhado para guardar a função em si.
   const onReady = useCallback((fn: (() => boolean) | null) => setChecker(() => fn), []);
@@ -87,7 +125,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
   if (queue.length === 0) {
     return (
       <Screen>
-        <Mascot size={110} />
+        <Lamb pose="aprendendo" size={150} />
         <h1 className="text-3xl font-extrabold">Nada para revisar agora</h1>
         <p className="text-slate-500">Os itens que você errar aparecem aqui na hora certa.</p>
         <Button onClick={onExit}>Voltar</Button>
@@ -113,6 +151,22 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
     else sounds.wrong();
     const nextCombo = correct ? combo + 1 : 0;
     setCombo(nextCombo);
+
+    // Incentivo do Cordeirinho para mostrar depois do "Continuar" (nunca em duas perguntas seguidas).
+    const picked =
+      correct && !cheerCooldown
+        ? pickCheer({
+            combo: nextCombo,
+            afterMistake: combo === 0 && mistakes > 0,
+            solved: nextSolved,
+            total,
+            remaining: nextQueue.length - (idx + 1),
+            shown: cheersShown,
+          })
+        : null;
+    setPendingCheer(picked ? picked[1] : null);
+    setCheerCooldown(!!picked);
+    if (picked) setCheersShown((s) => new Set(s).add(picked[0]));
 
     // Última resposta certa: a lição já conta como concluída (mesmo se fechar agora).
     const firstTry = review && !graded.has(exercise.id);
@@ -164,6 +218,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
       return;
     }
     if (outOfHearts) return;
+    if (pendingCheer) setCheer(pendingCheer);
     setIdx((i) => i + 1);
   }
 
@@ -182,7 +237,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
   if (outOfHearts && !feedback) {
     return (
       <Screen>
-        <Mascot size={110} />
+        <Lamb pose="descanso" size={150} />
         <h1 className="text-3xl font-extrabold">As chamas se apagaram</h1>
         <p className="max-w-sm text-slate-500">
           Sem problemas! Elas voltam a acender com o tempo (1 a cada 30 min), ou você pode{' '}
@@ -193,6 +248,9 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
       </Screen>
     );
   }
+
+  // A próxima pergunta só aparece (e só é lida em voz alta) depois do incentivo.
+  if (cheer) return <CheerScreen cheer={cheer} onDone={endCheer} />;
 
   // Áudio: Infantil lê sozinho (ainda aprendendo a ler); letra grande ganha o botão; os demais leem em silêncio.
   const audio: AudioMode = active.ageGroup === 'kids' ? 'auto' : active.largeText ? 'button' : 'off';
@@ -237,7 +295,9 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
         <div className="mx-auto flex max-w-2xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {feedback && (
             <div className={`flex gap-3 ${feedback.correct ? 'text-gold-800' : 'text-red-800'}`}>
-              {active.ageGroup === 'kids' && <Mascot size={64} halo={false} className="shrink-0" />}
+              {active.ageGroup !== 'adults' && (
+                <Lamb pose={feedback.correct ? 'sucesso' : 'ops'} size={76} className="animate-pop -my-2" />
+              )}
               <div>
               <p className="flex items-center gap-2 font-serif text-xl font-bold">
                 {feedback.correct ? <CheckCircle2 className="size-7" /> : <XCircle className="size-7" />}
@@ -346,6 +406,26 @@ function SourceSheet({ source, audio, ttsRate, onClose }: { source: string; audi
   );
 }
 
+/** Incentivo rápido entre perguntas: some sozinho em ~1,8 s ou com um toque. */
+function CheerScreen({ cheer, onDone }: { cheer: Cheer; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 1800);
+    return () => clearTimeout(t);
+  }, [onDone]);
+  return (
+    <button
+      onClick={onDone}
+      className="animate-fade mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center gap-4 px-4 text-center"
+      aria-label={`${cheer.title} ${cheer.text} Toque para continuar.`}
+    >
+      <Lamb pose={cheer.pose} size={190} className="animate-pop" />
+      <p className="font-serif text-3xl font-bold text-brand-700">{cheer.title}</p>
+      <p className="text-lg text-slate-600">{cheer.text}</p>
+      <p className="mt-4 text-sm text-slate-400">Toque para continuar</p>
+    </button>
+  );
+}
+
 function Screen({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-5 px-4 text-center">
@@ -373,7 +453,7 @@ function LessonComplete({
   return (
     <Screen>
       <div className="animate-pop">
-        <Mascot size={120} className="animate-float" />
+        <Lamb pose={mistakes === 0 && !practice && !review ? 'fe' : 'sucesso'} size={160} className="animate-float" />
       </div>
       <h1 className="text-3xl font-extrabold text-gold-600">{review ? 'Revisão concluída!' : practice ? 'Treino concluído!' : 'Lição concluída!'}</h1>
       <div className="grid w-full grid-cols-2 gap-3">
