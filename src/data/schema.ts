@@ -4,7 +4,7 @@
 //
 // Guia para quem escreve perguntas: docs/COMO_ADICIONAR_PERGUNTAS.md
 
-import type { AgeGroup, Exercise, Level, TaggedExercise, Unit } from '../types';
+import type { AgeGroup, Exercise, Level, TaggedExercise, Theme, Unit } from '../types';
 
 export type RawAge = 'KIDS' | 'TEENS' | 'ADULTS';
 
@@ -127,19 +127,45 @@ export function toExercise(q: RawQuestion): TaggedExercise {
   return e as TaggedExercise;
 }
 
-/** Módulo com todos os exercícios (de todas as idades), já convertidos. */
-export interface FullUnit extends Omit<Unit, 'levels'> {
-  levels: Array<Omit<Level, 'exercises'> & { exercises: TaggedExercise[] }>;
+/**
+ * Dificuldade de cada tipo de pergunta. Dentro de uma lição as perguntas vão
+ * do reconhecimento (verdadeiro/falso, escolha) à produção (montar, digitar).
+ */
+const TYPE_RANK: Record<RawQuestion['type'], number> = {
+  true_false: 0,
+  multiple_choice: 1,
+  match_pairs: 2,
+  fill_blank: 3,
+  speaking: 3,
+  word_bank: 4,
+  type_answer: 5,
+};
+
+export type FullLevel = Omit<Level, 'exercises'> & { exercises: TaggedExercise[] };
+
+/** Módulo (tema) com todos os exercícios (de todas as idades), já convertidos. */
+export interface FullModule extends Theme {
+  catechismPart: number;
+  description: string;
+  levels: FullLevel[];
 }
 
-export function buildUnit(m: RawModule): FullUnit {
-  return {
+/** Etapa com todos os exercícios (de todas as idades). */
+export interface FullUnit extends Omit<Unit, 'levels'> {
+  levels: FullLevel[];
+}
+
+export function buildUnit(m: RawModule): FullModule {
+  const theme: Theme = {
     id: m.id,
-    catechismPart: m.catechism_part,
     title: m.title,
-    description: m.description ?? '',
     icon: m.icon ?? '✝️',
     color: m.color ?? PART_COLORS[m.catechism_part] ?? PART_COLORS[1],
+  };
+  return {
+    ...theme,
+    catechismPart: m.catechism_part,
+    description: m.description ?? '',
     levels: [...m.levels]
       .sort((a, b) => a.level_number - b.level_number)
       .map((l) => ({
@@ -147,13 +173,38 @@ export function buildUnit(m: RawModule): FullUnit {
         title: l.title,
         description: l.description ?? '',
         icon: l.icon ?? '⭐',
-        exercises: l.questions.map(toExercise),
+        stage: l.level_number,
+        theme,
+        // sort é estável: perguntas do mesmo tipo mantêm a ordem do arquivo.
+        exercises: [...l.questions].sort((a, b) => TYPE_RANK[a.type] - TYPE_RANK[b.type]).map(toExercise),
       })),
   };
 }
 
-/** Recorta a trilha para uma faixa: só as perguntas dela; níveis e módulos vazios somem. */
-export function trackFor(units: FullUnit[], age: AgeGroup): Unit[] {
+/** As etapas de dificuldade. O level_number de cada lição no JSON diz a etapa. */
+export const STAGES: Array<{ title: string; description: string; icon: string; color: string }> = [
+  { title: 'Primeiros Passos', description: 'O essencial da fé, em lições curtas', icon: '🌱', color: '#1E3A8A' },
+  { title: 'Conhecendo a Fé', description: 'Um pouco mais de cada tema', icon: '📖', color: '#0F766E' },
+  { title: 'Crescendo na Fé', description: 'Histórias, sinais e orações a fundo', icon: '🌿', color: '#B45309' },
+  { title: 'Aprofundando', description: 'Perguntas mais desafiadoras', icon: '🔥', color: '#B91C1C' },
+  { title: 'Discípulo Missionário', description: 'O desafio final de cada tema', icon: '🕊️', color: '#6D28D9' },
+];
+
+/**
+ * Monta a trilha por etapas: Etapa 1 = lição 1 de todos os temas, Etapa 2 = lição 2...
+ * Assim a dificuldade sobe aos poucos, sem voltar ao fácil a cada tema novo.
+ */
+export function buildStages(mods: FullModule[]): FullUnit[] {
+  const max = Math.max(0, ...mods.flatMap((m) => m.levels.map((l) => l.stage)));
+  return Array.from({ length: max }, (_, i) => {
+    const stage = i + 1;
+    const meta = STAGES[i] ?? { title: `Etapa ${stage}`, description: '', icon: '⭐', color: PART_COLORS[1] };
+    return { id: `etapa_${stage}`, stage, ...meta, levels: mods.flatMap((m) => m.levels.filter((l) => l.stage === stage)) };
+  }).filter((u) => u.levels.length > 0);
+}
+
+/** Recorta para uma faixa: só as perguntas dela; lições e etapas (ou módulos) vazios somem. */
+export function trackFor<U extends { levels: FullLevel[] }>(units: U[], age: AgeGroup): Array<Omit<U, 'levels'> & { levels: Level[] }> {
   return units
     .map((u) => ({
       ...u,

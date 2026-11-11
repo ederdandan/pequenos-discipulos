@@ -178,23 +178,37 @@ export type Exercise =
 export type TaggedExercise = Exercise & { ages: AgeGroup[] };
 
 /** Nível (lição) de um módulo. `exercises` é sempre a lista já filtrada para uma faixa. */
+/** Tema (módulo) de onde vem a lição: Credo, Sacramentos, Missa... */
+export interface Theme {
+  id: string;
+  title: string;
+  icon: string;
+  /** Cor do tema (hex). */
+  color: string;
+}
+
 export interface Level {
   id: string;
   title: string;
   description: string;
   icon: string;
+  /** Etapa de dificuldade (1 = mais fácil … 5 = mais difícil). É o level_number do JSON. */
+  stage: number;
+  theme: Theme;
   exercises: Exercise[];
 }
 
-/** Módulo temático (uma "etapa" da trilha). */
+/**
+ * Etapa da trilha: reúne a lição de mesmo nível de todos os temas.
+ * A dificuldade sobe de etapa em etapa (e não volta ao fácil a cada tema novo).
+ */
 export interface Unit {
   id: string;
-  /** Pilar do Catecismo: 1 Credo, 2 Sacramentos, 3 Vida em Cristo, 4 Oração, 5 Especiais. */
-  catechismPart: number;
+  stage: number;
   title: string;
   description: string;
   icon: string;
-  /** Cor do cabeçalho do módulo (hex). */
+  /** Cor do cabeçalho da etapa (hex). */
   color: string;
   levels: Level[];
 }

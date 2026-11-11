@@ -1,5 +1,5 @@
 import type { AgeGroup, Exercise, Level, Unit } from '../types';
-import { AGES, buildUnit, trackFor, validateModules, type RawModule } from './schema';
+import { AGES, buildStages, buildUnit, trackFor, validateModules, type RawModule } from './schema';
 
 // Todo o conteúdo vem dos arquivos src/data/modulos/*.json, na ordem do nome
 // (01-…, 02-…). Para criar um módulo novo basta adicionar um arquivo lá.
@@ -18,11 +18,13 @@ if (import.meta.env.DEV) {
 
 const fullUnits = raw.map(({ data }) => buildUnit(data));
 
-/** Trilha de cada faixa: os mesmos módulos e níveis, com as perguntas filtradas pela idade. */
-export const tracks: Record<AgeGroup, Unit[]> = Object.fromEntries(AGES.map((g) => [g, trackFor(fullUnits, g)])) as Record<
-  AgeGroup,
-  Unit[]
->;
+/**
+ * Trilha de cada faixa: as mesmas etapas e lições, com as perguntas filtradas pela idade.
+ * Cada etapa traz uma lição de cada tema, e a dificuldade sobe de etapa em etapa.
+ */
+export const tracks: Record<AgeGroup, Unit[]> = Object.fromEntries(
+  AGES.map((g) => [g, trackFor(buildStages(fullUnits), g)]),
+) as Record<AgeGroup, Unit[]>;
 
 export const trackLevels = (g: AgeGroup): Level[] => tracks[g].flatMap((u) => u.levels);
 
@@ -50,7 +52,7 @@ export function isLevelUnlocked(g: AgeGroup, levelId: string, completed: string[
   return idx === 0 || (idx > 0 && completed.includes(levels[idx - 1].id));
 }
 
-/** Módulo atual: o que contém a primeira lição ainda não concluída. */
+/** Etapa atual: a que contém a primeira lição ainda não concluída. */
 export function currentUnit(g: AgeGroup, completed: string[]) {
   return tracks[g].find((u) => u.levels.some((l) => !completed.includes(l.id))) ?? null;
 }

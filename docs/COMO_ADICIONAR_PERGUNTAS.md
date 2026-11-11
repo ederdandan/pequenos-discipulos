@@ -49,6 +49,19 @@ src/data/modulos/
 | Juvenil | botão “Ver fonte” | aparece |
 | Adulto | sempre visível | aparece |
 
+## Etapas e dificuldade
+
+A trilha é montada por **etapas de dificuldade**, não por módulo. O `level_number` de cada lição no JSON
+é a etapa: a Etapa 1 reúne a lição 1 de todos os módulos, a Etapa 2 reúne a lição 2, e assim por diante
+(nomes em `STAGES`, no arquivo `src/data/schema.ts`). Ao criar perguntas:
+
+- **Etapa 1:** cerca de 6 perguntas por faixa, mais simples (verdadeiro/falso, escolha com 3 opções).
+- **Etapas 2 e 3:** 7 a 8 perguntas, com mais lacunas e pares.
+- **Etapas 4 e 5:** 8 a 9 perguntas, com opções mais parecidas, montar frase e resposta digitada.
+
+Dentro de cada lição, o app ordena sozinho as perguntas da mais fácil para a mais difícil:
+verdadeiro/falso → escolha → pares → lacuna/fala → montar frase → digitar.
+
 ## Tipos de pergunta
 
 Todos aceitam `explanation`, `source_reference` e `illustration` (um emoji grande acima da pergunta, ex.: `"illustration": "🍷"`;

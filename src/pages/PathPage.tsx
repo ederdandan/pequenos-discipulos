@@ -6,6 +6,7 @@ import type { AgeGroup, Level, Unit } from '../types';
 import { DailyPanel } from '../components/DailyPanel';
 import { QuestsPanel } from '../components/QuestsPanel';
 import { Shield } from '../components/icons';
+import { STAGES } from '../data/schema';
 
 interface Props {
   onStart: (levelId: string, practice: boolean) => void;
@@ -30,7 +31,7 @@ export function PathPage({ onStart, onReview }: Props) {
     <div className="space-y-8 pb-8">
       {active.notice && (
         <div className="relative rounded-2xl border-2 border-gold-300 bg-gold-50 p-4 pr-10 text-gold-800">
-          <p className="font-extrabold">⏰ Módulo reiniciado</p>
+          <p className="font-extrabold">⏰ Etapa reiniciada</p>
           <p className="text-sm">{active.notice}</p>
           <button
             onClick={() => updateActive((p) => ({ ...p, notice: null }))}
@@ -110,21 +111,14 @@ function TrackHeader({ g, done, total, questions }: { g: AgeGroup; done: number;
         <div className="h-full rounded-full bg-gold-500 transition-all" style={{ width: `${(done / total) * 100}%` }} />
       </div>
       <p className="mt-2 text-xs text-slate-400">
-        Fique {INACTIVITY_DAYS} dias sem estudar e o módulo atual recomeça (os anteriores ficam salvos).
+        Cada etapa passa por todos os temas e é um pouco mais difícil que a anterior. Fique {INACTIVITY_DAYS} dias sem
+        estudar e a etapa atual recomeça (as anteriores ficam salvas).
       </p>
     </div>
   );
 }
 
-const PILLARS: Record<number, string> = {
-  1: 'Pilar 1 · A Profissão de Fé',
-  2: 'Pilar 2 · Os Sacramentos',
-  3: 'Pilar 3 · A Vida em Cristo',
-  4: 'Pilar 4 · A Oração Cristã',
-  5: 'Módulo especial',
-};
-
-/** Cabeçalho do módulo com fundo de vitral (losangos translúcidos). */
+/** Cabeçalho da etapa com fundo de vitral (losangos translúcidos) e o nível de dificuldade. */
 function ModuleHeader({ unit }: { unit: Unit }) {
   return (
     <div
@@ -143,9 +137,18 @@ function ModuleHeader({ unit }: { unit: Unit }) {
           {unit.icon}
         </span>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-gold-200">{PILLARS[unit.catechismPart]}</p>
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold-200">
+            Etapa {unit.stage} de {STAGES.length}
+            <span className="flex gap-0.5" aria-label={`Dificuldade ${unit.stage} de ${STAGES.length}`}>
+              {STAGES.map((_, i) => (
+                <span key={i} className={`size-1.5 rounded-full ${i < unit.stage ? 'bg-gold-300' : 'bg-white/30'}`} />
+              ))}
+            </span>
+          </p>
           <h2 className="font-serif text-xl font-bold">{unit.title}</h2>
-          <p className="opacity-90">{unit.description}</p>
+          <p className="opacity-90">
+            {unit.description} · {unit.levels.length} lições · {unit.levels.reduce((n, l) => n + l.exercises.length, 0)} perguntas
+          </p>
         </div>
       </div>
     </div>
@@ -222,6 +225,12 @@ function LevelRow({
                 : 'border-slate-200 bg-slate-50'
           }`}
         >
+          <span
+            className="mb-1 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide"
+            style={{ color: unlocked ? level.theme.color : undefined }}
+          >
+            {level.theme.icon} {level.theme.title}
+          </span>
           <span className={`block font-bold ${unlocked ? 'text-slate-800' : 'text-slate-400'}`}>{level.title}</span>
           <span className="block text-sm text-slate-500">{level.description}</span>
           <span

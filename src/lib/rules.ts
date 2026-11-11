@@ -35,7 +35,7 @@ export const BADGES: Record<string, { label: string; icon: string; description: 
   streak_3: { label: 'Constância', icon: '🕯️', description: '3 dias seguidos' },
   streak_7: { label: 'Semana de fogo', icon: '🌟', description: '7 dias seguidos' },
   xp_100: { label: 'Centena', icon: '💯', description: '100 XP acumulados' },
-  unit_1: { label: 'Primeiro módulo', icon: '🏅', description: 'Concluiu um módulo inteiro' },
+  unit_1: { label: 'Primeira etapa', icon: '🏅', description: 'Concluiu uma etapa inteira' },
   answers_100: { label: '100 respostas', icon: '🎯', description: 'Acertou 100 respostas' },
   goal_1: { label: 'Meta batida', icon: '✅', description: 'Bateu a meta diária pela primeira vez' },
   goal_7: { label: '7 metas', icon: '📆', description: 'Bateu a meta diária em 7 dias' },
@@ -92,7 +92,7 @@ export function newProfile(
 const addHistory = (p: UserProfile, e: HistoryEntry): HistoryEntry[] => [e, ...p.history].slice(0, MAX_HISTORY);
 
 /**
- * Ficou INACTIVITY_DAYS dias ou mais sem jogar → o módulo atual recomeça
+ * Ficou INACTIVITY_DAYS dias ou mais sem jogar → a etapa atual recomeça
  * (as lições dela voltam a ficar pendentes). Etapas já concluídas, XP,
  * conquistas e histórico são mantidos.
  */
@@ -113,7 +113,7 @@ export function applyInactivityReset(p: UserProfile, now = Date.now()): UserProf
     completedLevels: p.completedLevels.filter((id) => !unitLevelIds.has(id)),
     lessonInProgress: inProgressHere ? null : p.lessonInProgress,
     history: addHistory(p, { at: now, kind: 'reset', title: unit.title, xp: 0 }),
-    notice: `Você ficou ${missed} dias sem estudar, então o módulo “${unit.title}” recomeçou. Seu XP, conquistas e módulos anteriores continuam salvos. Vamos retomar! 🙏`,
+    notice: `Você ficou ${missed} dias sem estudar, então a etapa “${unit.title}” recomeçou. Seu XP, conquistas e etapas anteriores continuam salvos. Vamos retomar! 🙏`,
   };
 }
 
