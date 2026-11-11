@@ -1,22 +1,39 @@
 // Web Speech API: síntese (TTS) e reconhecimento de voz, sem serviços externos.
 
-let cachedVoice: SpeechSynthesisVoice | null | undefined;
-
 const LANG = 'pt-BR';
 
-function portugueseVoice() {
-  if (cachedVoice !== undefined && cachedVoice !== null) return cachedVoice;
-  const voices = window.speechSynthesis?.getVoices() ?? [];
-  const isPtBr = (v: SpeechSynthesisVoice) => v.lang.replace('_', '-') === LANG;
-  cachedVoice =
-    voices.find((v) => isPtBr(v) && /natural|google|luciana|francisca/i.test(v.name)) ??
-    voices.find(isPtBr) ??
-    voices.find((v) => v.lang.startsWith('pt')) ??
-    null;
-  return cachedVoice;
+export const canSpeak = () => typeof window !== 'undefined' && 'speechSynthesis' in window;
+
+/** Preferências de voz do perfil ativo (definidas pelo App ao trocar de perfil). */
+let prefs: { pitch: number; name: string | null } = { pitch: 1, name: null };
+export function setVoicePrefs(p: { pitch?: number; name?: string | null } | undefined) {
+  prefs = { pitch: p?.pitch ?? 1, name: p?.name ?? null };
 }
 
-export const canSpeak = () => typeof window !== 'undefined' && 'speechSynthesis' in window;
+/** Vozes em português instaladas no aparelho (pt-BR primeiro). A lista varia por navegador/sistema. */
+export function portugueseVoices(): SpeechSynthesisVoice[] {
+  if (!canSpeak()) return [];
+  const all = window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('pt'));
+  const br = (v: SpeechSynthesisVoice) => (v.lang.replace('_', '-') === LANG ? 0 : 1);
+  return all.sort((a, b) => br(a) - br(b));
+}
+
+/** Avisa quando o navegador termina de carregar as vozes (Chrome carrega depois). */
+export function onVoicesChanged(fn: () => void) {
+  if (!canSpeak()) return () => {};
+  window.speechSynthesis.addEventListener('voiceschanged', fn);
+  return () => window.speechSynthesis.removeEventListener('voiceschanged', fn);
+}
+
+function chosenVoice() {
+  const voices = portugueseVoices();
+  return (
+    (prefs.name && voices.find((v) => v.name === prefs.name)) ||
+    voices.find((v) => /natural|google|luciana|francisca/i.test(v.name)) ||
+    voices[0] ||
+    null
+  );
+}
 
 export function speak(text: string, rate = 1) {
   if (!canSpeak()) return;
@@ -24,7 +41,8 @@ export function speak(text: string, rate = 1) {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = LANG;
   u.rate = rate;
-  const v = portugueseVoice();
+  u.pitch = prefs.pitch;
+  const v = chosenVoice();
   if (v) u.voice = v;
   window.speechSynthesis.speak(u);
 }

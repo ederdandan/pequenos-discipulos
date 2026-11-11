@@ -21,6 +21,7 @@ import { PhotoPicker } from '../components/PhotoPicker';
 import { InstallCard } from '../components/InstallCard';
 import { ExportButton, ImportButton } from '../components/BackupControls';
 import { LargeTextToggle } from '../components/LargeTextToggle';
+import { VoiceSettings } from '../components/VoiceSettings';
 
 export function ProfilePage() {
   const { active, updateActive, selectProfile, removeProfile } = useStore();
@@ -153,6 +154,8 @@ export function ProfilePage() {
           <LargeTextToggle value={active.largeText} onChange={(v) => updateActive((p) => ({ ...p, largeText: v }))} />
         </div>
       </section>
+
+      <VoiceSettings />
 
       <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
         <h2 className="mb-1 text-lg font-extrabold">Backup da família</h2>

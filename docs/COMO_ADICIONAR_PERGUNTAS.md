@@ -108,6 +108,20 @@ palavra (“7” = “sete”). Use `accept` para outras respostas válidas.
 ```
 Usa o microfone (Chrome/Edge). Sem microfone, a pessoa digita.
 
+## Resumo das fontes (`src/data/fontes.json`)
+
+No Juvenil e no Adulto, o botão **Ver fonte** abre um painel com a referência por extenso
+(ex.: `CIC 336` → "Catecismo da Igreja Católica · § 336") e um resumo do que ela diz.
+O resumo fica em `src/data/fontes.json`, com a chave **igual** ao `source_reference` da pergunta:
+
+```json
+"Lc 15,4-7": "Na parábola da ovelha perdida, o pastor deixa as noventa e nove para procurar a que se perdeu..."
+```
+
+Escreva em palavras próprias (paráfrase, não cópia literal). Se faltar, o painel mostra só a referência
+e o `npm run check:content` avisa quais estão sem resumo. Siglas novas (outro livro da Bíblia, outro
+documento) se acrescentam em `WORKS`, no arquivo `src/lib/sources.ts`.
+
 ## Áudio
 
 Não existe tipo de pergunta só de ouvir. O áudio depende do perfil:

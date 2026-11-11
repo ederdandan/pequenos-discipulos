@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FamilyIcon, PathIcon, ProfileIcon } from './components/icons';
 import { useStore } from './store/AppStore';
+import { setVoicePrefs } from './lib/speech';
 import { StatsBar } from './components/StatsBar';
 import { Avatar } from './components/Avatar';
 import { ProfilesPage } from './pages/ProfilesPage';
@@ -33,6 +34,9 @@ export default function App() {
     if (active) html.dataset.age = active.ageGroup;
     else delete html.dataset.age;
   }, [active?.ageGroup, active?.largeText]);
+
+  // Tom e voz da leitura em voz alta seguem o perfil ativo.
+  useEffect(() => setVoicePrefs(active?.voice), [active?.voice?.pitch, active?.voice?.name]);
 
   // Ao trocar de perfil, volta para a trilha.
   useEffect(() => {

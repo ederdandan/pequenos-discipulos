@@ -35,6 +35,17 @@ if (!errors.length) {
   console.log(`\n${mods.length} módulos · ${unique} perguntas no total (algumas servem a mais de uma faixa)`);
 }
 
+// Fontes de Juvenil/Adulto sem resumo em src/data/fontes.json: o painel "Ver fonte" mostra só a referência.
+const summaries = JSON.parse(readFileSync(join(dir, '..', 'fontes.json'), 'utf8')) as Record<string, string>;
+const noSummary = new Set<string>();
+for (const m of mods)
+  for (const l of m.data.levels ?? [])
+    for (const q of l.questions ?? [])
+      if (q.source_reference && q.target_ages?.some((g) => g !== 'KIDS') && !summaries[q.source_reference])
+        noSummary.add(q.source_reference);
+if (noSummary.size)
+  warnings.push(`${noSummary.size} fonte(s) sem resumo em src/data/fontes.json: ${[...noSummary].join(' | ')}`);
+
 if (warnings.length) console.warn(`\n${warnings.length} aviso(s):\n- ${warnings.join('\n- ')}`);
 if (errors.length) {
   console.error(`\n${errors.length} problema(s):\n- ${errors.join('\n- ')}`);

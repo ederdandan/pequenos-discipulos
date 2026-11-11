@@ -13,6 +13,8 @@ export interface UserProfile {
   ageGroup: AgeGroup;
   /** Letras maiores e leitura em voz alta mais lenta (acessibilidade). */
   largeText: boolean;
+  /** Voz da leitura em voz alta: tom (0.5 grave … 2 agudo) e nome da voz do aparelho. */
+  voice?: { pitch: number; name: string | null };
   xp: number;
   weeklyXp: number;
   /** Semana (ISO, ex.: "2026-W45") a que o weeklyXp pertence. Muda → zera o weeklyXp. */

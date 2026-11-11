@@ -1,5 +1,5 @@
 import { useCallback, useState, type ReactNode } from 'react';
-import { BookOpen, CheckCircle2, Volume2, X, XCircle } from 'lucide-react';
+import { BookOpen, CheckCircle2, ChevronRight, Volume2, X, XCircle } from 'lucide-react';
 import type { AgeGroup, Exercise } from '../types';
 import { findExercise, findLevel } from '../data/curriculum';
 import { useStore } from '../store/AppStore';
@@ -28,6 +28,8 @@ import { MatchPairs } from '../components/exercises/MatchPairs';
 import { TypeAnswer } from '../components/exercises/TypeAnswer';
 import { Mascot } from '../components/Mascot';
 import { FlameIcon, RosaryProgress } from '../components/icons';
+import { BottomSheet } from '../components/BottomSheet';
+import { describeReference, sourceSummary } from '../lib/sources';
 
 interface Props {
   /** Lição a jogar (vazio no modo revisão). */
@@ -251,7 +253,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
                   )}
                 </p>
               )}
-              <Explanation exercise={feedback.exercise} age={active.ageGroup} />
+              <Explanation exercise={feedback.exercise} age={active.ageGroup} audio={audio} ttsRate={ttsRate} />
               {!feedback.correct && (
                 <p className="mt-1 text-sm opacity-80">
                   Essa volta no final {review ? 'da revisão' : 'da lição'} e também na sua revisão de erros.
@@ -279,26 +281,68 @@ const PRAISE = ['Muito bem!', 'Isso mesmo!', 'Excelente!', 'Que beleza!', 'Mando
 
 /**
  * Explicação depois da resposta + fonte, conforme a faixa (seção 2.1 da especificação):
- * Infantil esconde a fonte, Juvenil mostra num cartão que abre, Adulto mostra sempre.
+ * Infantil esconde a fonte; Juvenil e Adulto tocam em "Ver fonte" e abre um painel
+ * com a referência por extenso e o resumo do que ela diz (src/data/fontes.json).
  */
-function Explanation({ exercise, age }: { exercise: Exercise; age: AgeGroup }) {
+function Explanation({ exercise, age, audio, ttsRate }: { exercise: Exercise; age: AgeGroup; audio: AudioMode; ttsRate: number }) {
   const [open, setOpen] = useState(false);
-  const source = exercise.sourceReference;
-  if (!exercise.explanation && (!source || age === 'kids')) return null;
+  const source = age === 'kids' ? undefined : exercise.sourceReference;
+  if (!exercise.explanation && !source) return null;
   return (
-    <div className="mt-2 space-y-1">
+    <div className="mt-2 space-y-2">
       {exercise.explanation && <p className="font-reading leading-snug text-slate-700">{exercise.explanation}</p>}
-      {source && age === 'adults' && (
-        <p className="flex items-center gap-1 text-sm font-bold">
-          <BookOpen className="size-4" /> {source}
-        </p>
-      )}
-      {source && age === 'teens' && (
-        <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1 text-sm font-bold underline">
-          <BookOpen className="size-4" /> {open ? source : 'Ver fonte'}
+      {source && (
+        <button
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-1.5 rounded-full border border-current/20 bg-white/70 px-3 py-1 text-sm font-semibold hover:bg-white"
+        >
+          <BookOpen className="size-4" />
+          {/* Adulto já vê a sigla; Juvenil vê só o convite. */}
+          {age === 'adults' ? source : 'Ver fonte'}
+          <ChevronRight className="size-4" />
         </button>
       )}
+      {open && source && <SourceSheet source={source} audio={audio} ttsRate={ttsRate} onClose={() => setOpen(false)} />}
     </div>
+  );
+}
+
+function SourceSheet({ source, audio, ttsRate, onClose }: { source: string; audio: AudioMode; ttsRate: number; onClose: () => void }) {
+  const parts = describeReference(source);
+  const summary = sourceSummary(source);
+  return (
+    <BottomSheet
+      onClose={onClose}
+      title={
+        <span className="flex items-center gap-2">
+          <BookOpen className="size-5 text-gold-600" /> Fonte
+        </span>
+      }
+    >
+      <ul className="space-y-2">
+        {parts.map((p, i) => (
+          <li key={i} className="rounded-xl border border-gold-200 bg-white p-3 shadow-sm">
+            <p className="font-bold text-brand-700">{p.work}</p>
+            {p.where && <p className="text-sm text-slate-500">{p.where}</p>}
+          </li>
+        ))}
+      </ul>
+      {summary && (
+        <div className="mt-5">
+          <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-gold-700">
+            O que diz
+            {audio !== 'off' && (
+              <button onClick={() => speak(summary, ttsRate)} className="text-brand-600" aria-label="Ouvir o resumo">
+                <Volume2 className="size-4" />
+              </button>
+            )}
+          </p>
+          <p className="font-reading text-lg leading-relaxed">{summary}</p>
+          <p className="mt-3 text-xs text-slate-400">Resumo em palavras simples, não é citação literal.</p>
+        </div>
+      )}
+      <p className="mt-5 text-xs text-slate-400">Referência: {source}</p>
+    </BottomSheet>
   );
 }
 
