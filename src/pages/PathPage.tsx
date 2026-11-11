@@ -1,18 +1,16 @@
-import { Check, Dumbbell, Lock, Play, Star, X } from 'lucide-react';
+import { Check, Dumbbell, Lock, Play, X } from 'lucide-react';
 import { findLevel, isLevelUnlocked, trackLevels, tracks } from '../data/curriculum';
 import { useStore } from '../store/AppStore';
 import { AGE_GROUPS, INACTIVITY_DAYS } from '../lib/rules';
 import type { AgeGroup, Level, Unit } from '../types';
 import { DailyPanel } from '../components/DailyPanel';
 import { QuestsPanel } from '../components/QuestsPanel';
+import { Shield } from '../components/icons';
 
 interface Props {
   onStart: (levelId: string, practice: boolean) => void;
   onReview: () => void;
 }
-
-// Deslocamento horizontal dos nós para formar um caminho em zigue-zague.
-const OFFSETS = [0, 60, 90, 60, 0, -60, -90, -60];
 
 export function PathPage({ onStart, onReview }: Props) {
   const { active, updateActive } = useStore();
@@ -27,7 +25,6 @@ export function PathPage({ onStart, onReview }: Props) {
       ? active.lessonInProgress
       : null;
   const inProgressLevel = inProgress ? findLevel(inProgress.levelId, g) : undefined;
-  let globalIdx = 0;
 
   return (
     <div className="space-y-8 pb-8">
@@ -48,7 +45,7 @@ export function PathPage({ onStart, onReview }: Props) {
       {inProgress && !(noHearts && !inProgress.practice) && (
         <button
           onClick={() => onStart(inProgress.levelId, inProgress.practice)}
-          className="flex w-full items-center gap-3 rounded-2xl border-2 border-b-4 border-brand-600 bg-brand-50 p-4 text-left hover:bg-brand-100"
+          className="flex w-full items-center gap-3 rounded-2xl border shadow-sm border-brand-600 bg-brand-50 p-4 text-left hover:bg-brand-100"
         >
           <Play className="size-8 shrink-0 text-brand-600" fill="currentColor" />
           <span>
@@ -77,23 +74,21 @@ export function PathPage({ onStart, onReview }: Props) {
       {tracks[g].map((unit) => (
         <section key={unit.id}>
           <ModuleHeader unit={unit} />
-          <div className="flex flex-col items-center gap-6">
-            {unit.levels.map((level) => {
-              const offset = OFFSETS[globalIdx++ % OFFSETS.length];
-              return (
-                <LevelNode
-                  key={level.id}
-                  level={level}
-                  offset={offset}
-                  done={active.completedLevels.includes(level.id)}
-                  unlocked={isLevelUnlocked(g, level.id, active.completedLevels)}
-                  started={inProgress?.levelId === level.id}
-                  noHearts={noHearts}
-                  onStart={onStart}
-                />
-              );
-            })}
-          </div>
+          {/* Caminho vertical: cada lição é um escudo ligado ao próximo por uma linha pontilhada. */}
+          <ol className="relative ml-2">
+            {unit.levels.map((level, i) => (
+              <LevelRow
+                key={level.id}
+                level={level}
+                last={i === unit.levels.length - 1}
+                done={active.completedLevels.includes(level.id)}
+                unlocked={isLevelUnlocked(g, level.id, active.completedLevels)}
+                started={inProgress?.levelId === level.id}
+                noHearts={noHearts}
+                onStart={onStart}
+              />
+            ))}
+          </ol>
         </section>
       ))}
     </div>
@@ -102,9 +97,9 @@ export function PathPage({ onStart, onReview }: Props) {
 
 function TrackHeader({ g, done, total, questions }: { g: AgeGroup; done: number; total: number; questions: number }) {
   return (
-    <div className="rounded-2xl border-2 border-slate-200 bg-white p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
-        <p className="font-extrabold">
+        <p className="font-bold">
           {AGE_GROUPS[g].emoji} Trilha {AGE_GROUPS[g].label}
         </p>
         <p className="text-sm font-bold text-slate-400">
@@ -133,8 +128,8 @@ const PILLARS: Record<number, string> = {
 function ModuleHeader({ unit }: { unit: Unit }) {
   return (
     <div
-      className="relative mb-8 overflow-hidden rounded-2xl border-b-4 p-5 text-white"
-      style={{ backgroundColor: unit.color, borderBottomColor: 'rgb(0 0 0 / 0.3)' }}
+      className="relative mb-6 overflow-hidden rounded-2xl p-5 text-white shadow-md"
+      style={{ backgroundColor: unit.color }}
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-20"
@@ -148,8 +143,8 @@ function ModuleHeader({ unit }: { unit: Unit }) {
           {unit.icon}
         </span>
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-wider text-gold-200">{PILLARS[unit.catechismPart]}</p>
-          <h2 className="text-xl font-extrabold">{unit.title}</h2>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gold-200">{PILLARS[unit.catechismPart]}</p>
+          <h2 className="font-serif text-xl font-bold">{unit.title}</h2>
           <p className="opacity-90">{unit.description}</p>
         </div>
       </div>
@@ -157,9 +152,9 @@ function ModuleHeader({ unit }: { unit: Unit }) {
   );
 }
 
-function LevelNode({
+function LevelRow({
   level,
-  offset,
+  last,
   done,
   unlocked,
   started,
@@ -167,7 +162,7 @@ function LevelNode({
   onStart,
 }: {
   level: Level;
-  offset: number;
+  last: boolean;
   done: boolean;
   unlocked: boolean;
   started: boolean;
@@ -175,42 +170,70 @@ function LevelNode({
   onStart: Props['onStart'];
 }) {
   const current = unlocked && !done;
-  // Sem corações: lições concluídas viram treino; novas ficam bloqueadas.
+  // Sem chamas: lições concluídas viram treino; novas ficam bloqueadas.
   const practice = done && noHearts;
   const playable = unlocked && (!noHearts || done);
+  const shield = done
+    ? { fill: '#DC2626', stroke: '#991B1B' }
+    : unlocked
+      ? { fill: '#1E3A8A', stroke: '#172554' }
+      : { fill: '#E2E8F0', stroke: '#CBD5E1' };
+  const status = done
+    ? practice
+      ? 'Treinar'
+      : 'Concluída · treinar de novo'
+    : current
+      ? noHearts
+        ? 'Aguardando chamas'
+        : started
+          ? 'Continuar'
+          : 'Começar'
+      : 'Bloqueada';
 
   return (
-    <div className="flex flex-col items-center" style={{ transform: `translateX(${offset}px)` }}>
-      {current && !noHearts && (
-        <span className="mb-2 animate-bounce rounded-xl border-2 border-gold-200 bg-white px-3 py-1 text-sm font-extrabold uppercase text-brand-700">
-          {started ? 'Continuar' : 'Começar'}
-        </span>
+    <li className="relative flex gap-4 pb-6">
+      {!last && (
+        <span
+          className={`absolute left-[31px] top-16 bottom-0 border-l-2 border-dashed ${done ? 'border-pentecost/50' : 'border-gold-300'}`}
+          aria-hidden="true"
+        />
       )}
       <button
         onClick={() => playable && onStart(level.id, practice)}
         disabled={!playable}
-        title={level.description}
-        className={`relative flex size-20 items-center justify-center rounded-full border-b-8 text-3xl transition active:translate-y-1 active:border-b-4 ${
-          done
-            ? 'border-pentecost-dark bg-pentecost text-white'
-            : unlocked
-              ? 'border-brand-800 bg-brand-700 text-white'
-              : 'border-slate-300 bg-slate-200 text-slate-400'
-        } ${current ? 'ring-4 ring-gold-400/60 ring-offset-4 ring-offset-parchment' : ''} ${!playable ? 'cursor-not-allowed' : ''}`}
+        className={`group flex flex-1 items-center gap-4 text-left ${!playable ? 'cursor-not-allowed' : ''}`}
       >
-        {/* medalha: aro dourado interno */}
-        {unlocked && <span className="pointer-events-none absolute inset-1.5 rounded-full border-2 border-gold-300/80" />}
-        {!unlocked ? <Lock className="size-8" /> : <span>{level.icon}</span>}
-        {done && (
-          <span className="absolute -right-1 -top-1 rounded-full border-2 border-white bg-gold-500 p-1 text-white">
-            {practice ? <Dumbbell className="size-4" /> : <Check className="size-4" strokeWidth={4} />}
+        <span className={`relative transition ${playable ? 'group-hover:scale-105' : ''}`}>
+          <Shield size={64} {...shield}>
+            {!unlocked ? <Lock className="size-6 text-slate-400" /> : <span className="text-3xl">{level.icon}</span>}
+          </Shield>
+          {done && (
+            <span className="absolute -right-1 top-0 rounded-full border-2 border-white bg-gold-500 p-0.5 text-white">
+              {practice ? <Dumbbell className="size-3.5" /> : <Check className="size-3.5" strokeWidth={4} />}
+            </span>
+          )}
+        </span>
+        <span
+          className={`flex-1 rounded-xl border p-4 transition ${
+            current
+              ? 'border-gold-400 bg-white shadow-md ring-2 ring-gold-200'
+              : unlocked
+                ? 'border-slate-200 bg-white shadow-sm group-hover:border-brand-200'
+                : 'border-slate-200 bg-slate-50'
+          }`}
+        >
+          <span className={`block font-bold ${unlocked ? 'text-slate-800' : 'text-slate-400'}`}>{level.title}</span>
+          <span className="block text-sm text-slate-500">{level.description}</span>
+          <span
+            className={`mt-2 inline-flex items-center gap-1 text-sm font-semibold ${
+              current ? 'text-brand-700' : done ? 'text-pentecost' : 'text-slate-400'
+            }`}
+          >
+            {current && !noHearts && <Play className="size-3.5" fill="currentColor" />}
+            {status} · {level.exercises.length} perguntas
           </span>
-        )}
-        {current && <Star className="absolute -bottom-2 size-5 text-gold-400" fill="currentColor" />}
+        </span>
       </button>
-      <span className={`mt-2 max-w-40 text-center font-extrabold leading-tight ${unlocked ? 'text-slate-700' : 'text-slate-400'}`}>
-        {level.title}
-      </span>
-    </div>
+    </li>
   );
 }

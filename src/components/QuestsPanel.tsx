@@ -70,7 +70,7 @@ export function QuestsPanel() {
               ) : done ? (
                 <button
                   onClick={() => open(q.id)}
-                  className="w-24 animate-bounce rounded-xl border-2 border-b-4 border-gold-600 bg-gold-400 py-1 text-sm font-extrabold text-white hover:bg-gold-300"
+                  className="w-24 animate-bounce rounded-xl border shadow-sm border-gold-600 bg-gold-400 py-1 text-sm font-extrabold text-white hover:bg-gold-300"
                   aria-label={`Abrir baú da missão ${q.label}`}
                 >
                   🎁 Abrir

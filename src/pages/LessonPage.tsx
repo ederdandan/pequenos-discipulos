@@ -1,5 +1,5 @@
 import { useCallback, useState, type ReactNode } from 'react';
-import { BookOpen, CheckCircle2, Flame, Volume2, X, XCircle } from 'lucide-react';
+import { BookOpen, CheckCircle2, Volume2, X, XCircle } from 'lucide-react';
 import type { AgeGroup, Exercise } from '../types';
 import { findExercise, findLevel } from '../data/curriculum';
 import { useStore } from '../store/AppStore';
@@ -19,16 +19,15 @@ import { sounds } from '../lib/sounds';
 import { newlyCompleted, questsAfterAnswer, questsAfterLesson, type Quest } from '../lib/quests';
 import { speak } from '../lib/speech';
 import { Button } from '../components/Button';
-import { correctAnswer } from '../components/exercises/shared';
+import { correctAnswer, type AudioMode } from '../components/exercises/shared';
 import { MultipleChoice } from '../components/exercises/MultipleChoice';
 import { FillBlank } from '../components/exercises/FillBlank';
 import { WordBank } from '../components/exercises/WordBank';
 import { Speaking } from '../components/exercises/Speaking';
-import { Listening } from '../components/exercises/Listening';
 import { MatchPairs } from '../components/exercises/MatchPairs';
-import { ListenChoose } from '../components/exercises/ListenChoose';
 import { TypeAnswer } from '../components/exercises/TypeAnswer';
 import { Mascot } from '../components/Mascot';
+import { FlameIcon, RosaryProgress } from '../components/icons';
 
 interface Props {
   /** Lição a jogar (vazio no modo revisão). */
@@ -193,7 +192,9 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
     );
   }
 
-  const props = { ageGroup: active.ageGroup, ttsRate, readAloud: active.ageGroup === 'kids', locked: !!feedback, onReady };
+  // Áudio: Infantil lê sozinho (ainda aprendendo a ler); letra grande ganha o botão; os demais leem em silêncio.
+  const audio: AudioMode = active.ageGroup === 'kids' ? 'auto' : active.largeText ? 'button' : 'off';
+  const props = { ageGroup: active.ageGroup, ttsRate, audio, locked: !!feedback, onReady };
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4">
@@ -201,19 +202,14 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
         <button onClick={onExit} className="text-slate-400 hover:text-slate-600" aria-label="Sair da lição">
           <X className="size-7" />
         </button>
-        <div className="h-4 flex-1 overflow-hidden rounded-full bg-slate-200">
-          <div
-            className="h-full rounded-full bg-gold-500 transition-all duration-500"
-            style={{ width: `${Math.min(100, (solved / total) * 100)}%` }}
-          />
-        </div>
+        <RosaryProgress done={Math.min(solved, total)} total={total} />
         {safe ? (
-          <span className="rounded-lg bg-brand-100 px-2 py-1 text-xs font-extrabold uppercase text-brand-700">
+          <span className="rounded-lg bg-brand-100 px-2 py-1 text-xs font-semibold text-brand-700">
             {review ? 'Revisão' : 'Treino'}
           </span>
         ) : (
-          <span className="flex items-center gap-1 font-extrabold text-fire" title="Chamas">
-            <Flame className="size-6" fill="currentColor" /> {active.hearts}
+          <span className="flex items-center gap-1 font-bold text-fire" title="Chamas">
+            <FlameIcon size={24} /> {active.hearts}
           </span>
         )}
       </header>
@@ -223,15 +219,17 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
         {exercise.type === 'fill-blank' && <FillBlank exercise={exercise} {...props} />}
         {exercise.type === 'word-bank' && <WordBank exercise={exercise} {...props} />}
         {exercise.type === 'speaking' && <Speaking exercise={exercise} {...props} />}
-        {exercise.type === 'listening' && <Listening exercise={exercise} {...props} />}
         {exercise.type === 'match-pairs' && <MatchPairs exercise={exercise} {...props} />}
-        {exercise.type === 'listen-choose' && <ListenChoose exercise={exercise} {...props} />}
         {exercise.type === 'type-answer' && <TypeAnswer exercise={exercise} {...props} />}
       </main>
 
       <footer
-        className={`-mx-4 border-t-2 px-4 py-5 ${
-          feedback ? (feedback.correct ? 'animate-slide-up border-gold-200 bg-gold-100' : 'animate-slide-up border-red-200 bg-red-100') : 'border-gold-100'
+        className={`sticky bottom-0 -mx-4 mb-3 rounded-2xl border px-4 py-5 ${
+          feedback
+            ? feedback.correct
+              ? 'animate-slide-up border-gold-300 bg-gold-50 shadow-lg'
+              : 'animate-slide-up border-red-200 bg-red-50 shadow-lg'
+            : 'border-transparent bg-parchment'
         }`}
       >
         <div className="mx-auto flex max-w-2xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -239,16 +237,18 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
             <div className={`flex gap-3 ${feedback.correct ? 'text-gold-800' : 'text-red-800'}`}>
               {active.ageGroup === 'kids' && <Mascot size={64} halo={false} className="shrink-0" />}
               <div>
-              <p className="flex items-center gap-2 text-xl font-extrabold">
+              <p className="flex items-center gap-2 font-serif text-xl font-bold">
                 {feedback.correct ? <CheckCircle2 className="size-7" /> : <XCircle className="size-7" />}
                 {feedback.correct ? PRAISE[feedback.exercise.id.length % PRAISE.length] : 'Resposta certa:'}
               </p>
               {!feedback.correct && (
                 <p className="mt-1 flex items-center gap-2 font-bold">
                   {feedback.answer}
-                  <button onClick={() => speak(feedback.answer, ttsRate)} aria-label="Ouvir resposta">
-                    <Volume2 className="size-5" />
-                  </button>
+                  {audio !== 'off' && (
+                    <button onClick={() => speak(feedback.answer, ttsRate)} aria-label="Ouvir resposta">
+                      <Volume2 className="size-5" />
+                    </button>
+                  )}
                 </p>
               )}
               <Explanation exercise={feedback.exercise} age={active.ageGroup} />
@@ -334,11 +334,11 @@ function LessonComplete({
       <h1 className="text-3xl font-extrabold text-gold-600">{review ? 'Revisão concluída!' : practice ? 'Treino concluído!' : 'Lição concluída!'}</h1>
       <div className="grid w-full grid-cols-2 gap-3">
         <div className="rounded-2xl border-2 border-gold-400 bg-gold-50 p-4">
-          <p className="text-xs font-extrabold uppercase text-gold-700">XP ganho</p>
+          <p className="text-sm font-semibold text-gold-700">Graça (XP)</p>
           <p className="text-3xl font-extrabold text-gold-600">+{reward.xp}</p>
         </div>
         <div className="rounded-2xl border-2 border-brand-200 bg-brand-50 p-4">
-          <p className="text-xs font-extrabold uppercase text-brand-700">Dias seguidos</p>
+          <p className="text-sm font-semibold text-brand-700">Velas acesas</p>
           <p className="text-3xl font-extrabold text-brand-700">🕯️ {reward.streak}</p>
         </div>
       </div>

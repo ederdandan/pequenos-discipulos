@@ -7,7 +7,7 @@ import type { ExerciseProps } from './shared';
 
 type Status = 'idle' | 'listening' | 'heard' | 'error';
 
-export function Speaking({ exercise, ttsRate, locked, onReady }: ExerciseProps<SpeakingExercise>) {
+export function Speaking({ exercise, ttsRate, audio, locked, onReady }: ExerciseProps<SpeakingExercise>) {
   const [typing, setTyping] = useState(!canRecognize());
   const [status, setStatus] = useState<Status>('idle');
   const [heard, setHeard] = useState<string[]>([]);
@@ -39,16 +39,19 @@ export function Speaking({ exercise, ttsRate, locked, onReady }: ExerciseProps<S
 
   return (
     <div className="space-y-6">
-      <h2 className="font-reading text-2xl font-extrabold">{exercise.prompt}</h2>
+      <h2 className="font-reading text-2xl font-bold">{exercise.prompt}</h2>
 
-      <div className="flex items-start gap-3 rounded-2xl border-2 border-slate-200 bg-white p-4">
-        <button
-          onClick={() => speak(exercise.targetPhrase, ttsRate)}
-          className="shrink-0 rounded-xl bg-brand-50 p-2 text-brand-600 hover:bg-brand-100"
-          aria-label="Ouvir a frase"
-        >
-          <Volume2 className="size-6" />
-        </button>
+      <div className="flex items-start gap-3 rounded-xl border border-gold-200 bg-white p-4 shadow-sm">
+        {/* Ouvir a oração ajuda quem ainda não lê (Infantil) ou usa letra grande. */}
+        {audio !== 'off' && (
+          <button
+            onClick={() => speak(exercise.targetPhrase, ttsRate)}
+            className="shrink-0 rounded-full bg-brand-50 p-2 text-brand-600 hover:bg-brand-100"
+            aria-label="Ouvir a frase"
+          >
+            <Volume2 className="size-6" />
+          </button>
+        )}
         <div>
           <p className="font-reading text-2xl font-bold leading-relaxed">{exercise.targetPhrase}</p>
           {exercise.hint && <p className="text-slate-500">{exercise.hint}</p>}
@@ -69,7 +72,7 @@ export function Speaking({ exercise, ttsRate, locked, onReady }: ExerciseProps<S
           <button
             onClick={record}
             disabled={locked}
-            className={`flex size-24 items-center justify-center rounded-full border-b-4 text-white transition ${
+            className={`flex size-24 items-center justify-center rounded-full text-white transition ${
               status === 'listening'
                 ? 'animate-pulse border-red-800 bg-pentecost'
                 : 'border-brand-700 bg-brand-600 hover:bg-brand-500'
@@ -95,7 +98,7 @@ export function Speaking({ exercise, ttsRate, locked, onReady }: ExerciseProps<S
         <button
           onClick={() => setTyping((t) => !t)}
           disabled={locked}
-          className="mx-auto flex items-center gap-2 text-sm font-bold uppercase text-slate-400 hover:text-slate-600"
+          className="mx-auto flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-slate-600"
         >
           {typing ? <Mic className="size-4" /> : <Keyboard className="size-4" />}
           {typing ? 'Usar o microfone' : 'Não posso falar agora'}

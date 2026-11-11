@@ -9,7 +9,7 @@ export function HeartsPicker({ value, onChange }: { value: number; onChange: (v:
           type="button"
           key={n}
           onClick={() => onChange(n)}
-          className={`rounded-2xl border-2 border-b-4 p-2 text-center transition ${
+          className={`rounded-2xl border shadow-sm p-2 text-center transition ${
             value === n ? 'border-fire bg-orange-50 text-fire' : 'border-slate-200 hover:bg-slate-50'
           }`}
         >

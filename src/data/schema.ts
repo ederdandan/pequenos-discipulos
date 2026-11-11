@@ -4,7 +4,7 @@
 //
 // Guia para quem escreve perguntas: docs/COMO_ADICIONAR_PERGUNTAS.md
 
-import type { AgeGroup, Exercise, Level, Option, TaggedExercise, Unit } from '../types';
+import type { AgeGroup, Exercise, Level, TaggedExercise, Unit } from '../types';
 
 export type RawAge = 'KIDS' | 'TEENS' | 'ADULTS';
 
@@ -12,21 +12,21 @@ interface RawBase {
   id: string;
   target_ages: RawAge[];
   prompt?: string;
+  /** Emoji grande que ilustra a pergunta (não as respostas). */
+  illustration?: string;
   explanation?: string;
   source_reference?: string;
 }
 
 export type RawQuestion = RawBase &
   (
-    | { type: 'multiple_choice'; context?: string; options: string[]; icons?: string[]; correct_index: number }
+    | { type: 'multiple_choice'; context?: string; options: string[]; correct_index: number }
     | { type: 'true_false'; statement: string; answer: boolean }
     | { type: 'match_pairs'; pairs: Array<{ item: string; match: string }> }
     | { type: 'fill_blank'; sentence: string; answer: string; wrong_options: string[] }
     | { type: 'word_bank'; sentence: string; distractors?: string[] }
     | { type: 'type_answer'; context?: string; answer: string; accept?: string[] }
-    | { type: 'listening'; phrase: string }
     | { type: 'speaking'; phrase: string; hint?: string }
-    | { type: 'listen_choose'; speak: string; options: string[]; icons?: string[]; correct_index: number }
   );
 
 export interface RawLevel {
@@ -65,22 +65,21 @@ export const BLANK = '___';
 
 export const levelId = (moduleId: string, n: number) => `${moduleId}_n${n}`;
 
-function options(texts: string[], icons: string[] | undefined, correctIndex: number): Option[] {
-  return texts.map((text, i) => ({ text, icon: icons?.[i] || undefined, correct: i === correctIndex }));
-}
+const options = (texts: string[], correctIndex: number) => texts.map((text, i) => ({ text, correct: i === correctIndex }));
 
 /** Converte uma pergunta do JSON no exercício usado pela tela. */
 export function toExercise(q: RawQuestion): TaggedExercise {
   const base = {
     id: q.id,
     ages: q.target_ages.map((a) => AGE_FROM_RAW[a]),
+    illustration: q.illustration,
     explanation: q.explanation,
     sourceReference: q.source_reference,
   };
   let e: Exercise;
   switch (q.type) {
     case 'multiple_choice':
-      e = { ...base, type: 'multiple-choice', prompt: q.prompt ?? '', context: q.context, options: options(q.options, q.icons, q.correct_index) };
+      e = { ...base, type: 'multiple-choice', prompt: q.prompt ?? '', context: q.context, options: options(q.options, q.correct_index) };
       break;
     case 'true_false':
       e = {
@@ -89,8 +88,8 @@ export function toExercise(q: RawQuestion): TaggedExercise {
         prompt: q.prompt ?? 'Verdadeiro ou falso?',
         context: q.statement,
         options: [
-          { text: 'Verdadeiro', icon: '👍', correct: q.answer },
-          { text: 'Falso', icon: '👎', correct: !q.answer },
+          { text: 'Verdadeiro', correct: q.answer },
+          { text: 'Falso', correct: !q.answer },
         ],
       };
       break;
@@ -121,14 +120,8 @@ export function toExercise(q: RawQuestion): TaggedExercise {
     case 'type_answer':
       e = { ...base, type: 'type-answer', prompt: q.prompt ?? 'Escreva a resposta', context: q.context, answer: q.answer, accept: q.accept };
       break;
-    case 'listening':
-      e = { ...base, type: 'listening', prompt: q.prompt ?? 'Ouça e escreva o que ouviu', phrase: q.phrase };
-      break;
     case 'speaking':
       e = { ...base, type: 'speaking', prompt: q.prompt ?? 'Fale em voz alta', targetPhrase: q.phrase, hint: q.hint };
-      break;
-    case 'listen_choose':
-      e = { ...base, type: 'listen-choose', prompt: q.prompt ?? 'Ouça e escolha', speak: q.speak, options: options(q.options, q.icons, q.correct_index) };
       break;
   }
   return e as TaggedExercise;
@@ -173,7 +166,7 @@ export function trackFor(units: FullUnit[], age: AgeGroup): Unit[] {
 
 // ---------------- Validação ----------------
 
-const TYPES = ['multiple_choice', 'true_false', 'match_pairs', 'fill_blank', 'word_bank', 'type_answer', 'listening', 'speaking', 'listen_choose'];
+const TYPES = ['multiple_choice', 'true_false', 'match_pairs', 'fill_blank', 'word_bank', 'type_answer', 'speaking'];
 const RAW_AGES = Object.keys(AGE_FROM_RAW);
 /** Menos que isso numa lição fica curto demais (só aviso). */
 export const MIN_PER_LESSON = 4;
@@ -255,15 +248,12 @@ function checkQuestion(q: RawQuestion, qe: (m: string) => void) {
   const distinct = (xs: string[]) => new Set(xs.map((x) => x.trim().toLowerCase())).size === xs.length;
   switch (q.type) {
     case 'multiple_choice':
-    case 'listen_choose':
-      if (q.type === 'multiple_choice' && !q.prompt) qe('sem "prompt"');
-      if (q.type === 'listen_choose' && !q.speak) qe('sem "speak"');
+      if (!q.prompt) qe('sem "prompt"');
       if (!Array.isArray(q.options) || q.options.length < 2) qe('precisa de pelo menos 2 "options"');
       else {
         if (!distinct(q.options)) qe('opções repetidas');
         if (!Number.isInteger(q.correct_index) || q.correct_index < 0 || q.correct_index >= q.options.length)
           qe(`"correct_index" fora das opções (0 a ${q.options.length - 1})`);
-        if (q.icons && q.icons.length !== q.options.length) qe('"icons" deve ter o mesmo tamanho de "options"');
       }
       break;
     case 'true_false':
@@ -291,7 +281,6 @@ function checkQuestion(q: RawQuestion, qe: (m: string) => void) {
       if (!q.prompt) qe('sem "prompt"');
       if (!q.answer) qe('sem "answer"');
       break;
-    case 'listening':
     case 'speaking':
       if (!q.phrase) qe('sem "phrase"');
       break;

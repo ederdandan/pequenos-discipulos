@@ -5,7 +5,7 @@ import { normalize } from '../../lib/validation';
 import { shuffle, type ExerciseProps } from './shared';
 import { Prompt } from './Prompt';
 
-export function WordBank({ exercise, ttsRate, readAloud, locked, onReady }: ExerciseProps<WordBankExercise>) {
+export function WordBank({ exercise, ttsRate, audio, locked, onReady }: ExerciseProps<WordBankExercise>) {
   // Índices permitem palavras repetidas no banco.
   const pool = useMemo(() => shuffle(exercise.words.map((w, i) => ({ w, i }))), [exercise]);
   const [chosen, setChosen] = useState<number[]>([]);
@@ -17,20 +17,20 @@ export function WordBank({ exercise, ttsRate, readAloud, locked, onReady }: Exer
 
   const add = (i: number) => {
     if (locked) return;
-    if (readAloud) speak(exercise.words[i], ttsRate);
+    if (audio === 'auto') speak(exercise.words[i], ttsRate);
     setChosen((c) => [...c, i]);
   };
   const remove = (i: number) => !locked && setChosen((c) => c.filter((x) => x !== i));
 
   return (
     <div className="space-y-6">
-      <Prompt text={exercise.prompt} ttsRate={ttsRate} autoRead={readAloud} />
+      <Prompt text={exercise.prompt} illustration={exercise.illustration} ttsRate={ttsRate} audio={audio} />
       <div className="flex min-h-16 flex-wrap items-center gap-2 border-y-2 border-slate-200 py-3">
         {chosen.map((i) => (
           <button
             key={i}
             onClick={() => remove(i)}
-            className="animate-pop rounded-xl border-2 border-b-4 border-slate-200 bg-white px-4 py-2 text-lg font-bold"
+            className="animate-pop rounded-xl border shadow-sm border-slate-200 bg-white px-4 py-2 text-lg font-bold"
           >
             {exercise.words[i]}
           </button>
@@ -44,7 +44,7 @@ export function WordBank({ exercise, ttsRate, readAloud, locked, onReady }: Exer
               key={i}
               onClick={() => add(i)}
               disabled={used || locked}
-              className={`rounded-xl border-2 border-b-4 px-4 py-2 text-lg font-bold transition ${
+              className={`rounded-xl border shadow-sm px-4 py-2 text-lg font-bold transition ${
                 used ? 'border-slate-200 bg-slate-200 text-transparent' : 'border-slate-200 bg-white hover:bg-slate-50'
               }`}
             >

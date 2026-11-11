@@ -25,7 +25,7 @@ export function InstallCard({ compact = false }: { compact?: boolean }) {
       {status === 'available' && (
         <button
           onClick={install}
-          className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-4 border-brand-700 bg-brand-600 px-4 py-2 font-extrabold uppercase text-white hover:bg-brand-500"
+          className="inline-flex items-center gap-2 rounded-2xl border shadow-sm border-brand-700 bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-500"
         >
           <Download className="size-5" /> Instalar app
         </button>

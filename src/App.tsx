@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Map, Trophy, User } from 'lucide-react';
+import { FamilyIcon, PathIcon, ProfileIcon } from './components/icons';
 import { useStore } from './store/AppStore';
 import { StatsBar } from './components/StatsBar';
 import { Avatar } from './components/Avatar';
@@ -15,10 +15,10 @@ type Tab = 'path' | 'ranking' | 'profile';
 // Tamanho base da fonte: como o Tailwind usa rem, a interface inteira escala.
 const fontSize = (p: UserProfile) => (p.largeText ? '20px' : p.ageGroup === 'kids' ? '17px' : '16px');
 
-const TABS: Array<{ id: Tab; label: string; icon: typeof Map }> = [
-  { id: 'path', label: 'Trilha', icon: Map },
-  { id: 'ranking', label: 'Ranking', icon: Trophy },
-  { id: 'profile', label: 'Perfil', icon: User },
+const TABS: Array<{ id: Tab; label: string; icon: typeof PathIcon }> = [
+  { id: 'path', label: 'Trilha', icon: PathIcon },
+  { id: 'ranking', label: 'Família', icon: FamilyIcon },
+  { id: 'profile', label: 'Perfil', icon: ProfileIcon },
 ];
 
 export default function App() {
@@ -70,16 +70,17 @@ export default function App() {
         {tab === 'profile' && <ProfilePage />}
       </main>
 
-      <nav className="sticky bottom-0 grid grid-cols-3 border-t-2 border-gold-100 bg-white">
+      <nav className="sticky bottom-0 grid grid-cols-3 border-t border-gold-200 bg-white/95 backdrop-blur">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex flex-col items-center gap-1 py-3 text-xs font-extrabold uppercase ${
+            className={`relative flex flex-col items-center gap-1 py-3 text-xs font-semibold ${
               tab === id ? 'text-brand-700' : 'text-slate-400 hover:text-slate-600'
             }`}
           >
-            <Icon className="size-6" />
+            {tab === id && <span className="absolute inset-x-8 top-0 h-0.5 rounded-full bg-gold-500" />}
+            <Icon size={24} />
             {label}
           </button>
         ))}

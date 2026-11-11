@@ -25,7 +25,7 @@ export function PhotoPicker({ photo, onChange }: { photo: string | null; onChang
         <button
           type="button"
           onClick={() => input.current?.click()}
-          className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-2 font-bold text-slate-700 hover:bg-slate-50"
+          className="inline-flex items-center gap-2 rounded-2xl border shadow-sm border-slate-200 bg-white px-4 py-2 font-bold text-slate-700 hover:bg-slate-50"
         >
           <Camera className="size-5" /> {photo ? 'Trocar foto' : 'Adicionar foto'}
         </button>

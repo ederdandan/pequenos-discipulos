@@ -1,4 +1,4 @@
-import { Flame, Target, Zap } from 'lucide-react';
+import { CandleIcon, FlameIcon, GoalIcon, GraceIcon } from './icons';
 import type { UserProfile } from '../types';
 import { dailyGoal, dailyXpToday, maxHearts, msToNextHeart } from '../lib/rules';
 import { useNow } from '../lib/useNow';
@@ -13,24 +13,24 @@ export function StatsBar({ profile }: { profile: UserProfile }) {
   const now = useNow(1000);
   const next = msToNextHeart(profile, now);
   return (
-    <div className="flex items-center gap-3 font-extrabold sm:gap-4">
-      <span className="flex items-center gap-1 text-gold-700" title="Dias seguidos (vela acesa)">
-        <span className="text-lg leading-none">🕯️</span> {profile.streak}
+    <div className="flex items-center gap-1.5 text-sm font-bold sm:gap-2">
+      <span className="flex items-center gap-1 rounded-full bg-gold-50 px-2 py-1 text-gold-700 ring-1 ring-gold-200" title="Dias seguidos (vela acesa)">
+        <CandleIcon size={18} /> {profile.streak}
       </span>
       <span
-        className={`flex items-center gap-1 ${dailyXpToday(profile) >= dailyGoal(profile) ? 'text-gold-600' : 'text-brand-600'}`}
+        className={`flex items-center gap-1 rounded-full px-2 py-1 ring-1 ${dailyXpToday(profile) >= dailyGoal(profile) ? 'bg-gold-50 text-gold-700 ring-gold-200' : 'bg-brand-50 text-brand-700 ring-brand-100'}`}
         title="Meta de hoje"
       >
-        <Target className="size-5" /> {Math.min(dailyXpToday(profile), dailyGoal(profile))}/{dailyGoal(profile)}
+        <GoalIcon size={18} /> {Math.min(dailyXpToday(profile), dailyGoal(profile))}/{dailyGoal(profile)}
       </span>
-      <span className="hidden items-center gap-1 text-gold-500 sm:flex" title="XP total">
-        <Zap className="size-5" fill="currentColor" /> {profile.xp}
+      <span className="hidden items-center gap-1 rounded-full bg-gold-50 px-2 py-1 text-gold-600 ring-1 ring-gold-200 sm:flex" title="Graça acumulada (XP)">
+        <GraceIcon size={18} /> {profile.xp}
       </span>
       <span
-        className="flex items-center gap-1 text-fire"
+        className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-fire ring-1 ring-orange-200"
         title={next !== null ? `Próxima chama em ${formatMs(next)}` : 'Chamas cheias'}
       >
-        <Flame className="size-5" fill="currentColor" /> {profile.hearts}
+        <FlameIcon size={18} /> {profile.hearts}
         <span className="text-xs font-bold text-orange-300">/{maxHearts(profile)}</span>
         {profile.hearts < maxHearts(profile) && next !== null && (
           <span className="text-xs font-bold text-slate-400">{formatMs(next)}</span>

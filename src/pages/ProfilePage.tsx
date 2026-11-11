@@ -71,7 +71,7 @@ export function ProfilePage() {
             <button
               key={g}
               onClick={() => updateActive((p) => ({ ...p, dailyGoal: g }))}
-              className={`rounded-2xl border-2 border-b-4 p-2 text-center transition ${
+              className={`rounded-2xl border shadow-sm p-2 text-center transition ${
                 dailyGoal(active) === g ? 'border-gold-400 bg-gold-50 text-gold-800' : 'border-slate-200 hover:bg-slate-50'
               }`}
             >

@@ -51,17 +51,18 @@ src/data/modulos/
 
 ## Tipos de pergunta
 
-Todos aceitam `explanation` e `source_reference`. Os campos marcados com * são obrigatórios.
+Todos aceitam `explanation`, `source_reference` e `illustration` (um emoji grande acima da pergunta, ex.: `"illustration": "🍷"`;
+use para ilustrar o **tema**, nunca para entregar a resposta). Os campos marcados com * são obrigatórios.
 
 ### `multiple_choice` · Múltipla escolha
 ```json
 { "id": "credo_n1_k07", "type": "multiple_choice", "target_ages": ["KIDS"],
   "prompt": "Quem é o Filho de Deus?",
-  "options": ["Jesus", "Moisés", "Noé"], "icons": ["✝️", "📜", "🚢"], "correct_index": 0,
+  "illustration": "✝️", "options": ["Jesus", "Moisés", "Noé"], "correct_index": 0,
   "explanation": "Jesus é o Filho de Deus que se fez homem." }
 ```
 `prompt`*, `options`* (2 ou mais), `correct_index`* (começa em **0**; na tela as opções são embaralhadas),
-`icons` (opcional, um emoji por opção, aparecem grandes no Infantil), `context` (texto de apoio num cartão).
+`context` (texto de apoio num cartão). As opções são só texto; no Infantil o app lê a pergunta e cada opção tocada.
 
 ### `true_false` · Verdadeiro ou falso
 ```json
@@ -107,17 +108,20 @@ palavra (“7” = “sete”). Use `accept` para outras respostas válidas.
 ```
 Usa o microfone (Chrome/Edge). Sem microfone, a pessoa digita.
 
-### `listening` · Ouvir e escrever
-```json
-{ "id": "...", "type": "listening", "target_ages": ["TEENS"], "phrase": "Deus é amor" }
-```
+## Áudio
 
-### `listen_choose` · Ouvir e escolher
-```json
-{ "id": "...", "type": "listen_choose", "target_ages": ["KIDS"],
-  "speak": "Quem construiu a arca?", "options": ["Noé", "Davi", "Jonas"], "icons": ["🚢", "🎵", "🐋"], "correct_index": 0 }
-```
-A pergunta é **falada** (sem texto escrito), ótimo para crianças que ainda não leem.
+Não existe tipo de pergunta só de ouvir. O áudio depende do perfil:
+
+| Perfil | Comportamento |
+| --- | --- |
+| Infantil | lê a pergunta sozinho e lê cada opção ao tocar |
+| Letra grande ligada | botão 🔊 ao lado da pergunta |
+| Demais | sem áudio |
+
+## Formatação
+
+Depois de editar à mão, rode `npm run format:content` para deixar uma pergunta por linha, agrupadas por faixa
+etária, e `npm run check:content` para validar.
 
 ## Criar um nível ou um módulo novo
 

@@ -57,7 +57,7 @@ export interface UserProfile {
   chestsOpened: number;
 }
 
-export type QuestMetric = 'xp' | 'lessons' | 'perfect' | 'combo' | 'speaking' | 'listening' | 'pairs' | 'reviews';
+export type QuestMetric = 'xp' | 'lessons' | 'perfect' | 'combo' | 'speaking' | 'pairs' | 'reviews';
 
 export interface DailyQuests {
   date: string;
@@ -102,15 +102,15 @@ export type ExerciseType =
   | 'word-bank'
   | 'multiple-choice'
   | 'fill-blank'
-  | 'listening'
   | 'match-pairs'
-  | 'listen-choose'
   | 'type-answer';
 
 interface BaseExercise {
   id: string;
   type: ExerciseType;
   prompt: string;
+  /** Emoji grande que ilustra a pergunta. */
+  illustration?: string;
   /** Explicação mostrada depois da resposta. */
   explanation?: string;
   /** Fonte (ex.: "CIC 198", "Lc 1,28"). Escondida no Infantil, opcional no Juvenil, sempre visível no Adulto. */
@@ -132,8 +132,6 @@ export interface WordBankExercise extends BaseExercise {
 
 export interface Option {
   text: string;
-  /** Emoji opcional (aparece grande no Infantil). */
-  icon?: string;
   correct: boolean;
 }
 
@@ -151,23 +149,10 @@ export interface FillBlankExercise extends BaseExercise {
   options: string[];
 }
 
-/** Ouvir a frase e digitar o que ouviu. */
-export interface ListeningExercise extends BaseExercise {
-  type: 'listening';
-  phrase: string;
-}
-
 /** Ligar os pares: item da esquerda ↔ item da direita. */
 export interface MatchPairsExercise extends BaseExercise {
   type: 'match-pairs';
   pairs: Array<[item: string, match: string]>;
-}
-
-/** Ouvir e escolher: a pergunta é falada (sem texto escrito) e a pessoa toca na opção. */
-export interface ListenChooseExercise extends BaseExercise {
-  type: 'listen-choose';
-  speak: string;
-  options: Option[];
 }
 
 /** Resposta digitada livre (curta). */
@@ -184,9 +169,7 @@ export type Exercise =
   | WordBankExercise
   | MultipleChoiceExercise
   | FillBlankExercise
-  | ListeningExercise
   | MatchPairsExercise
-  | ListenChooseExercise
   | TypeAnswerExercise;
 
 /** Exercício já convertido, com as faixas etárias a que se destina. */

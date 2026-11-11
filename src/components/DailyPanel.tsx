@@ -54,7 +54,7 @@ export function DailyPanel({ profile, onReview }: { profile: UserProfile; onRevi
             </p>
             <button
               onClick={onReview}
-              className="w-full rounded-xl border-2 border-b-4 border-brand-700 bg-brand-600 py-2 font-extrabold uppercase text-white hover:bg-brand-500"
+              className="w-full rounded-xl border shadow-sm border-brand-700 bg-brand-600 py-2 font-semibold text-white hover:bg-brand-500"
             >
               Revisar ({Math.min(due.length, 10)})
             </button>

@@ -6,7 +6,6 @@ import { exerciseTypes } from '../data/curriculum';
 /** Tipos de exercício que fazem cada métrica andar. */
 const METRIC_TYPES: Partial<Record<QuestMetric, Exercise['type'][]>> = {
   speaking: ['speaking'],
-  listening: ['listening', 'listen-choose'],
   pairs: ['match-pairs'],
 };
 
@@ -29,7 +28,6 @@ export const QUEST_POOL: Quest[] = [
   { id: 'combo5', metric: 'combo', target: 5, label: 'Acerte 5 seguidas', icon: '⚡' },
   { id: 'combo10', metric: 'combo', target: 10, label: 'Acerte 10 seguidas', icon: '⚡' },
   { id: 'speak2', metric: 'speaking', target: 2, label: 'Recite 2 frases em voz alta', icon: '🎤' },
-  { id: 'listen3', metric: 'listening', target: 3, label: 'Acerte 3 exercícios de escuta', icon: '👂' },
   { id: 'pairs2', metric: 'pairs', target: 2, label: 'Complete 2 exercícios de pares', icon: '🔗' },
   { id: 'review1', metric: 'reviews', target: 1, label: 'Faça 1 revisão de erros', icon: '🔁' },
 ];
@@ -97,7 +95,6 @@ export function questsAfterAnswer(p: UserProfile, type: Exercise['type'], correc
   if (!correct) return p;
   let n = bumpQuest(p, 'combo', combo);
   if (type === 'speaking') n = bumpQuest(n, 'speaking');
-  if (type === 'listening' || type === 'listen-choose') n = bumpQuest(n, 'listening');
   if (type === 'match-pairs') n = bumpQuest(n, 'pairs');
   return n;
 }

@@ -1,11 +1,16 @@
 import type { AgeGroup, Exercise } from '../../types';
 
+/**
+ * Áudio da tela: "auto" (Infantil) lê a pergunta sozinho e lê as opções ao tocar;
+ * "button" (letra grande) mostra o botão 🔊; "off" não tem áudio.
+ */
+export type AudioMode = 'auto' | 'button' | 'off';
+
 export interface ExerciseProps<E extends Exercise> {
   exercise: E;
   ageGroup: AgeGroup;
   ttsRate: number;
-  /** Lê em voz alta a pergunta e as opções tocadas (Infantil: crianças que ainda não leem). */
-  readAloud: boolean;
+  audio: AudioMode;
   /** true depois que a resposta foi verificada (trava a interação). */
   locked: boolean;
   /** O exercício informa como verificar a resposta atual (null = ainda não respondeu). */
@@ -16,7 +21,6 @@ export interface ExerciseProps<E extends Exercise> {
 export function correctAnswer(e: Exercise) {
   switch (e.type) {
     case 'multiple-choice':
-    case 'listen-choose':
       return e.options.find((o) => o.correct)?.text ?? '';
     case 'fill-blank':
       return `${e.sentenceParts[0]} ${e.correctWord} ${e.sentenceParts[1]}`.replace(/\s+([,.;:?!])/g, '$1').trim();
@@ -24,8 +28,6 @@ export function correctAnswer(e: Exercise) {
       return e.sentence;
     case 'speaking':
       return e.targetPhrase;
-    case 'listening':
-      return e.phrase;
     case 'type-answer':
       return e.answer;
     case 'match-pairs':

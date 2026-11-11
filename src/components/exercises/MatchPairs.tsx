@@ -9,7 +9,7 @@ export const MAX_PAIR_MISSES = 2;
 
 type Side = 'left' | 'right';
 
-export function MatchPairs({ exercise, ageGroup, ttsRate, readAloud, locked, onReady }: ExerciseProps<MatchPairsExercise>) {
+export function MatchPairs({ exercise, ageGroup, ttsRate, audio, locked, onReady }: ExerciseProps<MatchPairsExercise>) {
   const left = useMemo(() => shuffle(exercise.pairs.map((p, i) => ({ text: p[0], i }))), [exercise]);
   const right = useMemo(() => shuffle(exercise.pairs.map((p, i) => ({ text: p[1], i }))), [exercise]);
   const [selected, setSelected] = useState<{ side: Side; i: number } | null>(null);
@@ -24,7 +24,7 @@ export function MatchPairs({ exercise, ageGroup, ttsRate, readAloud, locked, onR
 
   function tap(side: Side, i: number) {
     if (locked || matched.has(i) || wrong) return;
-    if (readAloud) speak(exercise.pairs[i][side === 'left' ? 0 : 1], ttsRate);
+    if (audio === 'auto') speak(exercise.pairs[i][side === 'left' ? 0 : 1], ttsRate);
     if (!selected || selected.side === side) {
       setSelected({ side, i });
       return;
@@ -65,7 +65,7 @@ export function MatchPairs({ exercise, ageGroup, ttsRate, readAloud, locked, onR
                 key={i}
                 onClick={() => tap(side, i)}
                 disabled={locked || matched.has(i)}
-                className={`w-full rounded-2xl border-2 border-b-4 px-3 font-bold transition ${size} ${cls(side, i)}`}
+                className={`w-full rounded-2xl border shadow-sm px-3 font-bold transition ${size} ${cls(side, i)}`}
               >
                 {text}
               </button>

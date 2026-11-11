@@ -5,7 +5,7 @@ import type { ExerciseProps } from './shared';
 import { Prompt } from './Prompt';
 
 /** Resposta curta digitada (aceita variações listadas em `accept`). */
-export function TypeAnswer({ exercise, ttsRate, readAloud, locked, onReady }: ExerciseProps<TypeAnswerExercise>) {
+export function TypeAnswer({ exercise, ttsRate, audio, locked, onReady }: ExerciseProps<TypeAnswerExercise>) {
   const [text, setText] = useState('');
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export function TypeAnswer({ exercise, ttsRate, readAloud, locked, onReady }: Ex
 
   return (
     <div className="space-y-6">
-      <Prompt text={exercise.prompt} context={exercise.context} ttsRate={ttsRate} autoRead={readAloud} />
+      <Prompt text={exercise.prompt} illustration={exercise.illustration} context={exercise.context} ttsRate={ttsRate} audio={audio} />
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}

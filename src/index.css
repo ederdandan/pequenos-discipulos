@@ -9,7 +9,7 @@
  * - parchment = Pergaminho Suave → fundo
  */
 @theme {
-  --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
 
   --color-brand-50: #eff6ff;
@@ -48,6 +48,11 @@ html[data-age='adults'] {
 
 .font-reading {
   font-family: var(--font-reading);
+}
+
+/* Títulos de página em serifa, com cara de livro litúrgico. */
+h1 {
+  font-family: var(--font-serif);
 }
 
 body {

@@ -34,7 +34,7 @@ export function ProfilesPage() {
               <button
                 key={p.id}
                 onClick={() => selectProfile(p.id)}
-                className="flex flex-col items-center gap-1 rounded-3xl border-2 border-b-4 border-slate-200 bg-white p-5 transition hover:border-brand-500 hover:bg-brand-50"
+                className="flex flex-col items-center gap-1 rounded-3xl border shadow-sm border-slate-200 bg-white p-5 transition hover:border-brand-500 hover:bg-brand-50"
               >
                 <Avatar profile={p} size="lg" />
                 <span className="text-lg font-extrabold">{p.name}</span>
@@ -131,7 +131,7 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
               type="button"
               key={g}
               onClick={() => setAgeGroup(g)}
-              className={`rounded-2xl border-2 border-b-4 p-3 text-left transition ${
+              className={`rounded-2xl border shadow-sm p-3 text-left transition ${
                 ageGroup === g ? 'border-brand-500 bg-brand-50' : 'border-slate-200 hover:bg-slate-50'
               }`}
             >
