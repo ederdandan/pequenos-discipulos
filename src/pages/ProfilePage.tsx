@@ -1,4 +1,5 @@
-import { LogOut, Snowflake, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Camera, LogOut, Snowflake, Trash2 } from 'lucide-react';
 import type { AgeGroup } from '../types';
 import { useStore } from '../store/AppStore';
 import { trackLevels } from '../data/curriculum';
@@ -17,7 +18,8 @@ import {
 import { Button } from '../components/Button';
 import { HeartsPicker } from '../components/HeartsPicker';
 import { Avatar } from '../components/Avatar';
-import { PhotoPicker } from '../components/PhotoPicker';
+import { AvatarChooser } from '../components/AvatarChooser';
+import { BottomSheet } from '../components/BottomSheet';
 import { InstallCard } from '../components/InstallCard';
 import { ExportButton, ImportButton } from '../components/BackupControls';
 import { LargeTextToggle } from '../components/LargeTextToggle';
@@ -25,6 +27,7 @@ import { VoiceSettings } from '../components/VoiceSettings';
 
 export function ProfilePage() {
   const { active, updateActive, selectProfile, removeProfile } = useStore();
+  const [choosingAvatar, setChoosingAvatar] = useState(false);
   if (!active) return null;
 
   const canBuy = active.xp >= STREAK_FREEZE_COST && active.streakFreezes < MAX_STREAK_FREEZES;
@@ -40,15 +43,28 @@ export function ProfilePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Avatar profile={active} size="xl" />
+        <button onClick={() => setChoosingAvatar(true)} aria-label="Trocar foto ou avatar" className="shrink-0 rounded-full">
+          <Avatar profile={active} size="xl" />
+        </button>
         <div>
           <h1 className="text-2xl font-extrabold">{active.name}</h1>
           <p className="mb-2 text-slate-500">
             {AGE_GROUPS[active.ageGroup].emoji} {AGE_GROUPS[active.ageGroup].label} ({AGE_GROUPS[active.ageGroup].ages})
           </p>
-          <PhotoPicker photo={active.photo} onChange={(photo) => updateActive((p) => ({ ...p, photo }))} />
+          <button
+            onClick={() => setChoosingAvatar(true)}
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 font-bold text-slate-700 shadow-sm hover:bg-slate-50"
+          >
+            <Camera className="size-5" /> Foto ou avatar
+          </button>
         </div>
       </div>
+
+      {choosingAvatar && (
+        <BottomSheet title="Foto ou avatar" onClose={() => setChoosingAvatar(false)}>
+          <AvatarChooser profile={active} onChange={(photo) => updateActive((p) => ({ ...p, photo }))} />
+        </BottomSheet>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="XP total" value={active.xp} icon="⚡" />

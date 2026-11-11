@@ -5,14 +5,15 @@ import { useStore } from '../store/AppStore';
 import { AGE_GROUPS, MAX_HEARTS, newProfile } from '../lib/rules';
 import { HeartsPicker } from '../components/HeartsPicker';
 import { Avatar } from '../components/Avatar';
-import { PhotoPicker } from '../components/PhotoPicker';
+import { AvatarChooser } from '../components/AvatarChooser';
 import { InstallCard } from '../components/InstallCard';
 import { Button } from '../components/Button';
 import { ImportButton } from '../components/BackupControls';
 import { Mascot } from '../components/Mascot';
 import { LargeTextToggle } from '../components/LargeTextToggle';
 
-const AVATARS = ['🕊️', '😇', '🐑', '🦁', '🐟', '🌻', '⭐', '🐶', '👵', '👴', '👩', '👨', '👧', '👦', '🧒', '🧑‍🦳'];
+/** Emoji usado quando o perfil não tem foto nem avatar escolhido. */
+const DEFAULT_AVATAR = '🕊️';
 
 export function ProfilesPage() {
   const { state, selectProfile } = useStore();
@@ -69,7 +70,6 @@ export function ProfilesPage() {
 function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: boolean }) {
   const { addProfile } = useStore();
   const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState(AVATARS[0]);
   const [ageGroup, setAgeGroup] = useState<AgeGroup>('kids');
   const [largeText, setLargeText] = useState(false);
   const [hearts, setHearts] = useState(MAX_HEARTS);
@@ -78,7 +78,7 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    addProfile(newProfile(name, avatar, ageGroup, hearts, photo, largeText));
+    addProfile(newProfile(name, DEFAULT_AVATAR, ageGroup, hearts, photo, largeText));
     onDone();
   }
 
@@ -100,27 +100,7 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
 
       <fieldset>
         <legend className="mb-2 font-bold text-slate-600">Foto ou avatar</legend>
-        <div className="mb-3 flex items-center gap-4">
-          <Avatar profile={{ avatar, photo, name: name || 'perfil' }} size="lg" />
-          <PhotoPicker photo={photo} onChange={setPhoto} />
-        </div>
-        <p className="mb-2 text-sm text-slate-500">
-          {photo ? 'A foto aparece no lugar do avatar (inclusive no ranking).' : 'Sem foto? Escolha um avatar:'}
-        </p>
-        <div className={`grid grid-cols-8 gap-2 ${photo ? 'opacity-40' : ''}`}>
-          {AVATARS.map((a) => (
-            <button
-              type="button"
-              key={a}
-              onClick={() => setAvatar(a)}
-              className={`aspect-square rounded-xl text-2xl transition sm:text-3xl ${
-                avatar === a ? 'bg-brand-100 ring-2 ring-brand-500' : 'hover:bg-slate-100'
-              }`}
-            >
-              {a}
-            </button>
-          ))}
-        </div>
+        <AvatarChooser profile={{ avatar: DEFAULT_AVATAR, photo, name: name || 'perfil' }} onChange={setPhoto} />
       </fieldset>
 
       <fieldset>

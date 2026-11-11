@@ -27,7 +27,7 @@ export function Avatar({
     );
   }
   return (
-    <span className={`${SIZES[size]} inline-flex shrink-0 items-center justify-center leading-none ${className}`}>
+    <span className={`${SIZES[size]} inline-flex shrink-0 items-center justify-center rounded-full leading-none ${className}`}>
       {profile.avatar}
     </span>
   );

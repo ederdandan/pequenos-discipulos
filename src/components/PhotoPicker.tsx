@@ -27,7 +27,7 @@ export function PhotoPicker({ photo, onChange }: { photo: string | null; onChang
           onClick={() => input.current?.click()}
           className="inline-flex items-center gap-2 rounded-2xl border shadow-sm border-slate-200 bg-white px-4 py-2 font-bold text-slate-700 hover:bg-slate-50"
         >
-          <Camera className="size-5" /> {photo ? 'Trocar foto' : 'Adicionar foto'}
+          <Camera className="size-5" /> {photo?.startsWith('data:') ? 'Trocar foto' : 'Enviar foto'}
         </button>
         {photo && (
           <button
@@ -35,7 +35,7 @@ export function PhotoPicker({ photo, onChange }: { photo: string | null; onChang
             onClick={() => onChange(null)}
             className="inline-flex items-center gap-1 text-sm font-bold text-rose-500 hover:text-rose-600"
           >
-            <Trash2 className="size-4" /> Remover foto
+            <Trash2 className="size-4" /> Remover
           </button>
         )}
       </div>

@@ -96,18 +96,14 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   arredondados sem efeito 3D e sem caixa alta, trilha vertical com escudos, progresso em contas de terço.
   Mascote: pomba. Evitar zigue-zague de círculos, corações e ícones copiados do Duolingo.
 
-## Pedido pendente (ainda não feito)
+## Foto e avatares
 
-Avatares pré-definidos na criação e edição de perfil, mantendo o envio de foto própria:
-- Recortar 30 avatares circulares (sem o nome escrito embaixo) das grades em `imagens/`
-  (2 linhas × 5 colunas cada):
-  - `Personagens Santos 1.jpg` e `Personagens Santos 2.jpg` → **Santos (20):** Nossa Sra. Aparecida, São José,
-    Santa Teresinha, Santo Antônio, São Francisco, Santa Rita, São Jorge, São Pedro, Santa Dulce, São Carlo Acutis,
-    São Domingos Sávio, São João Bosco, Santa Inês, São Tarcísio, Santa Maria Goretti, Santo Expedito, Santa Clara,
-    São Judas Tadeu, Santa Joana d'Arc, São Padre Pio.
-  - `Personagens Magisterio.jpg` → **Magistério e Ministérios (10):** Papa, Bispo, Padre, Diácono, Freira, Monge,
-    Acólito/Coroinha, Catequista, Leitor, Ministro da Eucaristia.
-- Na tela: foto no topo + botão de enviar foto; abaixo, "Ou escolha um Avatar" com abas **Santos (20)** e
-  **Magistério e Ministérios (10)**, grade com o nome abaixo de cada um. Ao tocar, o avatar vira a imagem do
-  topo, fica marcado e é salvo como foto do perfil.
-- Hoje o avatar é um emoji (`AVATARS` em `ProfilesPage.tsx`) ou uma foto (`photo`, data URL); ver `Avatar.tsx` e `PhotoPicker.tsx`.
+- O perfil tem `avatar` (emoji, padrão 🕊️, usado só quando não há foto) e `photo`: foto própria (data URL) ou um
+  **avatar pré-definido** salvo como caminho relativo `avatares/<id>.webp`.
+- 30 avatares (Santos 20, Magistério e Ministérios 10) listados em `src/data/avatars.ts`; as imagens ficam em
+  `public/avatares/` e são recortadas das grades em `imagens/` por `scripts/crop-avatars.py`
+  (Pillow + numpy; `--sheet arquivo.png` gera uma folha de conferência).
+- `AvatarChooser` (foto no topo, "Enviar foto", abas com a grade) aparece na criação de perfil e, na aba Perfil,
+  num BottomSheet aberto pelo botão "Foto ou avatar".
+- No dev, com `base: './'`, abra `http://localhost:5173/` (na raiz): em `/pequenos-discipulos/` os arquivos de
+  `public/` caem no fallback do index.html. Em produção funciona normalmente.
