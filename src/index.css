@@ -1,0 +1,82 @@
+@import 'tailwindcss';
+
+/*
+ * Design system litúrgico (docs/especifica_o_t_cnica_do_app.md, seção 4).
+ * - brand  = Azul Mariano       → navegação, botões de ação, nós ativos da trilha
+ * - gold   = Dourado Sacro      → XP, progresso, acertos, medalhas
+ * - pentecost = Vermelho Pentecostes → níveis concluídos, conquistas
+ * - fire   = Fogo do Espírito Santo → chamas (vidas)
+ * - parchment = Pergaminho Suave → fundo
+ */
+@theme {
+  --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1e3a8a;
+  --color-brand-800: #172554;
+
+  --color-gold-50: #fffbeb;
+  --color-gold-100: #fef3c7;
+  --color-gold-200: #fde68a;
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
+  --color-gold-600: #d97706;
+  --color-gold-700: #b45309;
+  --color-gold-800: #92400e;
+
+  --color-pentecost: #dc2626;
+  --color-pentecost-dark: #991b1b;
+  --color-fire: #ea580c;
+  --color-parchment: #fdfbf7;
+}
+
+html {
+  /* O tamanho base muda com a opção "letra grande" (ver App.tsx): tudo em rem acompanha. */
+  transition: font-size 0.2s;
+  /* Fonte dos textos de leitura (perguntas, explicações). Adulto: serifada, estilo leitor. */
+  --font-reading: var(--font-sans);
+}
+html[data-age='adults'] {
+  --font-reading: var(--font-serif);
+}
+
+.font-reading {
+  font-family: var(--font-reading);
+}
+
+body {
+  @apply bg-parchment text-slate-800 antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.animate-pop { animation: pop 0.35s ease-out; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+.animate-shake { animation: shake 0.3s; }
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.animate-slide-up { animation: slide-up 0.25s ease-out; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }

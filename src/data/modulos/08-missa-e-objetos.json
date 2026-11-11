@@ -1,0 +1,61 @@
+{
+  "$schema": "../quiz.schema.json",
+  "id": "missa",
+  "catechism_part": 5,
+  "title": "A Missa e os Objetos Sacros",
+  "description": "Partes da Missa, objetos e vestes litúrgicas",
+  "icon": "⛪",
+  "color": "#1E3A8A",
+  "levels": [
+    {
+      "level_number": 1,
+      "title": "As Partes da Missa",
+      "description": "Da acolhida ao envio",
+      "icon": "📖",
+      "questions": [
+        { "id": "missa_n1_k01", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Que livro especial lemos na Missa para ouvir a Palavra de Deus?", "options": ["A Bíblia", "Uma receita", "O jornal"], "icons": ["📖", "🍰", "📰"], "correct_index": 0 },
+        { "id": "missa_n1_k02", "type": "true_false", "target_ages": ["KIDS"], "statement": "Na Missa, ficamos de pé para ouvir o Evangelho.", "answer": true, "explanation": "Ficamos de pé por respeito: é Jesus quem fala!" },
+        { "id": "missa_n1_k03", "type": "match_pairs", "target_ages": ["KIDS"], "prompt": "Ligue a parte da Missa ao que acontece:", "pairs": [{ "item": "Ato penitencial", "match": "Pedimos perdão" }, { "item": "Evangelho", "match": "Ouvimos as palavras de Jesus" }, { "item": "Consagração", "match": "Pão e vinho se tornam Jesus" }, { "item": "Bênção final", "match": "Somos enviados em paz" }] },
+        { "id": "missa_n1_k04", "type": "fill_blank", "target_ages": ["KIDS"], "sentence": "Antes da Comunhão, damos o abraço da ___.", "answer": "paz", "wrong_options": ["festa", "sorte"] },
+        { "id": "missa_n1_k05", "type": "listen_choose", "target_ages": ["KIDS"], "speak": "Que canto alegre cantamos antes do Evangelho?", "options": ["Aleluia", "Parabéns", "Ciranda"], "correct_index": 0 },
+
+        { "id": "missa_n1_t01", "type": "match_pairs", "target_ages": ["TEENS"], "prompt": "Ligue a saudação à resposta do povo:", "pairs": [{ "item": "O Senhor esteja convosco", "match": "Ele está no meio de nós" }, { "item": "Corações ao alto", "match": "O nosso coração está em Deus" }, { "item": "Ide em paz, e o Senhor vos acompanhe", "match": "Graças a Deus" }] },
+        { "id": "missa_n1_t02", "type": "true_false", "target_ages": ["TEENS"], "statement": "O Creio e a Oração dos Fiéis fazem parte da Liturgia da Palavra.", "answer": true, "source_reference": "IGMR 55; 67-71" },
+        { "id": "missa_n1_t03", "type": "fill_blank", "target_ages": ["TEENS"], "sentence": "A homilia é feita depois do ___.", "answer": "Evangelho", "wrong_options": ["Creio", "Pai-Nosso"], "source_reference": "IGMR 65-66" },
+        { "id": "missa_n1_t04", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "Qual oração rezamos juntos antes do abraço da paz e da comunhão?", "options": ["Pai-Nosso", "Creio", "Glória"], "correct_index": 0 },
+        { "id": "missa_n1_ta01", "type": "multiple_choice", "target_ages": ["TEENS", "ADULTS"], "prompt": "Quais são as duas grandes partes da Missa?", "options": ["Liturgia da Palavra e Liturgia Eucarística", "Entrada e saída", "Cantos e leituras"], "correct_index": 0, "explanation": "Elas formam um só ato de culto, com os ritos iniciais e finais.", "source_reference": "CIC 1346" },
+        { "id": "missa_n1_ta02", "type": "multiple_choice", "target_ages": ["TEENS", "ADULTS"], "prompt": "Em que momento o pão e o vinho se tornam o Corpo e o Sangue de Cristo?", "options": ["Na consagração, durante a Oração Eucarística", "Na preparação das oferendas", "No abraço da paz"], "correct_index": 0, "source_reference": "CIC 1353; 1375" },
+
+        { "id": "missa_n1_a01", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "O que é a epiclese na Oração Eucarística?", "options": ["A invocação do Espírito Santo sobre as oferendas", "A saudação da paz", "A procissão das oferendas"], "correct_index": 0, "source_reference": "CIC 1105; 1353" },
+        { "id": "missa_n1_a02", "type": "true_false", "target_ages": ["ADULTS"], "statement": "A Missa é memorial do sacrifício de Cristo: torna presente o único sacrifício da cruz, sem repeti-lo.", "answer": true, "source_reference": "CIC 1366-1367" },
+        { "id": "missa_n1_a03", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Nos domingos e solenidades, quantas leituras bíblicas há (além do salmo)?", "options": ["Três: primeira leitura, segunda leitura e Evangelho", "Uma", "Cinco"], "correct_index": 0, "source_reference": "IGMR 357" },
+        { "id": "missa_n1_a04", "type": "fill_blank", "target_ages": ["ADULTS"], "prompt": "Complete a doxologia final da Oração Eucarística", "sentence": "Por Cristo, com Cristo, em Cristo, a vós, Deus Pai todo-poderoso, na unidade do Espírito Santo, toda ___ e toda glória.", "answer": "honra", "wrong_options": ["força", "paz"], "source_reference": "IGMR 79h" }
+      ]
+    },
+    {
+      "level_number": 2,
+      "title": "Objetos Sacros e Vestes",
+      "description": "Cálice, sacrário, alva, casula…",
+      "icon": "🏆",
+      "questions": [
+        { "id": "missa_n2_k01", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Como se chama o copo especial onde o padre consagra o vinho?", "options": ["Cálice", "Caneca", "Garrafa"], "icons": ["🏆", "☕", "🍾"], "correct_index": 0 },
+        { "id": "missa_n2_k02", "type": "true_false", "target_ages": ["KIDS"], "statement": "No sacrário, Jesus fica guardado na Eucaristia.", "answer": true, "source_reference": "CIC 1379" },
+        { "id": "missa_n2_k03", "type": "match_pairs", "target_ages": ["KIDS"], "prompt": "Ligue o objeto ao seu uso:", "pairs": [{ "item": "Cálice", "match": "Recebe o vinho" }, { "item": "Patena", "match": "Recebe a hóstia" }, { "item": "Sacrário", "match": "Guarda a Eucaristia" }, { "item": "Círio pascal", "match": "Lembra Jesus ressuscitado" }] },
+        { "id": "missa_n2_k04", "type": "fill_blank", "target_ages": ["KIDS"], "sentence": "A lâmpada acesa perto do sacrário mostra que Jesus está ___.", "answer": "presente", "wrong_options": ["dormindo", "longe"] },
+        { "id": "missa_n2_k05", "type": "listen_choose", "target_ages": ["KIDS"], "speak": "Onde o padre celebra a Missa e consagra o pão e o vinho?", "options": ["No altar", "Na cozinha", "No jardim"], "icons": ["⛪", "🍳", "🌷"], "correct_index": 0 },
+
+        { "id": "missa_n2_t01", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "Como se chama o objeto usado para expor a hóstia consagrada para adoração?", "options": ["Ostensório (custódia)", "Turíbulo", "Galheta"], "correct_index": 0 },
+        { "id": "missa_n2_t02", "type": "true_false", "target_ages": ["TEENS"], "statement": "O turíbulo é usado para incensar o altar, o Evangelho e as oferendas.", "answer": true, "source_reference": "IGMR 276" },
+        { "id": "missa_n2_t03", "type": "fill_blank", "target_ages": ["TEENS"], "sentence": "O livro com as orações da Missa usado pelo padre chama-se ___.", "answer": "Missal", "wrong_options": ["Lecionário", "Catecismo"], "explanation": "As leituras ficam em outro livro: o Lecionário." },
+        { "id": "missa_n2_t04", "type": "type_answer", "target_ages": ["TEENS"], "prompt": "Qual vela grande, acesa na Vigília Pascal, simboliza Cristo ressuscitado?", "answer": "Círio pascal", "accept": ["círio", "o círio pascal"] },
+        { "id": "missa_n2_ta01", "type": "match_pairs", "target_ages": ["TEENS", "ADULTS"], "prompt": "Ligue a veste litúrgica:", "pairs": [{ "item": "Alva", "match": "Túnica branca comum a todos os ministros" }, { "item": "Estola", "match": "Faixa sobre os ombros do ministro ordenado" }, { "item": "Casula", "match": "Veste própria do sacerdote na Missa" }, { "item": "Dalmática", "match": "Veste própria do diácono" }], "source_reference": "IGMR 336-338" },
+        { "id": "missa_n2_ta02", "type": "multiple_choice", "target_ages": ["TEENS", "ADULTS"], "prompt": "O que é o ambão?", "options": ["O lugar de onde se proclama a Palavra de Deus", "A cadeira do bispo", "A pia de água benta"], "correct_index": 0, "source_reference": "IGMR 309" },
+
+        { "id": "missa_n2_a01", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Quais cores litúrgicas a Instrução Geral do Missal Romano prevê?", "options": ["Branco, vermelho, verde e roxo; e ainda preto e rosa onde for costume", "Azul, amarelo e verde", "Somente branco e roxo"], "correct_index": 0, "source_reference": "IGMR 346" },
+        { "id": "missa_n2_a02", "type": "true_false", "target_ages": ["ADULTS"], "statement": "O altar significa o próprio Cristo e, por isso, o sacerdote o beija no início e no fim da Missa.", "answer": true, "source_reference": "IGMR 49; 298" },
+        { "id": "missa_n2_a03", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "O que é a “pala”?", "options": ["Cartão quadrado revestido de linho para cobrir o cálice", "Toalha grande do altar", "Veste do bispo"], "correct_index": 0, "source_reference": "IGMR 118" },
+        { "id": "missa_n2_a04", "type": "fill_blank", "target_ages": ["ADULTS"], "sentence": "A veste própria do sacerdote celebrante, usada sobre a alva e a estola, é a ___.", "answer": "casula", "wrong_options": ["capa", "dalmática"], "source_reference": "IGMR 337" }
+      ]
+    }
+  ]
+}

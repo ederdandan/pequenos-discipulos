@@ -1,0 +1,37 @@
+{
+  "$schema": "../quiz.schema.json",
+  "id": "ano_liturgico",
+  "catechism_part": 5,
+  "title": "Ano Litúrgico e Festas",
+  "description": "Advento, Natal, Quaresma, Páscoa e Pentecostes",
+  "icon": "🕯️",
+  "color": "#6D28D9",
+  "levels": [
+    {
+      "level_number": 1,
+      "title": "Tempos e Festas",
+      "description": "As cores e os tempos da Igreja",
+      "icon": "📅",
+      "questions": [
+        { "id": "liturgico_n1_k01", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Em que tempo nos preparamos para o Natal?", "options": ["Advento", "Férias", "Carnaval"], "icons": ["🕯️", "🏖️", "🎭"], "correct_index": 0 },
+        { "id": "liturgico_n1_k02", "type": "true_false", "target_ages": ["KIDS"], "statement": "Na Páscoa celebramos a Ressurreição de Jesus.", "answer": true },
+        { "id": "liturgico_n1_k03", "type": "match_pairs", "target_ages": ["KIDS"], "prompt": "Ligue o tempo à cor que o padre usa:", "pairs": [{ "item": "Advento", "match": "🟣 Roxo" }, { "item": "Natal", "match": "⚪ Branco" }, { "item": "Tempo Comum", "match": "🟢 Verde" }, { "item": "Pentecostes", "match": "🔴 Vermelho" }] },
+        { "id": "liturgico_n1_k04", "type": "fill_blank", "target_ages": ["KIDS"], "sentence": "A coroa do Advento tem ___ velas.", "answer": "quatro", "wrong_options": ["dez", "duas"], "explanation": "Uma vela para cada domingo do Advento." },
+        { "id": "liturgico_n1_k05", "type": "listen_choose", "target_ages": ["KIDS"], "speak": "Em que dia começa a Quaresma, quando recebemos cinzas na testa?", "options": ["Quarta-feira de Cinzas", "Domingo de Páscoa", "Dia de Natal"], "correct_index": 0 },
+        { "id": "liturgico_n1_k06", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Em que festa lembramos o nascimento de Jesus?", "options": ["Natal", "Páscoa", "Pentecostes"], "icons": ["⭐", "🌅", "🔥"], "correct_index": 0 },
+
+        { "id": "liturgico_n1_t01", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "A Quaresma lembra os 40 dias que Jesus passou:", "options": ["No deserto, jejuando e rezando", "No Templo, ensinando", "No barco, pescando"], "correct_index": 0, "source_reference": "Mt 4,1-2" },
+        { "id": "liturgico_n1_t02", "type": "true_false", "target_ages": ["TEENS"], "statement": "As três práticas da Quaresma são oração, jejum e esmola.", "answer": true, "source_reference": "Mt 6,1-18" },
+        { "id": "liturgico_n1_t03", "type": "fill_blank", "target_ages": ["TEENS"], "sentence": "O Tempo Pascal dura 50 dias e termina na festa de ___.", "answer": "Pentecostes", "wrong_options": ["Natal", "Corpus Christi"], "source_reference": "At 2,1" },
+        { "id": "liturgico_n1_t04", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "Qual cor é usada na Sexta-feira Santa e nas festas dos mártires?", "options": ["Vermelho", "Verde", "Rosa"], "correct_index": 0, "explanation": "O vermelho lembra o sangue derramado e o fogo do Espírito Santo.", "source_reference": "IGMR 346" },
+        { "id": "liturgico_n1_ta01", "type": "multiple_choice", "target_ages": ["TEENS", "ADULTS"], "prompt": "Com qual tempo começa o Ano Litúrgico?", "options": ["Advento", "Quaresma", "Tempo Comum"], "correct_index": 0, "source_reference": "Normas Universais sobre o Ano Litúrgico 39-40" },
+        { "id": "liturgico_n1_ta02", "type": "match_pairs", "target_ages": ["TEENS", "ADULTS"], "prompt": "Ligue os dias do Tríduo Pascal:", "pairs": [{ "item": "Quinta-feira Santa", "match": "Ceia do Senhor e lava-pés" }, { "item": "Sexta-feira Santa", "match": "Paixão e morte do Senhor" }, { "item": "Vigília Pascal", "match": "A mãe de todas as vigílias" }], "source_reference": "Normas Universais sobre o Ano Litúrgico 19-21" },
+
+        { "id": "liturgico_n1_a01", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Como o Catecismo chama a Páscoa?", "options": ["“Festa das festas”, “Solenidade das solenidades”", "Uma festa secundária do calendário", "Apenas a memória da saída do Egito"], "correct_index": 0, "source_reference": "CIC 1169" },
+        { "id": "liturgico_n1_a02", "type": "true_false", "target_ages": ["ADULTS"], "statement": "O domingo é o dia de festa primordial, fundamento e núcleo de todo o ano litúrgico.", "answer": true, "source_reference": "CIC 1193; SC 106" },
+        { "id": "liturgico_n1_a03", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "A cor litúrgica rosa pode ser usada em quais domingos?", "options": ["Gaudete (3º do Advento) e Laetare (4º da Quaresma)", "Ramos e Pentecostes", "Natal e Epifania"], "correct_index": 0, "source_reference": "IGMR 346" },
+        { "id": "liturgico_n1_a04", "type": "fill_blank", "target_ages": ["ADULTS"], "sentence": "O ano litúrgico é o desdobramento dos diversos aspectos do único mistério ___.", "answer": "pascal", "wrong_options": ["oculto", "antigo"], "source_reference": "CIC 1171" }
+      ]
+    }
+  ]
+}

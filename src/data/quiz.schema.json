@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Módulo do Pequenos Discípulos",
+  "description": "Um arquivo = um módulo da trilha. Guia: docs/COMO_ADICIONAR_PERGUNTAS.md",
+  "type": "object",
+  "required": ["id", "catechism_part", "title", "levels"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "type": "string", "description": "Identificador único do módulo. NÃO mude depois de publicado (o progresso usa ele).", "pattern": "^[a-z0-9_]+$" },
+    "catechism_part": { "enum": [1, 2, 3, 4, 5], "description": "1 Credo · 2 Sacramentos e Liturgia · 3 Vida em Cristo · 4 Oração · 5 Módulo especial" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "icon": { "type": "string", "description": "Emoji do módulo" },
+    "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$", "description": "Cor do cabeçalho (opcional; padrão = cor do pilar)" },
+    "levels": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/level" } }
+  },
+  "definitions": {
+    "level": {
+      "type": "object",
+      "required": ["level_number", "title", "questions"],
+      "properties": {
+        "level_number": { "type": "integer", "minimum": 1, "description": "1, 2, 3… NÃO renumere depois de publicado." },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string", "description": "Emoji do nó na trilha" },
+        "questions": { "type": "array", "items": { "$ref": "#/definitions/question" } }
+      },
+      "additionalProperties": false
+    },
+    "ages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["KIDS", "TEENS", "ADULTS"] },
+      "description": "KIDS (até 9) · TEENS (10 a 16) · ADULTS (17+)"
+    },
+    "question": {
+      "type": "object",
+      "required": ["id", "type", "target_ages"],
+      "properties": {
+        "id": { "type": "string", "description": "Único em todo o app. Sugestão: <modulo>_n<nivel>_<k|t|a><nn>, ex.: credo_n1_k01" },
+        "type": {
+          "enum": ["multiple_choice", "true_false", "match_pairs", "fill_blank", "word_bank", "type_answer", "listening", "speaking", "listen_choose"]
+        },
+        "target_ages": { "$ref": "#/definitions/ages" },
+        "prompt": { "type": "string", "description": "Enunciado. Obrigatório em multiple_choice e type_answer; os outros têm texto padrão." },
+        "explanation": { "type": "string", "description": "Aparece depois da resposta." },
+        "source_reference": { "type": "string", "description": "Ex.: \"CIC 198\", \"Lc 1,28\". Obrigatório quando a pergunta vale para ADULTS." },
+        "context": { "type": "string", "description": "Texto de apoio num cartão (multiple_choice, type_answer)." },
+        "options": { "type": "array", "items": { "type": "string" }, "minItems": 2 },
+        "icons": { "type": "array", "items": { "type": "string" }, "description": "Um emoji por opção (opcional)." },
+        "correct_index": { "type": "integer", "minimum": 0, "description": "Posição da opção certa, começando em 0. A ordem é embaralhada na tela." },
+        "statement": { "type": "string", "description": "true_false: a afirmação." },
+        "answer": { "description": "true_false: true/false · fill_blank e type_answer: a resposta certa", "type": ["string", "boolean"] },
+        "accept": { "type": "array", "items": { "type": "string" }, "description": "type_answer: outras respostas aceitas." },
+        "pairs": {
+          "type": "array",
+          "minItems": 3,
+          "items": { "type": "object", "required": ["item", "match"], "properties": { "item": { "type": "string" }, "match": { "type": "string" } }, "additionalProperties": false }
+        },
+        "sentence": { "type": "string", "description": "fill_blank: frase com ___ no lugar da lacuna · word_bank: a frase completa." },
+        "wrong_options": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "distractors": { "type": "array", "items": { "type": "string" }, "description": "word_bank: palavras extras que não fazem parte da frase." },
+        "phrase": { "type": "string", "description": "listening/speaking: a frase a ouvir ou falar." },
+        "hint": { "type": "string" },
+        "speak": { "type": "string", "description": "listen_choose: o que é falado em voz alta." }
+      },
+      "additionalProperties": false
+    }
+  }
+}

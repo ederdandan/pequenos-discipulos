@@ -1,0 +1,63 @@
+{
+  "$schema": "../quiz.schema.json",
+  "id": "santos",
+  "catechism_part": 5,
+  "title": "Vida dos Santos",
+  "description": "Grandes amigos de Deus para nos inspirar",
+  "icon": "😇",
+  "color": "#B45309",
+  "levels": [
+    {
+      "level_number": 1,
+      "title": "Grandes Amigos de Deus",
+      "description": "Santos de todos os tempos",
+      "icon": "🛡️",
+      "questions": [
+        { "id": "santos_n1_k01", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Qual santo é conhecido por amar os animais e toda a criação?", "options": ["São Francisco de Assis", "São Pedro", "São Jorge"], "icons": ["🐦", "🔑", "🐉"], "correct_index": 0 },
+        { "id": "santos_n1_k02", "type": "true_false", "target_ages": ["KIDS"], "statement": "São José era carpinteiro e cuidou de Jesus como pai.", "answer": true, "source_reference": "Mt 13,55" },
+        { "id": "santos_n1_k03", "type": "fill_blank", "target_ages": ["KIDS"], "sentence": "Santo ___ é lembrado por ajudar a encontrar coisas perdidas.", "answer": "Antônio", "wrong_options": ["Pedro", "Paulo"] },
+        { "id": "santos_n1_k04", "type": "listen_choose", "target_ages": ["KIDS"], "speak": "Qual santa amava as rosas e queria passar o céu fazendo o bem na terra?", "options": ["Santa Teresinha", "Santa Clara", "Santa Luzia"], "correct_index": 0 },
+        { "id": "santos_n1_k05", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "O que é um santo?", "options": ["Alguém que amou muito a Deus e ao próximo e está no céu", "Um super-herói de filme", "Uma estátua mágica"], "icons": ["😇", "🦸", "🗿"], "correct_index": 0, "explanation": "Todos nós somos chamados a ser santos!", "source_reference": "CIC 828" },
+        { "id": "santos_n1_kt01", "type": "match_pairs", "target_ages": ["KIDS", "TEENS"], "prompt": "Ligue o Santo ao seu símbolo ou história:", "pairs": [{ "item": "São Francisco de Assis", "match": "Amor aos animais e à criação" }, { "item": "São Pedro", "match": "Chaves do Reino dos Céus" }, { "item": "Nossa Senhora Aparecida", "match": "Padroeira do Brasil" }] },
+
+        { "id": "santos_n1_t01", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "Quem foi o primeiro Papa?", "options": ["São Pedro", "São Paulo", "São João"], "correct_index": 0, "source_reference": "Mt 16,18-19" },
+        { "id": "santos_n1_t02", "type": "true_false", "target_ages": ["TEENS"], "statement": "São Carlo Acutis, canonizado em 2025, usou a internet para divulgar os milagres eucarísticos.", "answer": true, "explanation": "Ele dizia que a Eucaristia era a sua “autoestrada para o céu”." },
+        { "id": "santos_n1_t03", "type": "type_answer", "target_ages": ["TEENS"], "prompt": "Qual apóstolo negou Jesus três vezes antes de o galo cantar, e depois chorou arrependido?", "answer": "Pedro", "accept": ["São Pedro", "Simão Pedro"], "source_reference": "Lc 22,54-62" },
+        { "id": "santos_n1_t04", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "Santa Teresa de Calcutá dedicou a vida a:", "options": ["Cuidar dos mais pobres entre os pobres", "Escrever livros de ciência", "Governar um país"], "correct_index": 0 },
+        { "id": "santos_n1_ta01", "type": "match_pairs", "target_ages": ["TEENS", "ADULTS"], "prompt": "Ligue o santo à sua marca:", "pairs": [{ "item": "São Paulo", "match": "Converteu-se no caminho de Damasco" }, { "item": "Santa Teresinha", "match": "A “pequena via” do amor" }, { "item": "São Bento", "match": "“Ora et labora”: reza e trabalha" }, { "item": "Santo Agostinho", "match": "“Inquieto está o nosso coração…”" }], "source_reference": "At 9,1-19; Confissões I,1" },
+
+        { "id": "santos_n1_a01", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Ao canonizar alguns fiéis, a Igreja:", "options": ["Reconhece o poder do Espírito de santidade nela e propõe os santos como modelos e intercessores", "Cria novos deuses menores", "Afirma que eles nunca pecaram"], "correct_index": 0, "source_reference": "CIC 828" },
+        { "id": "santos_n1_a02", "type": "true_false", "target_ages": ["ADULTS"], "statement": "A Igreja ensina que os santos no céu intercedem por nós junto do Pai.", "answer": true, "source_reference": "CIC 956" },
+        { "id": "santos_n1_a03", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Qual santo escreveu a Suma Teológica e é chamado “Doutor Angélico”?", "options": ["São Tomás de Aquino", "Santo Agostinho", "São Boaventura"], "correct_index": 0, "source_reference": "Fides et Ratio 43-44" },
+        { "id": "santos_n1_a04", "type": "fill_blank", "target_ages": ["ADULTS"], "sentence": "Fizeste-nos para Ti, Senhor, e inquieto está o nosso coração enquanto não ___ em Ti.", "answer": "repousa", "wrong_options": ["pensa", "vive"], "source_reference": "Santo Agostinho, Confissões I,1; CIC 30" },
+        { "id": "santos_n1_a05", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Qual santa é Doutora da Igreja e padroeira das missões, mesmo sem nunca ter saído do Carmelo?", "options": ["Santa Teresinha do Menino Jesus", "Santa Clara de Assis", "Santa Rita de Cássia"], "correct_index": 0, "explanation": "Proclamada padroeira das missões por Pio XI (1927) e Doutora da Igreja por São João Paulo II (1997).", "source_reference": "Divini Amoris Scientia (1997)" }
+      ]
+    },
+    {
+      "level_number": 2,
+      "title": "Santos do Brasil e de Hoje",
+      "description": "Aparecida, Irmã Dulce e outros",
+      "icon": "🇧🇷",
+      "questions": [
+        { "id": "santos_n2_k01", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Quem é a padroeira do Brasil?", "options": ["Nossa Senhora Aparecida", "Santa Luzia", "Santa Bárbara"], "correct_index": 0 },
+        { "id": "santos_n2_k02", "type": "true_false", "target_ages": ["KIDS"], "statement": "A imagem de Nossa Senhora Aparecida foi encontrada por pescadores num rio.", "answer": true, "explanation": "Foi em 1717, no rio Paraíba do Sul." },
+        { "id": "santos_n2_k03", "type": "fill_blank", "target_ages": ["KIDS"], "sentence": "O dia de Nossa Senhora Aparecida é 12 de ___.", "answer": "outubro", "wrong_options": ["março", "dezembro"] },
+        { "id": "santos_n2_k04", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Santa Dulce dos Pobres cuidava de quem?", "options": ["Dos doentes e pobres da Bahia", "Só das pessoas ricas", "Dos animais da floresta"], "icons": ["🏥", "💰", "🌳"], "correct_index": 0 },
+        { "id": "santos_n2_k05", "type": "listen_choose", "target_ages": ["KIDS"], "speak": "Qual santo é o esposo de Maria e protetor da Sagrada Família?", "options": ["São José", "São Jorge", "São João"], "correct_index": 0 },
+
+        { "id": "santos_n2_t01", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "Santa Dulce dos Pobres, canonizada em 2019, ficou conhecida como:", "options": ["O Anjo Bom da Bahia", "A Santa dos Mares", "A Mãe dos Reis"], "correct_index": 0 },
+        { "id": "santos_n2_t02", "type": "match_pairs", "target_ages": ["TEENS"], "prompt": "Ligue o santo ao dia da sua festa:", "pairs": [{ "item": "São José", "match": "19 de março" }, { "item": "Santo Antônio", "match": "13 de junho" }, { "item": "São Francisco de Assis", "match": "4 de outubro" }, { "item": "Nossa Senhora Aparecida", "match": "12 de outubro" }] },
+        { "id": "santos_n2_t03", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "São João Paulo II criou qual grande encontro do Papa com os jovens?", "options": ["A Jornada Mundial da Juventude", "O Concílio de Trento", "A Campanha da Fraternidade"], "correct_index": 0 },
+        { "id": "santos_n2_t04", "type": "type_answer", "target_ages": ["TEENS"], "prompt": "Em que estado brasileiro viveu Santa Dulce dos Pobres?", "answer": "Bahia", "accept": ["na Bahia"] },
+        { "id": "santos_n2_t05", "type": "true_false", "target_ages": ["TEENS"], "statement": "São José de Anchieta, padre jesuíta, foi um grande evangelizador do Brasil e ajudou a fundar a cidade de São Paulo.", "answer": true },
+        { "id": "santos_n2_ta01", "type": "true_false", "target_ages": ["TEENS", "ADULTS"], "statement": "A imagem encontrada no rio Paraíba do Sul representa Nossa Senhora da Conceição (a Imaculada Conceição).", "answer": true, "explanation": "Por isso o nome completo é Nossa Senhora da Conceição Aparecida.", "source_reference": "CIC 491" },
+
+        { "id": "santos_n2_a01", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Qual papa proclamou Nossa Senhora da Conceição Aparecida padroeira do Brasil, em 1930?", "options": ["Pio XI", "Leão XIII", "João XXIII"], "correct_index": 0, "source_reference": "Pio XI, decreto de 16/07/1930" },
+        { "id": "santos_n2_a02", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Quem foi o primeiro santo nascido no Brasil, canonizado por Bento XVI em 2007?", "options": ["Santo Antônio de Sant'Ana Galvão (Frei Galvão)", "São José de Anchieta", "Santa Dulce dos Pobres"], "correct_index": 0, "source_reference": "Canonização em São Paulo, 11/05/2007" },
+        { "id": "santos_n2_a03", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Como se chama a encíclica de São João Paulo II sobre a relação entre fé e razão?", "options": ["Fides et Ratio", "Laudato Si'", "Rerum Novarum"], "correct_index": 0, "source_reference": "Fides et Ratio (1998)" },
+        { "id": "santos_n2_a04", "type": "fill_blank", "target_ages": ["ADULTS"], "sentence": "Santa Teresa de Calcutá via Cristo no disfarce angustiante dos mais pobres entre os ___.", "answer": "pobres", "wrong_options": ["ricos", "sábios"], "source_reference": "Mt 25,40" },
+        { "id": "santos_n2_a05", "type": "match_pairs", "target_ages": ["ADULTS"], "prompt": "Ligue o santo brasileiro ao seu legado:", "pairs": [{ "item": "Santa Dulce dos Pobres", "match": "Obras Sociais em Salvador" }, { "item": "Frei Galvão", "match": "“Pílulas” de papel com oração a Maria" }, { "item": "São José de Anchieta", "match": "Apóstolo do Brasil, catequese dos indígenas" }], "source_reference": "Canonizações de 2007, 2014 e 2019" }
+      ]
+    }
+  ]
+}

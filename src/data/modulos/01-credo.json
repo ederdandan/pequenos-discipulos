@@ -1,0 +1,88 @@
+{
+  "$schema": "../quiz.schema.json",
+  "id": "credo",
+  "catechism_part": 1,
+  "title": "A Profissão de Fé",
+  "description": "O Credo: Deus Pai, Jesus Cristo, o Espírito Santo e a Igreja",
+  "icon": "✝️",
+  "levels": [
+    {
+      "level_number": 1,
+      "title": "Deus Pai Criador",
+      "description": "Deus criou tudo por amor",
+      "icon": "🌍",
+      "questions": [
+        { "id": "credo_n1_k01", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Quem criou o mundo e tudo o que existe com muito amor?", "options": ["Deus Pai", "Um robô", "Os anjos sozinhos"], "icons": ["🙏", "🤖", "👼"], "correct_index": 0, "explanation": "Deus Pai criou o céu e a terra por amor a todos nós!" },
+        { "id": "credo_n1_k02", "type": "true_false", "target_ages": ["KIDS"], "statement": "Deus criou as pessoas parecidas com Ele, com um coração para amar.", "answer": true, "explanation": "A Bíblia diz que Deus nos criou à sua imagem e semelhança.", "source_reference": "Gn 1,27" },
+        { "id": "credo_n1_k03", "type": "match_pairs", "target_ages": ["KIDS"], "prompt": "Deus criou tudo! Ligue cada desenho ao nome:", "pairs": [{ "item": "☀️", "match": "Sol" }, { "item": "🌊", "match": "Mar" }, { "item": "🐦", "match": "Passarinho" }, { "item": "🌳", "match": "Árvore" }] },
+        { "id": "credo_n1_k04", "type": "fill_blank", "target_ages": ["KIDS"], "sentence": "No princípio, Deus criou o céu e a ___.", "answer": "terra", "wrong_options": ["lua", "casa"], "explanation": "É a primeira frase da Bíblia!", "source_reference": "Gn 1,1" },
+        { "id": "credo_n1_k05", "type": "listen_choose", "target_ages": ["KIDS"], "speak": "Quem cuida de nós como um Pai muito bondoso?", "options": ["Deus", "A chuva", "O sapo"], "icons": ["🙏", "🌧️", "🐸"], "correct_index": 0, "explanation": "Deus é nosso Pai: Ele nos conhece pelo nome e cuida de nós." },
+        { "id": "credo_n1_k06", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Quem Deus deu a cada criança para protegê-la?", "options": ["O Anjo da Guarda", "Um super-herói", "Um dragão"], "icons": ["👼", "🦸", "🐉"], "correct_index": 0, "explanation": "Cada um de nós tem um Anjo da Guarda que nos protege e nos ajuda a fazer o bem.", "source_reference": "CIC 336" },
+
+        { "id": "credo_n1_t01", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "Por que Deus criou o mundo?", "options": ["Por amor, para comunicar sua bondade e glória", "Porque precisava de ajuda", "Por acaso, sem nenhum motivo"], "correct_index": 0, "explanation": "Deus não precisava de nada: criou livremente, por amor, para partilhar sua bondade.", "source_reference": "CIC 293-295" },
+        { "id": "credo_n1_t02", "type": "true_false", "target_ages": ["TEENS"], "statement": "Na Bíblia, o ser humano é criado “à imagem e semelhança de Deus”.", "answer": true, "explanation": "Por isso cada pessoa tem uma dignidade única: é capaz de conhecer e amar a Deus.", "source_reference": "Gn 1,26-27" },
+        { "id": "credo_n1_t03", "type": "fill_blank", "target_ages": ["TEENS"], "sentence": "No princípio, Deus criou o ___ e a terra.", "answer": "céu", "wrong_options": ["mar", "sol"], "source_reference": "Gn 1,1" },
+        { "id": "credo_n1_t04", "type": "type_answer", "target_ages": ["TEENS"], "prompt": "Como se chama o anjo que Deus dá a cada pessoa para protegê-la?", "answer": "Anjo da Guarda", "accept": ["o anjo da guarda", "santo anjo"], "explanation": "“Cada fiel tem a seu lado um anjo como protetor e pastor” (São Basílio).", "source_reference": "CIC 336" },
+        { "id": "credo_n1_ta01", "type": "multiple_choice", "target_ages": ["TEENS", "ADULTS"], "prompt": "Quais criaturas espirituais servem a Deus e são seus mensageiros?", "options": ["Os anjos", "Os profetas", "Os apóstolos"], "correct_index": 0, "explanation": "Os anjos são criaturas puramente espirituais, com inteligência e vontade. “Anjo” quer dizer mensageiro.", "source_reference": "CIC 329-330" },
+        { "id": "credo_n1_ta02", "type": "match_pairs", "target_ages": ["TEENS", "ADULTS"], "prompt": "Ligue o arcanjo à sua missão na Bíblia:", "pairs": [{ "item": "Gabriel", "match": "Anunciou a Maria que seria Mãe de Jesus" }, { "item": "Rafael", "match": "Acompanhou Tobias na viagem" }, { "item": "Miguel", "match": "Combate o dragão e seus anjos" }], "source_reference": "Lc 1,26-38; Tb 5; Ap 12,7" },
+
+        { "id": "credo_n1_a01", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Com que afirmação começa a Profissão de Fé da Igreja?", "options": ["Creio em Deus Pai todo-poderoso, Criador do céu e da terra", "Creio na infalibilidade dos homens", "Creio na salvação apenas pelas obras, sem fé"], "correct_index": 0, "explanation": "O Credo começa por Deus Pai, Primeira Pessoa da Santíssima Trindade, e pela criação, início de todas as obras de Deus.", "source_reference": "CIC 198" },
+        { "id": "credo_n1_a02", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "O que significa afirmar que Deus criou “do nada” (ex nihilo)?", "options": ["Que Ele não precisou de nenhuma matéria preexistente", "Que o mundo não tem valor", "Que Deus criou e depois abandonou o mundo"], "correct_index": 0, "explanation": "Deus cria livremente, sem precisar de nada anterior, e sustenta continuamente a criação no ser.", "source_reference": "CIC 296-297" },
+        { "id": "credo_n1_a03", "type": "true_false", "target_ages": ["ADULTS"], "statement": "A fé ensina que Deus, depois de criar o mundo, deixou-o entregue a si mesmo.", "answer": false, "explanation": "Deus não abandona a criação: conserva-a no ser e conduz tudo pela sua Providência.", "source_reference": "CIC 301-303" },
+        { "id": "credo_n1_a04", "type": "fill_blank", "target_ages": ["ADULTS"], "sentence": "O homem é a única criatura na terra que Deus quis por si ___.", "answer": "mesma", "wrong_options": ["acaso", "engano"], "explanation": "Fórmula da Gaudium et spes 24, retomada pelo Catecismo ao falar da dignidade humana.", "source_reference": "CIC 356; GS 24" }
+      ]
+    },
+    {
+      "level_number": 2,
+      "title": "Jesus Cristo",
+      "description": "Encarnação, Paixão e Ressurreição",
+      "icon": "👶",
+      "questions": [
+        { "id": "credo_n2_k01", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Onde Jesus nasceu?", "options": ["Numa manjedoura em Belém", "Num castelo", "Num navio"], "icons": ["🐑", "🏰", "🚢"], "correct_index": 0, "explanation": "Jesus nasceu pobre, numa manjedoura, porque não havia lugar para eles na hospedaria.", "source_reference": "Lc 2,7" },
+        { "id": "credo_n2_k02", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Qual é o nome da mãe de Jesus?", "options": ["Maria", "Marta", "Sara"], "correct_index": 0, "explanation": "Maria disse “sim” a Deus e se tornou a Mãe de Jesus." },
+        { "id": "credo_n2_k03", "type": "true_false", "target_ages": ["KIDS"], "statement": "Jesus morreu na cruz e ressuscitou no terceiro dia.", "answer": true, "explanation": "Jesus deu a vida por nós e venceu a morte!", "source_reference": "1Cor 15,3-4" },
+        { "id": "credo_n2_k04", "type": "match_pairs", "target_ages": ["KIDS"], "prompt": "Ligue a festa ao que celebramos:", "pairs": [{ "item": "Natal", "match": "Jesus nasceu" }, { "item": "Sexta-feira Santa", "match": "Jesus morreu na cruz" }, { "item": "Páscoa", "match": "Jesus ressuscitou" }] },
+        { "id": "credo_n2_k05", "type": "fill_blank", "target_ages": ["KIDS"], "sentence": "Jesus é o ___ de Deus.", "answer": "Filho", "wrong_options": ["vizinho", "primo"] },
+        { "id": "credo_n2_k06", "type": "listen_choose", "target_ages": ["KIDS"], "speak": "O que Jesus fez no domingo de Páscoa?", "options": ["Ressuscitou", "Dormiu", "Viajou"], "icons": ["🌅", "😴", "🧳"], "correct_index": 0, "explanation": "No domingo de Páscoa, o túmulo estava vazio: Jesus está vivo!" },
+
+        { "id": "credo_n2_t01", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "O que significa “Encarnação”?", "options": ["O Filho de Deus se fez homem", "Jesus era só um bom profeta", "Deus fingiu ter um corpo"], "correct_index": 0, "explanation": "O Filho de Deus assumiu uma natureza humana para nos salvar, sem deixar de ser Deus.", "source_reference": "CIC 461" },
+        { "id": "credo_n2_t02", "type": "match_pairs", "target_ages": ["TEENS"], "prompt": "Ligue o acontecimento ao lugar:", "pairs": [{ "item": "Nascimento", "match": "Belém" }, { "item": "Infância", "match": "Nazaré" }, { "item": "Batismo", "match": "Rio Jordão" }, { "item": "Crucifixão", "match": "Jerusalém" }], "source_reference": "Lc 2; Mt 3; Jo 19" },
+        { "id": "credo_n2_t03", "type": "word_bank", "target_ages": ["TEENS"], "prompt": "Monte a frase de Jesus:", "sentence": "Eu sou o caminho, a verdade e a vida", "distractors": ["porta", "luz"], "source_reference": "Jo 14,6" },
+        { "id": "credo_n2_t04", "type": "fill_blank", "target_ages": ["TEENS"], "sentence": "Deus amou tanto o mundo que entregou o seu ___ único.", "answer": "Filho", "wrong_options": ["anjo", "reino"], "explanation": "Para que todo o que nele crer não pereça, mas tenha a vida eterna.", "source_reference": "Jo 3,16" },
+        { "id": "credo_n2_ta01", "type": "multiple_choice", "target_ages": ["TEENS", "ADULTS"], "prompt": "Jesus Cristo é:", "options": ["Verdadeiro Deus e verdadeiro homem", "Só Deus, com aparência humana", "Só homem, muito santo"], "correct_index": 0, "explanation": "Jesus não é em parte Deus e em parte homem: é uma só Pessoa divina com duas naturezas.", "source_reference": "CIC 464" },
+        { "id": "credo_n2_ta02", "type": "true_false", "target_ages": ["TEENS", "ADULTS"], "statement": "Jesus ressuscitou com o mesmo corpo que foi crucificado, agora glorioso.", "answer": true, "explanation": "O Ressuscitado mostra as marcas da Paixão, mas seu corpo glorioso não está mais sujeito ao espaço e ao tempo.", "source_reference": "CIC 645" },
+
+        { "id": "credo_n2_a01", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Que título de Maria o Concílio de Éfeso (431) proclamou, para afirmar a unidade da Pessoa de Cristo?", "options": ["Theotokos, Mãe de Deus", "Corredentora", "Rainha dos Apóstolos"], "correct_index": 0, "explanation": "Maria é Mãe de Deus porque é mãe do Filho eterno de Deus feito homem, que é Deus Ele mesmo.", "source_reference": "CIC 466; 495" },
+        { "id": "credo_n2_a02", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "O que a Igreja chama de “Mistério Pascal”?", "options": ["A Paixão, Morte, Ressurreição e Ascensão de Cristo", "Somente a festa da Páscoa judaica", "O tempo da Quaresma"], "correct_index": 0, "explanation": "É o centro da fé e da liturgia: pela sua Páscoa, Cristo nos salva.", "source_reference": "CIC 571; 1067" },
+        { "id": "credo_n2_a03", "type": "true_false", "target_ages": ["ADULTS"], "statement": "A morte de Cristo é o sacrifício único e definitivo que realiza a redenção dos homens.", "answer": true, "source_reference": "CIC 613-614" },
+        { "id": "credo_n2_a04", "type": "fill_blank", "target_ages": ["ADULTS"], "prompt": "Complete o ensinamento de São Paulo", "sentence": "Se Cristo não ressuscitou, é vã a vossa ___.", "answer": "fé", "wrong_options": ["casa", "lei"], "explanation": "A Ressurreição é a verdade culminante da fé em Cristo.", "source_reference": "1Cor 15,14; CIC 651" }
+      ]
+    },
+    {
+      "level_number": 3,
+      "title": "O Espírito Santo e a Igreja",
+      "description": "Pentecostes, os dons e a família de Deus",
+      "icon": "🕊️",
+      "questions": [
+        { "id": "credo_n3_k01", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Qual destes é um símbolo do Espírito Santo?", "options": ["Pomba", "Gato", "Carro"], "icons": ["🕊️", "🐱", "🚗"], "correct_index": 0, "explanation": "No batismo de Jesus, o Espírito Santo desceu sobre Ele como uma pomba.", "source_reference": "Mt 3,16" },
+        { "id": "credo_n3_k02", "type": "true_false", "target_ages": ["KIDS"], "statement": "No dia de Pentecostes, o Espírito Santo desceu sobre os apóstolos como línguas de fogo.", "answer": true, "source_reference": "At 2,3" },
+        { "id": "credo_n3_k03", "type": "multiple_choice", "target_ages": ["KIDS"], "prompt": "Quem é o Papa?", "options": ["O sucessor de São Pedro, que guia a Igreja", "O prefeito da cidade", "Um rei de outro país"], "correct_index": 0, "explanation": "O Papa é o pastor de toda a Igreja, como Jesus pediu a Pedro." },
+        { "id": "credo_n3_k04", "type": "fill_blank", "target_ages": ["KIDS"], "sentence": "A Santíssima Trindade é o Pai, o Filho e o Espírito ___.", "answer": "Santo", "wrong_options": ["Bom", "Forte"], "explanation": "Um só Deus em três Pessoas!" },
+        { "id": "credo_n3_k05", "type": "match_pairs", "target_ages": ["KIDS"], "prompt": "Ligue os símbolos do Espírito Santo:", "pairs": [{ "item": "🕊️", "match": "Pomba" }, { "item": "🔥", "match": "Fogo" }, { "item": "💨", "match": "Vento" }, { "item": "💧", "match": "Água" }], "source_reference": "CIC 694-701" },
+        { "id": "credo_n3_k06", "type": "speaking", "target_ages": ["KIDS"], "prompt": "Faça o Sinal da Cruz falando em voz alta", "phrase": "Em nome do Pai e do Filho e do Espírito Santo. Amém.", "explanation": "Com o Sinal da Cruz começamos nossas orações em nome da Santíssima Trindade." },
+
+        { "id": "credo_n3_t01", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "O que aconteceu em Pentecostes?", "options": ["O Espírito Santo desceu sobre os apóstolos reunidos com Maria", "Jesus nasceu em Belém", "Moisés recebeu os Mandamentos"], "correct_index": 0, "explanation": "Cheios do Espírito, os apóstolos começaram a anunciar Jesus sem medo.", "source_reference": "At 1,14; 2,1-4" },
+        { "id": "credo_n3_t02", "type": "type_answer", "target_ages": ["TEENS"], "prompt": "Quantos são os dons do Espírito Santo?", "answer": "sete", "explanation": "Sabedoria, entendimento, conselho, fortaleza, ciência, piedade e temor de Deus.", "source_reference": "CIC 1831" },
+        { "id": "credo_n3_t03", "type": "multiple_choice", "target_ages": ["TEENS"], "prompt": "Qual destes NÃO é um dom do Espírito Santo?", "options": ["Riqueza", "Sabedoria", "Fortaleza"], "correct_index": 0, "explanation": "Os sete dons são: sabedoria, entendimento, conselho, fortaleza, ciência, piedade e temor de Deus.", "source_reference": "CIC 1831" },
+        { "id": "credo_n3_t04", "type": "true_false", "target_ages": ["TEENS"], "statement": "A palavra “Igreja” quer dizer “convocação”: o povo que Deus reúne.", "answer": true, "source_reference": "CIC 751" },
+        { "id": "credo_n3_ta01", "type": "match_pairs", "target_ages": ["TEENS", "ADULTS"], "prompt": "Ligue as quatro notas da Igreja ao significado:", "pairs": [{ "item": "Una", "match": "Um só Senhor, uma só fé, um só Batismo" }, { "item": "Santa", "match": "Deus, seu autor, é santo" }, { "item": "Católica", "match": "Universal, enviada a todos os povos" }, { "item": "Apostólica", "match": "Fundada sobre os apóstolos" }], "source_reference": "CIC 811-865" },
+        { "id": "credo_n3_ta02", "type": "fill_blank", "target_ages": ["TEENS", "ADULTS"], "sentence": "Tu és Pedro, e sobre esta ___ edificarei a minha Igreja.", "answer": "pedra", "wrong_options": ["casa", "montanha"], "explanation": "Jesus confia a Pedro uma missão única na Igreja.", "source_reference": "Mt 16,18" },
+
+        { "id": "credo_n3_a01", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Segundo a fé da Igreja latina, o Espírito Santo procede:", "options": ["Do Pai e do Filho", "Somente dos anjos", "Da Igreja"], "correct_index": 0, "explanation": "“Que procede do Pai e do Filho (Filioque) e com o Pai e o Filho é adorado e glorificado.”", "source_reference": "CIC 246" },
+        { "id": "credo_n3_a02", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "O que é a “comunhão dos santos”?", "options": ["A união de todos os fiéis em Cristo: na terra, no purgatório e no céu", "Uma associação de pessoas canonizadas", "A reunião anual dos bispos"], "correct_index": 0, "source_reference": "CIC 946-962" },
+        { "id": "credo_n3_a03", "type": "true_false", "target_ages": ["ADULTS"], "statement": "O Papa, sucessor de Pedro, é o perpétuo e visível princípio e fundamento da unidade dos bispos e dos fiéis.", "answer": true, "source_reference": "CIC 882; LG 23" },
+        { "id": "credo_n3_a04", "type": "multiple_choice", "target_ages": ["ADULTS"], "prompt": "Por que a Igreja é chamada “Corpo de Cristo”?", "options": ["Cristo é a Cabeça e os fiéis são seus membros, unidos pelo Espírito", "Porque guarda relíquias", "Porque é uma organização humana bem estruturada"], "correct_index": 0, "source_reference": "CIC 787-795" }
+      ]
+    }
+  ]
+}
