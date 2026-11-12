@@ -64,7 +64,8 @@ function pickCheer(o: {
   if (STREAK_CHEERS[o.combo]) return [`combo-${o.combo}`, STREAK_CHEERS[o.combo]];
   if (o.afterMistake && !o.shown.has('perseverou'))
     return ['perseverou', { pose: 'fe', title: 'Perseverança!', text: 'Errar faz parte do caminho. Seguimos juntos!' }];
-  if (o.total >= 6 && o.solved === Math.ceil(o.total / 2) && !o.shown.has('metade'))
+  // ">=" e não "===": se a metade cair numa resposta em pausa, aparece na seguinte (uma vez só).
+  if (o.total >= 6 && o.solved >= Math.ceil(o.total / 2) && o.remaining > 1 && !o.shown.has('metade'))
     return ['metade', { pose: 'vamos', title: 'Metade do caminho!', text: 'Vamos em frente, falta pouco.' }];
   if (o.total >= 4 && o.remaining === 1 && !o.shown.has('ultima'))
     return ['ultima', { pose: 'vamos', title: 'Falta só uma!', text: 'Última pergunta. Vamos!' }];
@@ -125,7 +126,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
   if (queue.length === 0) {
     return (
       <Screen>
-        <Lamb pose="aprendendo" size={150} />
+        <Lamb pose="aprendendo" size={150} animated />
         <h1 className="text-3xl font-extrabold">Nada para revisar agora</h1>
         <p className="text-slate-500">Os itens que você errar aparecem aqui na hora certa.</p>
         <Button onClick={onExit}>Voltar</Button>
@@ -237,7 +238,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
   if (outOfHearts && !feedback) {
     return (
       <Screen>
-        <Lamb pose="descanso" size={150} />
+        <Lamb pose="descanso" size={150} animated />
         <h1 className="text-3xl font-extrabold">As chamas se apagaram</h1>
         <p className="max-w-sm text-slate-500">
           Sem problemas! Elas voltam a acender com o tempo (1 a cada 30 min), ou você pode{' '}
@@ -295,9 +296,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
         <div className="mx-auto flex max-w-2xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {feedback && (
             <div className={`flex gap-3 ${feedback.correct ? 'text-gold-800' : 'text-red-800'}`}>
-              {active.ageGroup !== 'adults' && (
-                <Lamb pose={feedback.correct ? 'sucesso' : 'ops'} size={76} className="animate-pop -my-2" />
-              )}
+              <Lamb pose={feedback.correct ? 'sucesso' : 'ops'} size={76} once className="-my-2" />
               <div>
               <p className="flex items-center gap-2 font-serif text-xl font-bold">
                 {feedback.correct ? <CheckCircle2 className="size-7" /> : <XCircle className="size-7" />}
@@ -418,7 +417,7 @@ function CheerScreen({ cheer, onDone }: { cheer: Cheer; onDone: () => void }) {
       className="animate-fade mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center gap-4 px-4 text-center"
       aria-label={`${cheer.title} ${cheer.text} Toque para continuar.`}
     >
-      <Lamb pose={cheer.pose} size={190} className="animate-pop" />
+      <Lamb pose={cheer.pose} size={190} animated />
       <p className="font-serif text-3xl font-bold text-brand-700">{cheer.title}</p>
       <p className="text-lg text-slate-600">{cheer.text}</p>
       <p className="mt-4 text-sm text-slate-400">Toque para continuar</p>
@@ -452,9 +451,7 @@ function LessonComplete({
   const pct = Math.min(100, (reward.dailyXp / reward.dailyGoal) * 100);
   return (
     <Screen>
-      <div className="animate-pop">
-        <Lamb pose={mistakes === 0 && !practice && !review ? 'fe' : 'sucesso'} size={160} className="animate-float" />
-      </div>
+      <Lamb pose={mistakes === 0 && !practice && !review ? 'fe' : 'sucesso'} size={160} animated />
       <h1 className="text-3xl font-extrabold text-gold-600">{review ? 'Revisão concluída!' : practice ? 'Treino concluído!' : 'Lição concluída!'}</h1>
       <div className="grid w-full grid-cols-2 gap-3">
         <div className="rounded-2xl border-2 border-gold-400 bg-gold-50 p-4">

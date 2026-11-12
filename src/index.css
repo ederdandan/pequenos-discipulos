@@ -91,3 +91,62 @@ body {
   50% { transform: translateY(-6px); }
 }
 .animate-float { animation: float 3s ease-in-out infinite; }
+
+/* Cordeirinho animado (componente Lamb com `animated`): entra com um pulinho e depois
+   faz um movimento contínuo que combina com a pose. Gira/pula a partir dos pés. */
+@keyframes lamb-in {
+  0% { transform: translateY(24px) scale(0.6); opacity: 0; }
+  55% { transform: translateY(-10px) scale(1.06, 0.96); opacity: 1; }
+  75% { transform: translateY(0) scale(0.97, 1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes lamb-jump { /* sucesso: pula comemorando */
+  0%, 100% { transform: translateY(0) scale(1); }
+  15% { transform: translateY(0) scale(1.06, 0.92); }
+  45% { transform: translateY(-16%) scale(0.96, 1.05) rotate(-3deg); }
+  70% { transform: translateY(0) scale(1.05, 0.94); }
+  85% { transform: translateY(0) scale(1); }
+}
+@keyframes lamb-wobble { /* ops: balança a cabeça, meio sem graça */
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-5deg); }
+  40% { transform: rotate(4deg); }
+  60% { transform: rotate(-3deg); }
+  80% { transform: rotate(1deg); }
+}
+@keyframes lamb-pray { /* fé: respira devagar com um brilho dourado */
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgb(245 158 11 / 0)); }
+  50% { transform: scale(1.04); filter: drop-shadow(0 0 18px rgb(245 158 11 / 0.55)); }
+}
+@keyframes lamb-go { /* vamos: dá o impulso para a frente */
+  0%, 100% { transform: translateX(0) rotate(0); }
+  30% { transform: translateX(-4%) rotate(-3deg); }
+  60% { transform: translateX(6%) rotate(5deg); }
+}
+@keyframes lamb-rest { /* descanso: boceja e cochila */
+  0%, 100% { transform: scale(1) rotate(0); }
+  50% { transform: scale(1.03, 0.96) rotate(-2deg); }
+}
+@keyframes lamb-wave { /* acolhimento: balança acenando */
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+@keyframes lamb-read { /* aprendendo: acena a cabeça lendo */
+  0%, 100% { transform: rotate(0) translateY(0); }
+  50% { transform: rotate(2deg) translateY(2%); }
+}
+.lamb-anim { transform-origin: 50% 95%; }
+.lamb-sucesso { animation: lamb-in 0.5s ease-out, lamb-jump 1.1s 0.5s ease-in-out infinite; }
+.lamb-ops { animation: lamb-in 0.5s ease-out, lamb-wobble 1.6s 0.5s ease-in-out infinite; }
+.lamb-fe { animation: lamb-in 0.5s ease-out, lamb-pray 3s 0.5s ease-in-out infinite; }
+.lamb-vamos { animation: lamb-in 0.5s ease-out, lamb-go 1.3s 0.5s ease-in-out infinite; }
+.lamb-descanso { animation: lamb-in 0.5s ease-out, lamb-rest 3.5s 0.5s ease-in-out infinite; }
+.lamb-acolhimento { animation: lamb-in 0.5s ease-out, lamb-wave 2.2s 0.5s ease-in-out infinite; }
+.lamb-aprendendo { animation: lamb-in 0.5s ease-out, lamb-read 2.6s 0.5s ease-in-out infinite; }
+/* No rodapé (pequeno): só a entrada e um movimento, sem ficar repetindo. */
+.lamb-once { animation-iteration-count: 1, 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lamb-anim { animation: none !important; }
+}

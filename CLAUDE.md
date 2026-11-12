@@ -109,8 +109,8 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   Ícones gerados por `scripts/make-icons.py` (busto da pose acolhimento; ao mudar, suba a versão do cache em `sw.js`).
   7 poses em `public/cordeirinho/` (acolhimento, sucesso, ops, aprendendo, descanso, fe, vamos), recortadas de
   `imagens/Cordeirinho.jpg` por `scripts/crop-lamb.py` (Pillow + numpy + scipy). Aparece no rodapé de correção
-  (só Infantil e Juvenil), no fim da lição, sem chamas, sem revisão e na `CheerScreen` (`LessonPage.tsx`): tela
+  (todas as faixas), no fim da lição, sem chamas, sem revisão e na `CheerScreen` (`LessonPage.tsx`): tela
   rápida entre perguntas só em marcos (3/5/8 seguidas, acerto após erro, metade, falta uma), nunca duas seguidas,
-  some em 1,8 s ou com um toque.
+  some em 1,8 s ou com um toque. Animações por pose em `index.css` (`.lamb-<pose>`; prop `animated`/`once`).
 - No dev, com `base: './'`, abra `http://localhost:5173/` (na raiz): em `/pequenos-discipulos/` os arquivos de
   `public/` caem no fallback do index.html. Em produção funciona normalmente.

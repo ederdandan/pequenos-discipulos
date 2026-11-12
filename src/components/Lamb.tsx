@@ -29,13 +29,30 @@ export function usePreloadLamb() {
   }, []);
 }
 
-export function Lamb({ pose, size = 96, className = '' }: { pose: LambPose; size?: number; className?: string }) {
+/**
+ * `animated`: entra com um pulinho e repete o movimento da pose (telas em que aparece por inteiro).
+ * `once`: só a entrada e um movimento (rodapé de correção).
+ */
+export function Lamb({
+  pose,
+  size = 96,
+  className = '',
+  animated = false,
+  once = false,
+}: {
+  pose: LambPose;
+  size?: number;
+  className?: string;
+  animated?: boolean;
+  once?: boolean;
+}) {
+  const anim = animated || once ? `lamb-anim lamb-${pose} ${once ? 'lamb-once' : ''}` : '';
   return (
     <img
       src={lambSrc(pose)}
       alt={ALT[pose]}
       style={{ height: size }}
-      className={`w-auto shrink-0 select-none object-contain ${className}`}
+      className={`w-auto shrink-0 select-none object-contain ${anim} ${className}`}
       draggable={false}
     />
   );

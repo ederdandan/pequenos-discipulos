@@ -21,7 +21,7 @@ export function ProfilesPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col items-center px-4 py-10">
-      <Lamb pose="acolhimento" size={150} className="animate-float mb-2" />
+      <Lamb pose="acolhimento" size={150} animated className="mb-2" />
       <h1 className="text-center text-3xl font-extrabold text-brand-700">Pequenos Discípulos</h1>
       <p className="mb-8 text-center text-slate-500">Catequese em família: cada um no seu ritmo, todos juntos.</p>
 
