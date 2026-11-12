@@ -1,86 +1,105 @@
-"""Gera os ícones PNG do app com o Cordeirinho: `PYTHONIOENCODING=utf-8 python scripts/make-icons.py [--preview]`
+"""Gera os ícones PNG do app: `PYTHONIOENCODING=utf-8 python scripts/make-icons.py [--preview arquivo.png]`
 
-Requer Pillow, numpy e scipy. Desenho: Cordeirinho (pose "acolhimento") sobre auréola dourada,
-em fundo Azul Mariano. Os ícones "maskable" e o da Apple ocupam o quadro todo e deixam o
-desenho dentro da zona segura (círculo de 80%), porque o sistema recorta as bordas.
+Fonte: o ícone "3. O Cordeirinho Alegre" da grade `imagens/icone.jpeg` (Pillow + numpy + scipy).
+O fundo laranja original vira Azul Mariano, a cor principal do app (a borda da lã é suavizada).
+O quadrado do ícone é recortado um pouco para dentro (some o canto arredondado e o fundo bege da grade)
+e vira um desenho "sangrado", que preenche o quadro todo:
+
+- icon-192 / icon-512 ("any", favicon do site): cantos arredondados com fundo transparente.
+- apple-touch-icon (180): quadro todo, o iOS arredonda sozinho.
+- icon-maskable-512: quadro todo, como o da Apple. O Android recorta em círculo/squircle; o rosto
+  fica no centro e só as pontas da lã e das orelhas são cortadas.
+
+Ao mudar os ícones, suba a versão do cache em public/sw.js.
 """
-import importlib.util
 import sys
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageDraw
+from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / 'imagens' / 'icone.jpeg'
 OUT = ROOT / 'public' / 'icons'
 
-BG = (30, 58, 138)  # Azul Mariano #1E3A8A
-HALO = (253, 230, 138)  # dourado claro #FDE68A
-HALO_RIM = (245, 158, 11)  # Dourado Sacro #F59E0B
+# Quadrado do ícone 3 na grade (x0, y0, lado), medido pela borda laranja.
+TILE = (836, 164, 284)
+# Recuo para eliminar o canto arredondado da grade: raio ~50 px → r·(1 − 1/√2) ≈ 15 px,
+# mais uma folga para a borda suavizada do canto.
+INSET = 21
 
-_spec = importlib.util.spec_from_file_location('crop_lamb', ROOT / 'scripts' / 'crop-lamb.py')
-crop_lamb = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(crop_lamb)
-
-
-def lamb(bust: bool) -> Image.Image:
-    im = crop_lamb.pose('acolhimento', None)
-    if bust:  # cabeça, lenço e Bíblia: lê melhor em tamanho pequeno
-        im = im.crop((0, 0, im.width, int(im.height * 0.68)))
-    return im
+BG = np.array([30, 58, 138])  # Azul Mariano #1E3A8A (brand-700)
+ORANGE = np.array([243, 109, 42])  # fundo original (média medida)
 
 
-def render(size: int, full_bleed: bool, bust: bool, ss: int = 4) -> Image.Image:
-    S = size * ss
-    img = Image.new('RGBA', (S, S), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    if full_bleed:
-        d.rectangle((0, 0, S, S), fill=BG)
-        area = 0.80  # zona segura do maskable
-    else:
-        d.rounded_rectangle((0, 0, S - 1, S - 1), radius=int(S * 0.22), fill=BG)
-        area = 0.96
-    # Auréola atrás do cordeirinho.
-    r = S * area * 0.40
-    cx, cy = S / 2, S / 2 + (S * 0.09 if bust and full_bleed else -S * area * (0.04 if bust else 0.07))
-    w = max(2, int(S * 0.018))
-    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=HALO, outline=HALO_RIM, width=w)
-
-    fig = lamb(bust)
-    box = S * area * (0.84 if bust else 0.86)
-    scale = box / max(fig.width, fig.height)
-    fig = fig.resize((int(fig.width * scale), int(fig.height * scale)), Image.LANCZOS)
-    x = (S - fig.width) // 2
-    if bust:  # o busto encosta na borda de baixo (o rosto fica dentro da zona segura)
-        y = S - fig.height
-    else:
-        y = (S - fig.height) // 2 + int(S * 0.02)
-    img.alpha_composite(fig, (x, y))
-    if not full_bleed:  # corta o que passar do quadrado arredondado
-        mask = Image.new('L', (S, S), 0)
-        ImageDraw.Draw(mask).rounded_rectangle((0, 0, S - 1, S - 1), radius=int(S * 0.22), fill=255)
-        img.putalpha(Image.composite(img.getchannel('A'), mask, mask))
-    return img.resize((size, size), Image.LANCZOS)
+def recolor(im: Image.Image) -> Image.Image:
+    """Troca o fundo laranja (as regiões laranja que tocam a borda) pelo azul do app."""
+    a = np.array(im).astype(float)
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    orange = (r > 200) & (b < 110) & (g > 70) & (g < 190)
+    labels, _ = ndimage.label(orange)
+    edge = np.unique(np.concatenate([labels[0], labels[-1], labels[:, 0], labels[:, -1]]))
+    core = np.isin(labels, edge[edge > 0])
+    # Faixa da borda: pixel misturado entre laranja e lã branca. t = quanto de laranja ele tem.
+    band = ndimage.binary_dilation(core, iterations=2) & ~core
+    t = np.clip(((255 - g) / (255 - ORANGE[1]) + (255 - b) / (255 - ORANGE[2])) / 2, 0, 1)
+    out = a.copy()
+    out[core] = BG
+    out[band] = a[band] + t[band, None] * (BG - ORANGE)
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
 
 
-ICONS = [
-    ('icon-192.png', 192, False),
-    ('icon-512.png', 512, False),
-    ('icon-maskable-512.png', 512, True),
-    ('apple-touch-icon.png', 180, True),
-]
+def bleed() -> Image.Image:
+    """O desenho sem cantos nem fundo da grade, preenchendo um quadrado."""
+    x, y, s = TILE
+    im = Image.open(SRC).convert('RGB')
+    return recolor(im.crop((x + INSET, y + INSET, x + s - INSET, y + s - INSET)))
+
+
+def rounded(size: int, radius: float = 0.22) -> Image.Image:
+    """Ícone com cantos arredondados e fundo transparente (máscara suavizada 4x)."""
+    art = bleed().resize((size, size), Image.LANCZOS).convert('RGBA')
+    big = size * 4
+    mask = Image.new('L', (big, big), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, big - 1, big - 1), radius=int(big * radius), fill=255)
+    art.putalpha(mask.resize((size, size), Image.LANCZOS))
+    return art
+
+
+def full(size: int) -> Image.Image:
+    return bleed().resize((size, size), Image.LANCZOS)
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    out = {
+        'icon-192.png': rounded(192),
+        'icon-512.png': rounded(512),
+        'icon-maskable-512.png': full(512),
+        'apple-touch-icon.png': full(180),
+    }
+    for name, im in out.items():
+        im.save(OUT / name, optimize=True)
+        print('ok', name, im.size)
+
+    if '--preview' in sys.argv:
+        # Folha de conferência: cada ícone sobre fundo claro e escuro, e o maskable recortado em círculo.
+        dest = Path(sys.argv[sys.argv.index('--preview') + 1])
+        sheet = Image.new('RGB', (4 * 270, 2 * 270), (240, 240, 240))
+        sheet.paste((40, 40, 40), (0, 270, sheet.width, sheet.height))
+        circle = Image.new('L', (512, 512), 0)
+        ImageDraw.Draw(circle).ellipse((0, 0, 511, 511), fill=255)
+        masked = out['icon-maskable-512.png'].convert('RGBA')
+        masked.putalpha(circle)
+        items = [out['icon-512.png'], out['apple-touch-icon.png'].convert('RGBA'), out['icon-maskable-512.png'].convert('RGBA'), masked]
+        for row in range(2):
+            for i, im in enumerate(items):
+                t = im.resize((230, 230), Image.LANCZOS)
+                sheet.paste(t, (i * 270 + 20, row * 270 + 20), t)
+        sheet.save(dest)
+        print('folha', dest)
+
 
 if __name__ == '__main__':
-    if '--preview' in sys.argv:
-        out = Path(sys.argv[sys.argv.index('--preview') + 1])
-        sheet = Image.new('RGBA', (4 * 300 + 50, 2 * 300 + 30), (240, 240, 240, 255))
-        for row, bust in enumerate([False, True]):
-            for col, (_, _, fb) in enumerate(ICONS[1:3] + [(None, None, False), (None, None, True)]):
-                size = 256 if col < 2 else 96
-                sheet.alpha_composite(render(size, fb, bust), (10 + col * 300, 10 + row * 300))
-        sheet.save(out)
-    else:
-        bust = '--full' not in sys.argv
-        OUT.mkdir(parents=True, exist_ok=True)
-        for name, size, fb in ICONS:
-            render(size, fb, bust).save(OUT / name, optimize=True)
-            print(name, size)
+    main()

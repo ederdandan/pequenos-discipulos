@@ -6,7 +6,7 @@
 // Prefixo próprio: no GitHub Pages vários apps do mesmo usuário dividem a mesma origem
 // (e o mesmo Cache Storage). Só apagamos caches nossos de versões antigas.
 const PREFIX = 'pequenos-discipulos-';
-const CACHE = `${PREFIX}v3`; // v3: verificação de atualização
+const CACHE = `${PREFIX}v4`; // v4: ícone Cordeirinho Alegre
 const MATCH = { ignoreVary: true, ignoreSearch: false };
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 

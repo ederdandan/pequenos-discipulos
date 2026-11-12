@@ -115,8 +115,9 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   (Pillow + numpy; `--sheet arquivo.png` gera uma folha de conferência).
 - `AvatarChooser` (foto no topo, "Enviar foto", abas com a grade) aparece na criação de perfil e, na aba Perfil,
   num BottomSheet aberto pelo botão "Foto ou avatar".
-- **Cordeirinho** (`components/Lamb.tsx`): mascote do app (logo da entrada, ícones do PWA) e companheiro das lições.
-  Ícones gerados por `scripts/make-icons.py` (busto da pose acolhimento; ao mudar, suba a versão do cache em `sw.js`).
+- **Cordeirinho** (`components/Lamb.tsx`): mascote do app (logo da entrada; o ícone do PWA é o rosto do Cordeirinho Alegre) e companheiro das lições.
+  Ícones do app e favicon: "O Cordeirinho Alegre" (ícone 3 da grade `imagens/icone.jpeg`, fundo trocado para Azul Mariano), recortados por
+  `scripts/make-icons.py` (`--preview arquivo.png` gera folha de conferência; ao mudar, suba a versão do cache em `sw.js`).
   7 poses em `public/cordeirinho/` (acolhimento, sucesso, ops, aprendendo, descanso, fe, vamos), recortadas de
   `imagens/Cordeirinho.jpg` por `scripts/crop-lamb.py` (Pillow + numpy + scipy). Aparece no rodapé de correção
   (todas as faixas), no fim da lição, sem chamas, sem revisão e na `CheerScreen` (`LessonPage.tsx`): tela
