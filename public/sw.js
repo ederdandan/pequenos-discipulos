@@ -1,14 +1,16 @@
 // Service worker do Pequenos Discípulos: deixa o app funcionar offline (encontros, retiros, acampamentos).
 // - Página (index.html): rede primeiro, cache se estiver offline → sempre pega a versão nova quando há internet.
 // - Arquivos /assets/ (têm hash no nome, nunca mudam): cache primeiro.
-// - Fontes do Google: cache, atualizando em segundo plano.
+// - manifest.webmanifest: rede primeiro (é por ele que o celular descobre ícone e nome novos).
+// - Ícones, imagens e fontes: cache na hora, atualizando em segundo plano. Os ícones têm ?v=<hash>
+//   no endereço (scripts/make-icons.py), então um ícone novo é sempre um endereço novo.
 
 // Prefixo próprio: no GitHub Pages vários apps do mesmo usuário dividem a mesma origem
 // (e o mesmo Cache Storage). Só apagamos caches nossos de versões antigas.
 const PREFIX = 'pequenos-discipulos-';
-const CACHE = `${PREFIX}v4`; // v4: ícone Cordeirinho Alegre
+const CACHE = `${PREFIX}v5`; // v5: manifest pela rede e imagens atualizadas em segundo plano
 const MATCH = { ignoreVary: true, ignoreSearch: false };
-const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
+const CORE = ['./', './index.html', './manifest.webmanifest'];
 
 /** Lista os arquivos /assets/ citados no index.html. */
 function assetsIn(html) {
@@ -82,6 +84,23 @@ self.addEventListener('fetch', (event) => {
   const sameOrigin = url.origin === self.location.origin;
   const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
   if (!sameOrigin && !isFont) return;
+  const hashed = sameOrigin && url.pathname.includes('/assets/');
+
+  if (sameOrigin && url.pathname.endsWith('/manifest.webmanifest')) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE);
+        try {
+          const fresh = await fetch(new Request(req, { cache: 'no-cache' }));
+          if (fresh.ok) await cache.put(req, fresh.clone());
+          return fresh;
+        } catch {
+          return (await cache.match(req, MATCH)) ?? Response.error();
+        }
+      })(),
+    );
+    return;
+  }
 
   event.respondWith(
     (async () => {
@@ -95,8 +114,8 @@ self.addEventListener('fetch', (event) => {
           })
           .catch(() => undefined);
       if (cached) {
-        // Fontes: devolve o cache e atualiza em segundo plano. Assets com hash nunca mudam.
-        if (isFont) event.waitUntil(fromNetwork());
+        // Assets com hash nunca mudam. O resto (ícones, imagens, fontes) atualiza em segundo plano.
+        if (!hashed) event.waitUntil(fromNetwork());
         return cached;
       }
       return (await fromNetwork()) ?? Response.error();

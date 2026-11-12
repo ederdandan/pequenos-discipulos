@@ -10,8 +10,12 @@ e vira um desenho "sangrado", que preenche o quadro todo:
 - icon-maskable-512: quadro todo, como o da Apple. O Android recorta em círculo/squircle; o rosto
   fica no centro e só as pontas da lã e das orelhas são cortadas.
 
-Ao mudar os ícones, suba a versão do cache em public/sw.js.
+No fim, o script grava um código da versão (?v=<hash das imagens>) nos endereços dos ícones em
+public/manifest.webmanifest e index.html: endereço novo faz o navegador e o Android baixarem o ícone novo
+sem precisar limpar o cache. Ao mudar os ícones, suba também a versão do cache em public/sw.js.
 """
+import hashlib
+import re
 import sys
 from pathlib import Path
 
@@ -71,6 +75,19 @@ def full(size: int) -> Image.Image:
     return bleed().resize((size, size), Image.LANCZOS)
 
 
+def stamp_version(names):
+    """Põe ?v=<hash> nos endereços dos ícones (manifest e index.html)."""
+    h = hashlib.sha1()
+    for n in sorted(names):
+        h.update((OUT / n).read_bytes())
+    v = h.hexdigest()[:8]
+    for f in [ROOT / 'public' / 'manifest.webmanifest', ROOT / 'index.html']:
+        text = f.read_text(encoding='utf-8')
+        new = re.sub(r'(icons/[\w-]+\.png)(\?v=\w+)?', lambda m: f'{m.group(1)}?v={v}', text)
+        f.write_text(new, encoding='utf-8')
+    print('versão dos ícones:', v)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     out = {
@@ -82,6 +99,7 @@ def main():
     for name, im in out.items():
         im.save(OUT / name, optimize=True)
         print('ok', name, im.size)
+    stamp_version(list(out))
 
     if '--preview' in sys.argv:
         # Folha de conferência: cada ícone sobre fundo claro e escuro, e o maskable recortado em círculo.

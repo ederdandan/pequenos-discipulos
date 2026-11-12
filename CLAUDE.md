@@ -117,7 +117,10 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   num BottomSheet aberto pelo botão "Foto ou avatar".
 - **Cordeirinho** (`components/Lamb.tsx`): mascote do app (logo da entrada; o ícone do PWA é o rosto do Cordeirinho Alegre) e companheiro das lições.
   Ícones do app e favicon: "O Cordeirinho Alegre" (ícone 3 da grade `imagens/icone.jpeg`, fundo trocado para Azul Mariano), recortados por
-  `scripts/make-icons.py` (`--preview arquivo.png` gera folha de conferência; ao mudar, suba a versão do cache em `sw.js`).
+  `scripts/make-icons.py` (`--preview arquivo.png` gera folha de conferência). O script grava `?v=<hash>` nos
+  endereços dos ícones (manifest e index.html): ícone novo = endereço novo, sem precisar limpar cache. O `sw.js`
+  busca o manifest pela rede e atualiza ícones/imagens em segundo plano. iPhone não troca o ícone da tela de
+  início sozinho (só removendo e adicionando de novo).
   7 poses em `public/cordeirinho/` (acolhimento, sucesso, ops, aprendendo, descanso, fe, vamos), recortadas de
   `imagens/Cordeirinho.jpg` por `scripts/crop-lamb.py` (Pillow + numpy + scipy). Aparece no rodapé de correção
   (todas as faixas), no fim da lição, sem chamas, sem revisão e na `CheerScreen` (`LessonPage.tsx`): tela
