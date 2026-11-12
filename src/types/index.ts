@@ -40,6 +40,8 @@ export interface UserProfile {
   progressByDifficulty?: Partial<Record<Difficulty, string[]>>;
   /** Concluiu a trilha toda no nível atual: perguntar se quer mudar de nível. */
   levelOffer?: boolean;
+  /** Já viu a explicação de boas-vindas (o que são velas, meta, graça e chamas). */
+  introSeen?: boolean;
   badges: string[];
   createdAt: number;
   /** Lição começada e não terminada: ao voltar, continua de onde parou. */

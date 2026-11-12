@@ -17,7 +17,7 @@ export function BottomSheet({ title, onClose, children }: { title: ReactNode; on
         <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-slate-300" aria-hidden="true" />
         <div className="mb-4 flex items-center justify-between gap-4">
           <h2 className="font-serif text-xl font-bold">{title}</h2>
-          <button onClick={onClose} className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600" aria-label="Fechar">
+          <button onClick={onClose} className="rounded-full p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-600" aria-label="Fechar">
             <X className="size-6" />
           </button>
         </div>

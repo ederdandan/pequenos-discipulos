@@ -4,6 +4,7 @@ import { FamilyIcon, PathIcon, ProfileIcon } from './components/icons';
 import { useStore } from './store/AppStore';
 import { setVoicePrefs } from './lib/speech';
 import { StatsBar } from './components/StatsBar';
+import { HowItWorks } from './components/HowItWorks';
 import { Avatar } from './components/Avatar';
 import { ProfilesPage } from './pages/ProfilesPage';
 import { PathPage } from './pages/PathPage';
@@ -26,9 +27,10 @@ const TABS: Array<{ id: Tab; label: string; icon: typeof PathIcon }> = [
 ];
 
 export default function App() {
-  const { active } = useStore();
+  const { active, updateActive } = useStore();
   const [tab, setTab] = useState<Tab>('path');
   const [lesson, setLesson] = useState<{ levelId: string; practice: boolean; review?: boolean } | null>(null);
+  const [help, setHelp] = useState(false);
   // Versão nova do app: atualiza sozinho (se ligado), mas nunca no meio de uma lição.
   const update = useAppUpdate(!!lesson);
   // Conteúdo surge suavemente ao abrir a aba e ao rolar.
@@ -68,8 +70,20 @@ export default function App() {
           <Avatar profile={active} size="sm" />
           <span className="hidden sm:inline">{active.name}</span>
         </span>
-        <StatsBar profile={active} />
+        <StatsBar profile={active} onHelp={() => setHelp(true)} />
       </header>
+
+      {/* Primeira vez do perfil: boas-vindas explicando os números do topo. Perfis antigos veem uma vez. */}
+      {(help || !active.introSeen) && (
+        <HowItWorks
+          profile={active}
+          welcome={!active.introSeen}
+          onClose={() => {
+            setHelp(false);
+            if (!active.introSeen) updateActive((p) => ({ ...p, introSeen: true }));
+          }}
+        />
+      )}
 
       {update.available && (
         <div className="mx-4 mt-3 flex items-center justify-between gap-3 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm">
@@ -104,7 +118,7 @@ export default function App() {
             key={id}
             onClick={() => setTab(id)}
             className={`relative flex flex-col items-center gap-1 py-3 text-xs font-semibold ${
-              tab === id ? 'text-brand-700' : 'text-slate-400 hover:text-slate-600'
+              tab === id ? 'text-brand-700' : 'text-slate-500 hover:text-slate-600'
             }`}
           >
             {tab === id && <span className="absolute inset-x-8 top-0 h-0.5 rounded-full bg-gold-500" />}

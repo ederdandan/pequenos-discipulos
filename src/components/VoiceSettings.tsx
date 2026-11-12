@@ -69,7 +69,7 @@ export function VoiceSettings() {
           </select>
         </label>
       )}
-      <p className="mt-3 text-xs text-slate-400">As vozes disponíveis dependem do navegador e do aparelho.</p>
+      <p className="mt-3 text-xs text-slate-500">As vozes disponíveis dependem do navegador e do aparelho.</p>
     </section>
   );
 }

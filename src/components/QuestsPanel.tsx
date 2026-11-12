@@ -34,7 +34,7 @@ export function QuestsPanel() {
     <div className="rounded-2xl border-2 border-slate-200 bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
         <p className="font-extrabold">🗓️ Missões do dia</p>
-        <p className="text-xs font-bold text-slate-400">
+        <p className="text-xs font-bold text-slate-500">
           {allOpened ? 'Tudo feito! ' : ''}Novas em {untilMidnight(now)}
         </p>
       </div>
@@ -55,7 +55,7 @@ export function QuestsPanel() {
                       style={{ width: `${(value / q.target) * 100}%` }}
                     />
                   </div>
-                  <span className="w-10 text-right text-xs font-bold text-slate-400">
+                  <span className="w-10 text-right text-xs font-bold text-slate-500">
                     {value}/{q.target}
                   </span>
                 </div>

@@ -41,14 +41,14 @@ export function ProfilesPage() {
               >
                 <Avatar profile={p} size="lg" />
                 <span className="text-lg font-extrabold">{p.name}</span>
-                <span className="text-xs font-bold uppercase text-slate-400">
+                <span className="text-xs font-bold uppercase text-slate-500">
                   {AGE_GROUPS[p.ageGroup].label} · {p.xp} XP
                 </span>
               </button>
             ))}
             <button
               onClick={() => setCreating(true)}
-              className="flex flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-slate-300 p-5 text-slate-400 transition hover:border-brand-500 hover:text-brand-600"
+              className="flex flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-slate-300 p-5 text-slate-500 transition hover:border-brand-500 hover:text-brand-600"
             >
               <Plus className="size-10" />
               <span className="font-extrabold">Novo perfil</span>
@@ -61,7 +61,7 @@ export function ProfilesPage() {
         <InstallCard compact />
       </div>
 
-      <div className="mt-6 flex items-center gap-2 text-sm text-slate-400">
+      <div className="mt-6 flex items-center gap-2 text-sm text-slate-500">
         <Upload className="size-4" />
         Trocando de aparelho? <ImportButton className="font-bold text-brand-600 underline" />
       </div>

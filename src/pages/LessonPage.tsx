@@ -265,7 +265,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4">
       <header className="flex items-center gap-4 py-5">
-        <button onClick={onExit} className="text-slate-400 hover:text-slate-600" aria-label="Sair da lição">
+        <button onClick={onExit} className="text-slate-500 hover:text-slate-600" aria-label="Sair da lição">
           <X className="size-7" />
         </button>
         <RosaryProgress done={Math.min(solved, total)} total={total} />
@@ -293,14 +293,14 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
         className={`sticky bottom-0 -mx-4 mb-3 rounded-2xl border px-4 py-5 ${
           feedback
             ? feedback.correct
-              ? 'animate-slide-up border-gold-300 bg-gold-50 shadow-lg'
+              ? 'animate-slide-up border-emerald-300 bg-emerald-50 shadow-lg'
               : 'animate-slide-up border-red-200 bg-red-50 shadow-lg'
             : 'border-transparent bg-parchment'
         }`}
       >
         <div className="mx-auto flex max-w-2xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {feedback && (
-            <div className={`flex gap-3 ${feedback.correct ? 'text-gold-800' : 'text-red-800'}`}>
+            <div className={`flex gap-3 ${feedback.correct ? 'text-emerald-800' : 'text-red-800'}`}>
               <Lamb pose={feedback.correct ? 'sucesso' : 'ops'} size={76} once className="-my-2" />
               <div>
               <p className="flex items-center gap-2 font-serif text-xl font-bold">
@@ -402,10 +402,10 @@ function SourceSheet({ source, audio, ttsRate, onClose }: { source: string; audi
             )}
           </p>
           <p className="font-reading text-lg leading-relaxed">{summary}</p>
-          <p className="mt-3 text-xs text-slate-400">Resumo em palavras simples, não é citação literal.</p>
+          <p className="mt-3 text-xs text-slate-500">Resumo em palavras simples, não é citação literal.</p>
         </div>
       )}
-      <p className="mt-5 text-xs text-slate-400">Referência: {source}</p>
+      <p className="mt-5 text-xs text-slate-500">Referência: {source}</p>
     </BottomSheet>
   );
 }
@@ -425,7 +425,7 @@ function CheerScreen({ cheer, onDone }: { cheer: Cheer; onDone: () => void }) {
       <Lamb pose={cheer.pose} size={190} animated />
       <p className="font-serif text-3xl font-bold text-brand-700">{cheer.title}</p>
       <p className="text-lg text-slate-600">{cheer.text}</p>
-      <p className="mt-4 text-sm text-slate-400">Toque para continuar</p>
+      <p className="mt-4 text-sm text-slate-500">Toque para continuar</p>
     </button>
   );
 }

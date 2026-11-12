@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Camera, LogOut, RefreshCw, Snowflake, Trash2 } from 'lucide-react';
-import { BUILD_DATE, applyUpdate, type useAppUpdate } from '../lib/update';
+import { APP_VERSION, BUILD_DATE, applyUpdate, type useAppUpdate } from '../lib/update';
 import type { AgeGroup } from '../types';
 import { useStore } from '../store/AppStore';
 import { trackLevels } from '../data/curriculum';
@@ -121,7 +121,7 @@ export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate
               <div
                 key={id}
                 title={b.description}
-                className={`rounded-2xl border-2 p-3 text-center ${has ? 'border-pentecost/40 bg-red-50' : 'border-slate-200 opacity-40 grayscale'}`}
+                className={`rounded-2xl border-2 p-3 text-center ${has ? 'border-pentecost/40 bg-red-50' : 'border-slate-200 opacity-60 grayscale'}`}
               >
                 <div className="text-3xl">{b.icon}</div>
                 <p className="text-xs font-extrabold">{b.label}</p>
@@ -182,7 +182,7 @@ export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate
                 active.ageGroup === g ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-slate-200'
               }`}
             >
-              {AGE_GROUPS[g].emoji} {AGE_GROUPS[g].label} <span className="text-xs text-slate-400">({AGE_GROUPS[g].ages})</span>
+              {AGE_GROUPS[g].emoji} {AGE_GROUPS[g].label} <span className="text-xs text-slate-500">({AGE_GROUPS[g].ages})</span>
             </button>
           ))}
         </div>
@@ -214,6 +214,13 @@ export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate
           <Trash2 className="size-5" /> Apagar perfil
         </Button>
       </div>
+
+      <footer className="border-t border-slate-200 pt-4 pb-2 text-center text-xs text-slate-500">
+        <p className="font-semibold text-slate-500">Pequenos Discípulos</p>
+        <p>
+          Versão {APP_VERSION} · publicada em {BUILD_DATE}
+        </p>
+      </footer>
     </div>
   );
 }
@@ -240,7 +247,7 @@ function History({ entries }: { entries: HistoryEntry[] }) {
                 <p className="font-bold">
                   {KIND[h.kind].label}: {h.title}
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   {new Date(h.at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                   {h.mistakes !== undefined && ` · ${h.mistakes === 0 ? 'sem erros' : `${h.mistakes} erro(s)`}`}
                 </p>
@@ -260,7 +267,7 @@ function Stat({ label, value, icon }: { label: string; value: number | string; i
       <p className="text-2xl font-extrabold">
         {icon} {value}
       </p>
-      <p className="text-xs font-bold uppercase text-slate-400">{label}</p>
+      <p className="text-xs font-bold uppercase text-slate-500">{label}</p>
     </div>
   );
 }
@@ -281,7 +288,9 @@ function UpdateSettings({ update }: { update: ReturnType<typeof useAppUpdate> })
       <h2 className="mb-1 flex items-center gap-2 text-lg font-extrabold">
         <RefreshCw className="size-5 text-brand-500" /> Atualizações
       </h2>
-      <p className="mb-3 text-sm text-slate-500">Versão de {BUILD_DATE}.</p>
+      <p className="mb-3 text-sm text-slate-500">
+        Versão {APP_VERSION}, publicada em {BUILD_DATE}.
+      </p>
       <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border-2 border-slate-200 bg-white p-3">
         <span>
           <span className="block font-bold text-slate-700">Atualizar automaticamente</span>

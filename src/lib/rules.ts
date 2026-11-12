@@ -64,6 +64,7 @@ export function newProfile(
     ageGroup,
     largeText,
     difficulty,
+    introSeen: false,
     xp: 0,
     weeklyXp: 0,
     weekId: weekKey(),
@@ -358,6 +359,6 @@ export function buyStreakFreeze(p: UserProfile): UserProfile | null {
 
 export function leagueTier(weeklyXp: number) {
   if (weeklyXp >= 150) return { name: 'Ouro', icon: '🥇', color: 'text-gold-600' };
-  if (weeklyXp >= 60) return { name: 'Prata', icon: '🥈', color: 'text-slate-400' };
+  if (weeklyXp >= 60) return { name: 'Prata', icon: '🥈', color: 'text-slate-500' };
   return { name: 'Bronze', icon: '🥉', color: 'text-orange-700' };
 }

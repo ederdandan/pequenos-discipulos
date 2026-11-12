@@ -1,13 +1,14 @@
 import { useEffect, type DependencyList, type RefObject } from 'react';
 
 // Conteúdo que "surge" suavemente: cada bloco da tela começa transparente e um pouco abaixo,
-// e aparece quando entra na área visível ao rolar. Os que já estão na tela aparecem em
-// sequência rápida (efeito cascata). Com "reduzir movimento" do sistema, nada é animado.
+// e aparece um pouco ANTES de entrar na área visível ao rolar (margem de 25% abaixo da tela),
+// para nunca deixar espaço em branco em rolagem rápida ou celular lento. Os que já estão na
+// tela aparecem em sequência rápida (efeito cascata). Com "reduzir movimento", nada é animado.
 
 /** Blocos animados: os filhos diretos da página e cada lição da trilha. */
 const SELECTOR = ':scope > * > *, ol > li';
-const STAGGER_MS = 55;
-const MAX_DELAY_MS = 330;
+const STAGGER_MS = 45;
+const MAX_DELAY_MS = 220;
 
 const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
@@ -27,7 +28,7 @@ export function useReveal(ref: RefObject<HTMLElement | null>, deps: DependencyLi
           io.unobserve(el);
         }
       },
-      { rootMargin: '0px 0px -6% 0px' },
+      { rootMargin: '0px 0px 25% 0px' },
     );
 
     // Cada observador guarda os próprios blocos: ao trocar de aba o anterior é desligado,

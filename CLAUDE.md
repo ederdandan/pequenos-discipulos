@@ -128,10 +128,18 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   ligado por padrão) recarrega sozinho, nunca durante uma lição; desligado, mostra um aviso com "Atualizar".
   A data do build vem de `__BUILD_DATE__` (`vite.config.ts`). Só funciona no build de produção (`vite preview`).
 - **Conteúdo que surge ao rolar** (`lib/reveal.ts` + `.reveal` em `index.css`): blocos da página e lições da
-  trilha aparecem com fade ao entrar na tela; a pergunta nova da lição entra deslizando (`.animate-question`).
+  trilha surgem um pouco antes de entrar na tela (margem de 25%, opacidade inicial 0,35: nunca fica em branco); a pergunta nova da lição entra deslizando (`.animate-question`).
   Tudo desligado com "reduzir movimento". Em teste automatizado a aba sem foco pausa a renderização: confira
   com rolagem real + screenshot, não só com `scrollTo` por script.
 - **Modo app sem seleção de texto** (`index.css`): com `display-mode: standalone` (ou `html[data-standalone]`,
   marcado em `lib/pwa.ts` para iPhone antigo) o texto não é selecionável e some o menu "copiar"; campos continuam.
+- **Usabilidade (análise UX):** a Trilha abre com o cartão **Próxima lição / Continue de onde parou** (`NextLesson`
+  em `PathPage.tsx`) antes de tudo. Os números do topo (`StatsBar`) são um botão que abre `HowItWorks` (velas,
+  meta, graça, chamas); na primeira vez de cada perfil ele abre sozinho como boas-vindas (`introSeen`).
+  `BackupReminder` lembra de salvar backup quando há 3+ lições e nenhum backup em 14 dias ("Depois" adia 7;
+  chaves `pequenos_discipulos_last_backup` e `_backup_snooze`, marcadas por `downloadBackup`). Textos usam no mínimo
+  `text-slate-500` (contraste WCAG AA); não usar `text-slate-400` em texto.
+- **Versão do app:** rodapé da aba Perfil mostra `APP_VERSION` (versão do package.json + commit curto, via
+  `__APP_VERSION__`/`__COMMIT__` em `vite.config.ts`) e a data do build.
 - No dev, com `base: './'`, abra `http://localhost:5173/` (na raiz): em `/pequenos-discipulos/` os arquivos de
   `public/` caem no fallback do index.html. Em produção funciona normalmente.

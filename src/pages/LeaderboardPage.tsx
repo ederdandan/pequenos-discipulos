@@ -41,13 +41,13 @@ export function LeaderboardPage() {
               key={p.id}
               className={`flex items-center gap-4 px-5 py-4 ${p.id === active?.id ? 'bg-brand-50' : ''}`}
             >
-              <span className="w-8 text-center text-xl font-extrabold text-slate-400">{MEDALS[i] ?? i + 1}</span>
+              <span className="w-8 text-center text-xl font-extrabold text-slate-500">{MEDALS[i] ?? i + 1}</span>
               <Avatar profile={p} size="md" />
               <div className="flex-1">
                 <p className="font-extrabold">
                   {p.name} {p.id === active?.id && <span className="text-sm text-brand-600">(você)</span>}
                 </p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-slate-500">
                   {t.icon} {t.name} · 🕯️ {p.streak}
                 </p>
               </div>

@@ -8,6 +8,7 @@ import { QuestsPanel } from '../components/QuestsPanel';
 import { Shield } from '../components/icons';
 import { STAGES } from '../data/schema';
 import { BottomSheet } from '../components/BottomSheet';
+import { BackupReminder } from '../components/BackupReminder';
 import { Button } from '../components/Button';
 import { Lamb } from '../components/Lamb';
 import { DIFFICULTY, difficultyOf, nextDifficulty, setDifficulty, type Difficulty } from '../lib/difficulty';
@@ -32,6 +33,8 @@ export function PathPage({ onStart, onReview, onChooseLevel }: Props) {
       ? active.lessonInProgress
       : null;
   const inProgressLevel = inProgress ? findLevel(inProgress.levelId, g) : undefined;
+  // Próxima lição da trilha: a primeira ainda não concluída (já liberada, pela ordem).
+  const nextLevel = levels.find((l) => !active.completedLevels.includes(l.id));
 
   return (
     <div className="space-y-8 pb-8">
@@ -61,20 +64,15 @@ export function PathPage({ onStart, onReview, onChooseLevel }: Props) {
         </div>
       )}
 
-      {inProgress && !(noHearts && !inProgress.practice) && (
-        <button
-          onClick={() => onStart(inProgress.levelId, inProgress.practice)}
-          className="flex w-full items-center gap-3 rounded-2xl border shadow-sm border-brand-600 bg-brand-50 p-4 text-left hover:bg-brand-100"
-        >
-          <Play className="size-8 shrink-0 text-brand-600" fill="currentColor" />
-          <span>
-            <span className="block font-extrabold text-brand-700">Continuar “{inProgressLevel?.title}”</span>
-            <span className="text-sm text-brand-700/80">
-              Você já acertou {inProgress.solved} de {inProgressLevel?.exercises.length}. Seu progresso está salvo.
-            </span>
-          </span>
-        </button>
-      )}
+      <NextLesson
+        level={nextLevel}
+        inProgress={inProgress}
+        inProgressLevel={inProgressLevel}
+        noHearts={noHearts}
+        onStart={onStart}
+      />
+
+      <BackupReminder />
 
       <DailyPanel profile={active} onReview={onReview} />
       <QuestsPanel />
@@ -111,6 +109,56 @@ export function PathPage({ onStart, onReview, onChooseLevel }: Props) {
         </section>
       ))}
     </div>
+  );
+}
+
+/**
+ * A ação principal fica no topo: continuar a lição em andamento ou começar a próxima,
+ * sem precisar rolar até a trilha.
+ */
+function NextLesson({
+  level,
+  inProgress,
+  inProgressLevel,
+  noHearts,
+  onStart,
+}: {
+  level: Level | undefined;
+  inProgress: { levelId: string; practice: boolean; solved: number } | null;
+  inProgressLevel: Level | undefined;
+  noHearts: boolean;
+  onStart: Props['onStart'];
+}) {
+  const resuming = inProgress && inProgressLevel && !(noHearts && !inProgress.practice);
+  const target = resuming ? inProgressLevel : level;
+  if (!target) return null;
+  const blocked = !resuming && noHearts;
+  return (
+    <button
+      onClick={() => !blocked && onStart(target.id, resuming ? inProgress.practice : false)}
+      disabled={blocked}
+      className="flex w-full items-center gap-4 rounded-3xl bg-brand-700 p-4 text-left text-white shadow-lg shadow-brand-700/20 transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-4xl">
+        {target.icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-xs font-semibold uppercase tracking-wider text-gold-200">
+          {resuming ? 'Continue de onde parou' : blocked ? 'Aguardando chamas' : 'Próxima lição'}
+        </span>
+        <span className="block font-serif text-xl font-bold leading-tight">{target.title}</span>
+        <span className="block text-sm text-white/80">
+          {resuming
+            ? `Você já acertou ${inProgress.solved} de ${target.exercises.length}`
+            : `${target.theme.title} · ${target.exercises.length} perguntas`}
+        </span>
+      </span>
+      {!blocked && (
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gold-400 text-brand-800">
+          <Play className="size-6 translate-x-0.5" fill="currentColor" />
+        </span>
+      )}
+    </button>
   );
 }
 
@@ -182,14 +230,14 @@ function TrackHeader({
         <p className="font-bold">
           {AGE_GROUPS[g].emoji} Trilha {AGE_GROUPS[g].label} · {DIFFICULTY[difficulty].icon} {DIFFICULTY[difficulty].label}
         </p>
-        <p className="text-sm font-bold text-slate-400">
+        <p className="text-sm font-bold text-slate-500">
           {done}/{total} lições · {questions} perguntas
         </p>
       </div>
       <div className="h-3 overflow-hidden rounded-full bg-slate-200">
         <div className="h-full rounded-full bg-gold-500 transition-all" style={{ width: `${(done / total) * 100}%` }} />
       </div>
-      <p className="mt-2 text-xs text-slate-400">
+      <p className="mt-2 text-sm text-slate-500">
         Cada etapa passa por todos os temas e é um pouco mais difícil que a anterior. Fique {INACTIVITY_DAYS} dias sem
         estudar e a etapa atual recomeça (as anteriores ficam salvas). O nível de dificuldade muda em Perfil.
       </p>
@@ -287,7 +335,7 @@ function LevelRow({
       >
         <span className={`relative transition ${playable ? 'group-hover:scale-105' : ''}`}>
           <Shield size={64} {...shield}>
-            {!unlocked ? <Lock className="size-6 text-slate-400" /> : <span className="text-3xl">{level.icon}</span>}
+            {!unlocked ? <Lock className="size-6 text-slate-500" /> : <span className="text-3xl">{level.icon}</span>}
           </Shield>
           {done && (
             <span className="absolute -right-1 top-0 rounded-full border-2 border-white bg-gold-500 p-0.5 text-white">
@@ -310,11 +358,11 @@ function LevelRow({
           >
             {level.theme.icon} {level.theme.title}
           </span>
-          <span className={`block font-bold ${unlocked ? 'text-slate-800' : 'text-slate-400'}`}>{level.title}</span>
+          <span className={`block font-bold ${unlocked ? 'text-slate-800' : 'text-slate-500'}`}>{level.title}</span>
           <span className="block text-sm text-slate-500">{level.description}</span>
           <span
             className={`mt-2 inline-flex items-center gap-1 text-sm font-semibold ${
-              current ? 'text-brand-700' : done ? 'text-pentecost' : 'text-slate-400'
+              current ? 'text-brand-700' : done ? 'text-pentecost' : 'text-slate-500'
             }`}
           >
             {current && !noHearts && <Play className="size-3.5" fill="currentColor" />}

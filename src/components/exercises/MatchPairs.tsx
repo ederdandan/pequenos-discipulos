@@ -73,7 +73,7 @@ export function MatchPairs({ exercise, ageGroup, ttsRate, audio, locked, onReady
           </div>
         ))}
       </div>
-      <p className="text-center text-sm text-slate-400">
+      <p className="text-center text-sm text-slate-500">
         {done ? 'Todos os pares ligados!' : 'Toque num item da esquerda e depois no par dele à direita.'}
         {misses > 0 && ` · ${misses} ${misses === 1 ? 'erro' : 'erros'}`}
       </p>

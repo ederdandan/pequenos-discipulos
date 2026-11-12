@@ -98,7 +98,7 @@ export function Speaking({ exercise, ttsRate, audio, locked, onReady }: Exercise
         <button
           onClick={() => setTyping((t) => !t)}
           disabled={locked}
-          className="mx-auto flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-slate-600"
+          className="mx-auto flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-600"
         >
           {typing ? <Mic className="size-4" /> : <Keyboard className="size-4" />}
           {typing ? 'Usar o microfone' : 'Não posso falar agora'}

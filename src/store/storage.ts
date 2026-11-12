@@ -91,7 +91,43 @@ export function downloadBackup(state: AppState) {
   a.download = `pequenos-discipulos-backup-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
+  setLocal(BACKUP_AT_KEY, String(Date.now()));
 }
+
+// Lembrete de backup: os dados só existem neste navegador. Se houver progresso e nenhum
+// backup recente, a trilha mostra um aviso (que pode ser adiado por alguns dias).
+const BACKUP_AT_KEY = 'pequenos_discipulos_last_backup';
+const BACKUP_SNOOZE_KEY = 'pequenos_discipulos_backup_snooze';
+const DAY = 86_400_000;
+/** Lembrar de novo a cada 14 dias; "Depois" adia 7 dias. */
+export const BACKUP_EVERY_DAYS = 14;
+const SNOOZE_DAYS = 7;
+/** Só lembra depois de algum progresso que valha guardar. */
+const MIN_LESSONS = 3;
+
+function getLocal(key: string) {
+  try {
+    return Number(localStorage.getItem(key)) || 0;
+  } catch {
+    return 0;
+  }
+}
+function setLocal(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    /* sem armazenamento */
+  }
+}
+
+export function needsBackupReminder(state: AppState, now = Date.now()) {
+  const lessons = state.profiles.reduce((n, p) => n + p.history.filter((h) => h.kind === 'lesson').length, 0);
+  if (lessons < MIN_LESSONS) return false;
+  if (now < getLocal(BACKUP_SNOOZE_KEY)) return false;
+  return now - getLocal(BACKUP_AT_KEY) > BACKUP_EVERY_DAYS * DAY;
+}
+
+export const snoozeBackupReminder = (now = Date.now()) => setLocal(BACKUP_SNOOZE_KEY, String(now + SNOOZE_DAYS * DAY));
 
 /**
  * Junta um backup com o estado atual: perfis novos entram, perfis existentes

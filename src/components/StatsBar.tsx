@@ -9,11 +9,17 @@ export function formatMs(ms: number) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-export function StatsBar({ profile }: { profile: UserProfile }) {
+/** Números do topo. Ao tocar, `onHelp` abre a explicação de cada um. */
+export function StatsBar({ profile, onHelp }: { profile: UserProfile; onHelp?: () => void }) {
   const now = useNow(1000);
   const next = msToNextHeart(profile, now);
   return (
-    <div className="flex items-center gap-1.5 text-sm font-bold sm:gap-2">
+    <button
+      type="button"
+      onClick={onHelp}
+      aria-label={`Velas ${profile.streak}, meta ${Math.min(dailyXpToday(profile), dailyGoal(profile))} de ${dailyGoal(profile)}, graça ${profile.xp}, chamas ${profile.hearts} de ${maxHearts(profile)}. Toque para ver o que significam.`}
+      className="flex items-center gap-1.5 rounded-full text-sm font-bold sm:gap-2"
+    >
       <span className="flex items-center gap-1 rounded-full bg-gold-50 px-2 py-1 text-gold-700 ring-1 ring-gold-200" title="Dias seguidos (vela acesa)">
         <CandleIcon size={18} /> {profile.streak}
       </span>
@@ -31,11 +37,11 @@ export function StatsBar({ profile }: { profile: UserProfile }) {
         title={next !== null ? `Próxima chama em ${formatMs(next)}` : 'Chamas cheias'}
       >
         <FlameIcon size={18} /> {profile.hearts}
-        <span className="text-xs font-bold text-orange-300">/{maxHearts(profile)}</span>
+        <span className="text-xs font-bold text-orange-400">/{maxHearts(profile)}</span>
         {profile.hearts < maxHearts(profile) && next !== null && (
-          <span className="text-xs font-bold text-slate-400">{formatMs(next)}</span>
+          <span className="text-xs font-bold text-slate-500">{formatMs(next)}</span>
         )}
       </span>
-    </div>
+    </button>
   );
 }

@@ -12,6 +12,9 @@ const CHECK_EVERY = 30 * 60 * 1000;
 /** Data e hora do build (vite.config.ts → define). */
 export const BUILD_DATE: string = __BUILD_DATE__;
 
+/** Versão do app (package.json) + commit do build, ex.: "1.0.0 (7b536c5)". */
+export const APP_VERSION = `${__APP_VERSION__} (${__COMMIT__})`;
+
 export function getAutoUpdate(): boolean {
   try {
     return localStorage.getItem(AUTO_KEY) !== 'off';
