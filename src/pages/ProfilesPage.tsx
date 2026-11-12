@@ -9,11 +9,11 @@ import { AvatarChooser } from '../components/AvatarChooser';
 import { InstallCard } from '../components/InstallCard';
 import { Button } from '../components/Button';
 import { ImportButton } from '../components/BackupControls';
-import { Mascot } from '../components/Mascot';
+import { Lamb } from '../components/Lamb';
 import { LargeTextToggle } from '../components/LargeTextToggle';
 
 /** Emoji usado quando o perfil não tem foto nem avatar escolhido. */
-const DEFAULT_AVATAR = '🕊️';
+const DEFAULT_AVATAR = '🐑';
 
 export function ProfilesPage() {
   const { state, selectProfile } = useStore();
@@ -21,7 +21,7 @@ export function ProfilesPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col items-center px-4 py-10">
-      <Mascot size={112} className="animate-float mb-2" />
+      <Lamb pose="acolhimento" size={150} className="animate-float mb-2" />
       <h1 className="text-center text-3xl font-extrabold text-brand-700">Pequenos Discípulos</h1>
       <p className="mb-8 text-center text-slate-500">Catequese em família: cada um no seu ritmo, todos juntos.</p>
 

@@ -1,81 +1,86 @@
-"""Gera os ícones PNG do app (sem dependências): `python scripts/make-icons.py`
+"""Gera os ícones PNG do app com o Cordeirinho: `PYTHONIOENCODING=utf-8 python scripts/make-icons.py [--preview]`
 
-Desenho: cruz branca sobre auréola dourada, em fundo Azul Mariano.
+Requer Pillow, numpy e scipy. Desenho: Cordeirinho (pose "acolhimento") sobre auréola dourada,
+em fundo Azul Mariano. Os ícones "maskable" e o da Apple ocupam o quadro todo e deixam o
+desenho dentro da zona segura (círculo de 80%), porque o sistema recorta as bordas.
 """
-import struct
-import zlib
+import importlib.util
+import sys
 from pathlib import Path
 
+from PIL import Image, ImageDraw
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / 'public' / 'icons'
+
 BG = (30, 58, 138)  # Azul Mariano #1E3A8A
-HALO = (245, 158, 11)  # Dourado Sacro #F59E0B
-HALO_RIM = (252, 211, 77)  # dourado claro
-WHITE = (255, 255, 255)
+HALO = (253, 230, 138)  # dourado claro #FDE68A
+HALO_RIM = (245, 158, 11)  # Dourado Sacro #F59E0B
+
+_spec = importlib.util.spec_from_file_location('crop_lamb', ROOT / 'scripts' / 'crop-lamb.py')
+crop_lamb = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(crop_lamb)
 
 
-def in_round_rect(x, y, x0, y0, x1, y1, r):
-    if not (x0 <= x <= x1 and y0 <= y <= y1):
-        return False
-    cx = min(max(x, x0 + r), x1 - r)
-    cy = min(max(y, y0 + r), y1 - r)
-    return (x - cx) ** 2 + (y - cy) ** 2 <= r * r
+def lamb(bust: bool) -> Image.Image:
+    im = crop_lamb.pose('acolhimento', None)
+    if bust:  # cabeça, lenço e Bíblia: lê melhor em tamanho pequeno
+        im = im.crop((0, 0, im.width, int(im.height * 0.68)))
+    return im
 
 
-def in_circle(x, y, cx, cy, r):
-    return (x - cx) ** 2 + (y - cy) ** 2 <= r * r
+def render(size: int, full_bleed: bool, bust: bool, ss: int = 4) -> Image.Image:
+    S = size * ss
+    img = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    if full_bleed:
+        d.rectangle((0, 0, S, S), fill=BG)
+        area = 0.80  # zona segura do maskable
+    else:
+        d.rounded_rectangle((0, 0, S - 1, S - 1), radius=int(S * 0.22), fill=BG)
+        area = 0.96
+    # Auréola atrás do cordeirinho.
+    r = S * area * 0.40
+    cx, cy = S / 2, S / 2 + (S * 0.09 if bust and full_bleed else -S * area * (0.04 if bust else 0.07))
+    w = max(2, int(S * 0.018))
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=HALO, outline=HALO_RIM, width=w)
+
+    fig = lamb(bust)
+    box = S * area * (0.84 if bust else 0.86)
+    scale = box / max(fig.width, fig.height)
+    fig = fig.resize((int(fig.width * scale), int(fig.height * scale)), Image.LANCZOS)
+    x = (S - fig.width) // 2
+    if bust:  # o busto encosta na borda de baixo (o rosto fica dentro da zona segura)
+        y = S - fig.height
+    else:
+        y = (S - fig.height) // 2 + int(S * 0.02)
+    img.alpha_composite(fig, (x, y))
+    if not full_bleed:  # corta o que passar do quadrado arredondado
+        mask = Image.new('L', (S, S), 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, S - 1, S - 1), radius=int(S * 0.22), fill=255)
+        img.putalpha(Image.composite(img.getchannel('A'), mask, mask))
+    return img.resize((size, size), Image.LANCZOS)
 
 
-def color_at(x, y, maskable):
-    # Ícone "maskable" ocupa a tela toda; o desenho fica na zona segura (80%).
-    if maskable:
-        scale = 0.78
-        x, y = 0.5 + (x - 0.5) / scale, 0.5 + (y - 0.5) / scale
-    elif not in_round_rect(x, y, 0, 0, 1, 1, 0.22):
-        return None
-    # cruz latina
-    if in_round_rect(x, y, 0.445, 0.17, 0.555, 0.84, 0.02) or in_round_rect(x, y, 0.27, 0.33, 0.73, 0.44, 0.02):
-        return WHITE
-    # auréola: disco dourado com aro mais claro
-    if in_circle(x, y, 0.5, 0.385, 0.215):
-        return HALO
-    if in_circle(x, y, 0.5, 0.385, 0.245):
-        return HALO_RIM
-    return BG
-
-
-def render(size, maskable=False, ss=3):
-    rows = []
-    for py in range(size):
-        row = bytearray([0])  # filtro PNG "none"
-        for px in range(size):
-            r = g = b = a = 0
-            for sy in range(ss):
-                for sx in range(ss):
-                    c = color_at((px + (sx + 0.5) / ss) / size, (py + (sy + 0.5) / ss) / size, maskable)
-                    if c:
-                        r, g, b, a = r + c[0], g + c[1], b + c[2], a + 255
-            n = ss * ss
-            k = a / 255 or 1
-            row += bytes([round(r / k), round(g / k), round(b / k), round(a / n)])
-        rows.append(bytes(row))
-    return png(size, size, b''.join(rows))
-
-
-def png(w, h, raw):
-    def chunk(tag, data):
-        return struct.pack('>I', len(data)) + tag + data + struct.pack('>I', zlib.crc32(tag + data) & 0xFFFFFFFF)
-
-    ihdr = struct.pack('>IIBBBBB', w, h, 8, 6, 0, 0, 0)
-    return b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', ihdr) + chunk(b'IDAT', zlib.compress(raw, 9)) + chunk(b'IEND', b'')
-
+ICONS = [
+    ('icon-192.png', 192, False),
+    ('icon-512.png', 512, False),
+    ('icon-maskable-512.png', 512, True),
+    ('apple-touch-icon.png', 180, True),
+]
 
 if __name__ == '__main__':
-    out = Path(__file__).resolve().parent.parent / 'public' / 'icons'
-    out.mkdir(parents=True, exist_ok=True)
-    for name, size, mask, ss in [
-        ('icon-192.png', 192, False, 3),
-        ('icon-512.png', 512, False, 2),
-        ('icon-maskable-512.png', 512, True, 2),
-        ('apple-touch-icon.png', 180, True, 3),
-    ]:
-        (out / name).write_bytes(render(size, mask, ss))
-        print('ok', name)
+    if '--preview' in sys.argv:
+        out = Path(sys.argv[sys.argv.index('--preview') + 1])
+        sheet = Image.new('RGBA', (4 * 300 + 50, 2 * 300 + 30), (240, 240, 240, 255))
+        for row, bust in enumerate([False, True]):
+            for col, (_, _, fb) in enumerate(ICONS[1:3] + [(None, None, False), (None, None, True)]):
+                size = 256 if col < 2 else 96
+                sheet.alpha_composite(render(size, fb, bust), (10 + col * 300, 10 + row * 300))
+        sheet.save(out)
+    else:
+        bust = '--full' not in sys.argv
+        OUT.mkdir(parents=True, exist_ok=True)
+        for name, size, fb in ICONS:
+            render(size, fb, bust).save(OUT / name, optimize=True)
+            print(name, size)

@@ -34,7 +34,7 @@ BG = np.array([243, 226, 194], float)
 SHADOW = np.array([210, 186, 154], float)
 
 
-def cut(img: np.ndarray) -> Image.Image:
+def cut(img: np.ndarray, max_side: int | None = MAX_SIDE) -> Image.Image:
     px = img.astype(float)
     axis = SHADOW - BG
     t = np.clip(((px - BG) @ axis) / (axis @ axis), 0, 1.2)
@@ -57,8 +57,15 @@ def cut(img: np.ndarray) -> Image.Image:
     im = Image.fromarray(rgba, 'RGBA')
     bbox = Image.fromarray((rgba[..., 3] > 10).astype(np.uint8) * 255).getbbox()
     im = im.crop(bbox)
-    im.thumbnail((MAX_SIDE, MAX_SIDE), Image.LANCZOS)
+    if max_side:
+        im.thumbnail((max_side, max_side), Image.LANCZOS)
     return im
+
+
+def pose(name: str, max_side: int | None = None) -> Image.Image:
+    """Uma pose recortada em resolução cheia (usada também por make-icons.py)."""
+    x0, y0, x1, y1 = POSES[name]
+    return cut(np.asarray(Image.open(SRC).convert('RGB'))[y0:y1, x0:x1], max_side)
 
 
 def main():

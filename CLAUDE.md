@@ -60,8 +60,8 @@ src/
   components/
     exercises/         MultipleChoice, FillBlank, MatchPairs, WordBank, TypeAnswer, Speaking, Prompt, shared.ts
     icons.tsx          ícones próprios (vela, chama, graça, meta, escudo, terço de progresso)
-    BottomSheet.tsx, VoiceSettings.tsx, Avatar.tsx, PhotoPicker.tsx, Mascot.tsx (pomba) ...
-scripts/               check-content.ts, format-content.py, make-icons.py
+    BottomSheet.tsx, VoiceSettings.tsx, Avatar.tsx, AvatarChooser.tsx, PhotoPicker.tsx, Lamb.tsx (Cordeirinho) ...
+scripts/               check-content.ts, format-content.py, make-icons.py, crop-avatars.py, crop-lamb.py
 docs/COMO_ADICIONAR_PERGUNTAS.md   guia completo para escrever perguntas
 imagens/               artes de referência (faixas etárias e grades de avatares de santos/magistério)
 ```
@@ -94,18 +94,19 @@ imagens/               artes de referência (faixas etárias e grades de avatare
 - **Identidade visual (não parecer Duolingo):** paleta litúrgica (azul mariano `brand`, dourado `gold`, vermelho
   `pentecost`, fogo `fire`, fundo pergaminho), fontes Lora (títulos, serifa) e Plus Jakarta Sans, botões planos
   arredondados sem efeito 3D e sem caixa alta, trilha vertical com escudos, progresso em contas de terço.
-  Mascote: pomba. Evitar zigue-zague de círculos, corações e ícones copiados do Duolingo.
+  Mascote: Cordeirinho (logo da entrada e ícone do PWA). Evitar zigue-zague de círculos, corações e ícones copiados do Duolingo.
 
 ## Foto e avatares
 
-- O perfil tem `avatar` (emoji, padrão 🕊️, usado só quando não há foto) e `photo`: foto própria (data URL) ou um
+- O perfil tem `avatar` (emoji, padrão 🐑, usado só quando não há foto) e `photo`: foto própria (data URL) ou um
   **avatar pré-definido** salvo como caminho relativo `avatares/<id>.webp`.
 - 30 avatares (Santos 20, Magistério e Ministérios 10) listados em `src/data/avatars.ts`; as imagens ficam em
   `public/avatares/` e são recortadas das grades em `imagens/` por `scripts/crop-avatars.py`
   (Pillow + numpy; `--sheet arquivo.png` gera uma folha de conferência).
 - `AvatarChooser` (foto no topo, "Enviar foto", abas com a grade) aparece na criação de perfil e, na aba Perfil,
   num BottomSheet aberto pelo botão "Foto ou avatar".
-- **Cordeirinho** (`components/Lamb.tsx`): companheiro das lições; a pomba segue como mascote da marca.
+- **Cordeirinho** (`components/Lamb.tsx`): mascote do app (logo da entrada, ícones do PWA) e companheiro das lições.
+  Ícones gerados por `scripts/make-icons.py` (busto da pose acolhimento; ao mudar, suba a versão do cache em `sw.js`).
   7 poses em `public/cordeirinho/` (acolhimento, sucesso, ops, aprendendo, descanso, fe, vamos), recortadas de
   `imagens/Cordeirinho.jpg` por `scripts/crop-lamb.py` (Pillow + numpy + scipy). Aparece no rodapé de correção
   (só Infantil e Juvenil), no fim da lição, sem chamas, sem revisão e na `CheerScreen` (`LessonPage.tsx`): tela
