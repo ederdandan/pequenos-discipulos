@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useReveal } from './lib/reveal';
+import { appearanceOf, useAppearance } from './lib/theme';
 import { FamilyIcon, PathIcon, ProfileIcon } from './components/icons';
 import { useStore } from './store/AppStore';
 import { setVoicePrefs } from './lib/speech';
@@ -28,6 +29,8 @@ const TABS: Array<{ id: Tab; label: string; icon: typeof PathIcon }> = [
 
 export default function App() {
   const { active, updateActive } = useStore();
+  // Tela de perfis (sem perfil ativo) usa a aparência padrão.
+  useAppearance(appearanceOf(active));
   const [tab, setTab] = useState<Tab>('path');
   const [lesson, setLesson] = useState<{ levelId: string; practice: boolean; review?: boolean } | null>(null);
   const [help, setHelp] = useState(false);

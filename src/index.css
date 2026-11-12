@@ -46,6 +46,93 @@ html[data-age='adults'] {
   --font-reading: var(--font-serif);
 }
 
+/*
+ * Aparência por perfil (src/lib/theme.ts). data-color troca só a cor de destaque "brand"
+ * (botões, navegação, trilha); as cores com significado (acerto, erro, XP, chamas) não mudam.
+ * Sem data-color (ou "azul") fica o Azul Mariano do @theme.
+ */
+html[data-color='roxo'] {
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+  --color-brand-700: #5b21b6;
+  --color-brand-800: #4c1d95;
+}
+html[data-color='lilas'] {
+  --color-brand-50: #faf5ff;
+  --color-brand-100: #f3e8ff;
+  --color-brand-200: #e9d5ff;
+  --color-brand-500: #a855f7;
+  --color-brand-600: #9333ea;
+  --color-brand-700: #6d28d9;
+  --color-brand-800: #581c87;
+}
+html[data-color='rosa'] {
+  --color-brand-50: #fdf2f8;
+  --color-brand-100: #fce7f3;
+  --color-brand-200: #fbcfe8;
+  --color-brand-500: #ec4899;
+  --color-brand-600: #db2777;
+  --color-brand-700: #9d174d;
+  --color-brand-800: #831843;
+}
+html[data-color='verde'] {
+  --color-brand-50: #f1f7ee;
+  --color-brand-100: #dcefd6;
+  --color-brand-200: #bfe0b4;
+  --color-brand-500: #4d8a3c;
+  --color-brand-600: #3b7330;
+  --color-brand-700: #2f5d27;
+  --color-brand-800: #234620;
+}
+html[data-color='ouro'] {
+  --color-brand-50: #fdf8ec;
+  --color-brand-100: #f8ecc9;
+  --color-brand-200: #f0d78e;
+  --color-brand-500: #c99a2e;
+  --color-brand-600: #a67c1a;
+  --color-brand-700: #7c5a10;
+  --color-brand-800: #5c420b;
+}
+html[data-color='vermelho'] {
+  --color-brand-50: #fef2f2;
+  --color-brand-100: #fee2e2;
+  --color-brand-200: #fecaca;
+  --color-brand-500: #ef4444;
+  --color-brand-600: #dc2626;
+  --color-brand-700: #991b1b;
+  --color-brand-800: #7f1d1d;
+}
+html[data-color='petroleo'] {
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-200: #99f6e4;
+  --color-brand-500: #14b8a6;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #115e59;
+  --color-brand-800: #134e4a;
+}
+
+/* Modo leitura: fundo de papel, branco amarelado, tinta marrom e letra de livro em todo texto de leitura. */
+html[data-mode='leitura'] {
+  --color-parchment: #f3ead6;
+  --color-white: #fbf5e6;
+  --color-slate-50: #f6eedc;
+  --color-slate-100: #eee3cc;
+  --color-slate-200: #e2d4b8;
+  --color-slate-300: #cfbd9a;
+  --color-slate-500: #6e5c44;
+  --color-slate-600: #5a4a36;
+  --color-slate-700: #463a2b;
+  --color-slate-800: #33291e;
+  --font-reading: var(--font-serif);
+}
+html[data-mode='leitura'] .font-reading {
+  line-height: 1.6;
+}
+
 .font-reading {
   font-family: var(--font-reading);
 }

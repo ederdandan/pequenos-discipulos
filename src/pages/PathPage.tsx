@@ -311,8 +311,8 @@ function LevelRow({
   const shield = done
     ? { fill: '#DC2626', stroke: '#991B1B' }
     : unlocked
-      ? { fill: '#1E3A8A', stroke: '#172554' }
-      : { fill: '#E2E8F0', stroke: '#CBD5E1' };
+      ? { fill: 'var(--color-brand-700)', stroke: 'var(--color-brand-800)' }
+      : { fill: 'var(--color-slate-200)', stroke: 'var(--color-slate-300)' };
   const status = done
     ? practice
       ? 'Treinar'

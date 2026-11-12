@@ -226,7 +226,7 @@ export function buildUnit(m: RawModule): FullModule {
 
 /** As etapas de dificuldade. O level_number de cada lição no JSON diz a etapa. */
 export const STAGES: Array<{ title: string; description: string; icon: string; color: string }> = [
-  { title: 'Primeiros Passos', description: 'O essencial da fé, em lições curtas', icon: '🌱', color: '#1E3A8A' },
+  { title: 'Primeiros Passos', description: 'O essencial da fé, em lições curtas', icon: '🌱', color: 'var(--color-brand-700)' },
   { title: 'Conhecendo a Fé', description: 'Um pouco mais de cada tema', icon: '📖', color: '#0F766E' },
   { title: 'Crescendo na Fé', description: 'Histórias, sinais e orações a fundo', icon: '🌿', color: '#B45309' },
   { title: 'Aprofundando', description: 'Perguntas mais desafiadoras', icon: '🔥', color: '#B91C1C' },

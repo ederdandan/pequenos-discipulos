@@ -146,6 +146,13 @@ imagens/               artes de referência (faixas etárias e grades de avatare
 - **Perfil em duas abas** (`ProfilePage`, `ProfileTab`): "Meu progresso" (números, conquistas, histórico, bloqueio)
   e "Ajustes" (nível `#nivel`, faixa, meta, erros, reinício por inatividade, voz, instalar, backup, atualizações,
   trocar/apagar). Apagar perfil exige digitar o nome (`DeleteProfile`).
+- **Aparência por perfil** (`lib/theme.ts`, campo `appearance` do perfil, Perfil → Ajustes → Aparência `#aparencia`):
+  cor Clássico (Azul Mariano), Tempo litúrgico, Lilás, Rosa ou Azul-petróleo, e modo Claro ou Leitura (papel sépia,
+  letra serifada). `useAppearance` (App.tsx) põe `html[data-color]` e `html[data-mode]`; o `index.css` só troca as
+  variáveis `--color-brand-*` (e, no modo leitura, `white`/`slate`/`parchment`). Cores com significado (acerto,
+  erro, XP, chamas) nunca mudam. Para seguir o tema, use classes `brand-*` ou `var(--color-brand-700)`, nunca hex do
+  azul. O tempo litúrgico vem de `lib/liturgy.ts` (Páscoa, Advento, Natal, Quaresma, Gaudete/Laetare, Pentecostes;
+  branco é mostrado em dourado) e é reavaliado à meia-noite. Fase 2 (modo escuro, alto contraste) ainda não feita.
 - **Criar perfil** pede só nome e faixa; "Mais opções" guarda foto, nível, erros (padrão 10 no Infantil, 5 nas
   outras) e letra grande.
 - **Reinício por inatividade** é por perfil (`inactivityReset`; `inactivityResetOn`): sem valor, desligado no

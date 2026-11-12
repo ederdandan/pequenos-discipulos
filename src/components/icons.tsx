@@ -107,7 +107,8 @@ export function Shield({
   return (
     <span className="relative inline-flex shrink-0 items-center justify-center" style={{ width: size, height: size * 1.12 }}>
       <svg viewBox="0 0 64 72" width={size} height={size * 1.12} className="absolute inset-0" aria-hidden="true">
-        <path d="M32 3 58 12v20c0 17-11 29-26 37C17 61 6 49 6 32V12Z" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+        {/* style (e não atributo) para aceitar var(--color-…) do tema. */}
+        <path d="M32 3 58 12v20c0 17-11 29-26 37C17 61 6 49 6 32V12Z" style={{ fill, stroke }} strokeWidth="3" strokeLinejoin="round" />
         <path d="M32 9 52 16v16c0 13.5-8.5 23.5-20 30-11.5-6.5-20-16.5-20-30V16Z" fill="none" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.5" />
       </svg>
       <span className="relative -mt-1 flex items-center justify-center">{children}</span>

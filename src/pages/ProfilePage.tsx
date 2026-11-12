@@ -28,6 +28,8 @@ import { ExportButton, ImportButton } from '../components/BackupControls';
 import { LargeTextToggle } from '../components/LargeTextToggle';
 import { VoiceSettings } from '../components/VoiceSettings';
 import { DifficultyPicker } from '../components/DifficultyPicker';
+import { AppearancePicker } from '../components/AppearancePicker';
+import { appearanceOf } from '../lib/theme';
 import { DIFFICULTY, completedIn, difficultyOf, setDifficulty } from '../lib/difficulty';
 
 export type ProfileTab = 'progresso' | 'ajustes';
@@ -189,6 +191,14 @@ export function ProfilePage({ update, initialTab = 'progresso' }: { update: Retu
           <div className="mt-4">
             <LargeTextToggle value={active.largeText} onChange={(v) => updateActive((p) => ({ ...p, largeText: v }))} />
           </div>
+        </section>
+
+        <section id="aparencia" className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+          <h2 className="mb-1 text-lg font-extrabold">🎨 Aparência</h2>
+          <p className="mb-3 text-sm text-slate-500">
+            Só deste perfil. As cores que têm significado (verde de acerto, vermelho de erro, chamas e graça) não mudam.
+          </p>
+          <AppearancePicker value={appearanceOf(active)} onChange={(a) => updateActive((p) => ({ ...p, appearance: a }))} />
         </section>
 
         <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
