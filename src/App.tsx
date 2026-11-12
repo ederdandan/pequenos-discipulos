@@ -88,6 +88,10 @@ export default function App() {
           <PathPage
             onStart={(levelId, practice) => setLesson({ levelId, practice })}
             onReview={() => setLesson({ levelId: '', practice: false, review: true })}
+            onChooseLevel={() => {
+              setTab('profile');
+              setTimeout(() => document.getElementById('nivel')?.scrollIntoView({ block: 'start' }), 80);
+            }}
           />
         )}
         {tab === 'ranking' && <LeaderboardPage />}

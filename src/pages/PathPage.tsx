@@ -7,13 +7,19 @@ import { DailyPanel } from '../components/DailyPanel';
 import { QuestsPanel } from '../components/QuestsPanel';
 import { Shield } from '../components/icons';
 import { STAGES } from '../data/schema';
+import { BottomSheet } from '../components/BottomSheet';
+import { Button } from '../components/Button';
+import { Lamb } from '../components/Lamb';
+import { DIFFICULTY, difficultyOf, nextDifficulty, setDifficulty, type Difficulty } from '../lib/difficulty';
 
 interface Props {
   onStart: (levelId: string, practice: boolean) => void;
   onReview: () => void;
+  /** Abre a aba Perfil na escolha de nível. */
+  onChooseLevel: () => void;
 }
 
-export function PathPage({ onStart, onReview }: Props) {
+export function PathPage({ onStart, onReview, onChooseLevel }: Props) {
   const { active, updateActive } = useStore();
   if (!active) return null;
   const g = active.ageGroup;
@@ -29,6 +35,18 @@ export function PathPage({ onStart, onReview }: Props) {
 
   return (
     <div className="space-y-8 pb-8">
+      {active.levelOffer && (
+        <LevelOffer
+          name={active.name}
+          current={difficultyOf(active)}
+          onAnswer={(d) => updateActive((p) => (d ? setDifficulty(p, d) : { ...p, levelOffer: false }))}
+          onChooseLevel={() => {
+            updateActive((p) => ({ ...p, levelOffer: false }));
+            onChooseLevel();
+          }}
+        />
+      )}
+
       {active.notice && (
         <div className="relative rounded-2xl border-2 border-gold-300 bg-gold-50 p-4 pr-10 text-gold-800">
           <p className="font-extrabold">⏰ Etapa reiniciada</p>
@@ -70,7 +88,7 @@ export function PathPage({ onStart, onReview }: Props) {
         </div>
       )}
 
-      <TrackHeader g={g} done={doneCount} total={levels.length} questions={questions} />
+      <TrackHeader g={g} difficulty={difficultyOf(active)} done={doneCount} total={levels.length} questions={questions} />
 
       {tracks[g].map((unit) => (
         <section key={unit.id}>
@@ -96,12 +114,73 @@ export function PathPage({ onStart, onReview }: Props) {
   );
 }
 
-function TrackHeader({ g, done, total, questions }: { g: AgeGroup; done: number; total: number; questions: number }) {
+/** Concluiu a trilha toda: pergunta se quer mudar de nível e explica onde fazer isso depois. */
+function LevelOffer({
+  name,
+  current,
+  onAnswer,
+  onChooseLevel,
+}: {
+  name: string;
+  current: Difficulty;
+  onAnswer: (d: Difficulty | null) => void;
+  onChooseLevel: () => void;
+}) {
+  const next = nextDifficulty(current);
+  const cur = DIFFICULTY[current];
+  return (
+    <BottomSheet title="Trilha concluída!" onClose={() => onAnswer(null)}>
+      <div className="flex flex-col items-center gap-3 text-center">
+        <Lamb pose="sucesso" size={130} animated />
+        <p className="text-lg font-extrabold">
+          Parabéns, {name}! Você concluiu toda a trilha no nível {cur.icon} {cur.label}.
+        </p>
+        {next ? (
+          <p className="text-slate-600">
+            Quer mudar para o nível <b>{DIFFICULTY[next].icon} {DIFFICULTY[next].label}</b>? A trilha recomeça do
+            início com um jeito mais desafiador de responder ({DIFFICULTY[next].hint.toLowerCase()}). Seu progresso no{' '}
+            {cur.label} fica guardado.
+          </p>
+        ) : (
+          <p className="text-slate-600">
+            Você chegou ao nível mais alto! Continue treinando as lições ou escolha outro nível para recomeçar a trilha.
+          </p>
+        )}
+        <div className="mt-2 flex w-full flex-col gap-2">
+          {next && <Button onClick={() => onAnswer(next)}>Sim, mudar para {DIFFICULTY[next].label}</Button>}
+          <Button variant="secondary" onClick={onChooseLevel}>
+            Escolher outro nível
+          </Button>
+          <Button variant="ghost" onClick={() => onAnswer(null)}>
+            {next ? `Agora não, continuar no ${cur.label}` : 'Continuar'}
+          </Button>
+        </div>
+        <p className="rounded-2xl bg-brand-50 p-3 text-sm text-brand-700">
+          💡 Você pode mudar de nível quando quiser em <b>Perfil → Nível de dificuldade</b>.
+        </p>
+      </div>
+    </BottomSheet>
+  );
+}
+
+function TrackHeader({
+  g,
+  difficulty,
+  done,
+  total,
+  questions,
+}: {
+  g: AgeGroup;
+  difficulty: Difficulty;
+  done: number;
+  total: number;
+  questions: number;
+}) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
         <p className="font-bold">
-          {AGE_GROUPS[g].emoji} Trilha {AGE_GROUPS[g].label}
+          {AGE_GROUPS[g].emoji} Trilha {AGE_GROUPS[g].label} · {DIFFICULTY[difficulty].icon} {DIFFICULTY[difficulty].label}
         </p>
         <p className="text-sm font-bold text-slate-400">
           {done}/{total} lições · {questions} perguntas
@@ -112,7 +191,7 @@ function TrackHeader({ g, done, total, questions }: { g: AgeGroup; done: number;
       </div>
       <p className="mt-2 text-xs text-slate-400">
         Cada etapa passa por todos os temas e é um pouco mais difícil que a anterior. Fique {INACTIVITY_DAYS} dias sem
-        estudar e a etapa atual recomeça (as anteriores ficam salvas).
+        estudar e a etapa atual recomeça (as anteriores ficam salvas). O nível de dificuldade muda em Perfil.
       </p>
     </div>
   );

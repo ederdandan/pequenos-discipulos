@@ -52,7 +52,9 @@
         "correct_index": { "type": "integer", "minimum": 0, "description": "Posição da opção certa, começando em 0. A ordem é embaralhada na tela." },
         "statement": { "type": "string", "description": "true_false: a afirmação." },
         "answer": { "description": "true_false: true/false · fill_blank e type_answer: a resposta certa", "type": ["string", "boolean"] },
-        "accept": { "type": "array", "items": { "type": "string" }, "description": "type_answer: outras respostas aceitas." },
+        "accept": { "type": "array", "items": { "type": "string" }, "description": "type_answer, e multiple_choice/fill_blank quando digitados: outras respostas aceitas." },
+        "typed": { "type": "boolean", "description": "multiple_choice: true = no nível Especialista a resposta é digitada (só se fizer sentido sem as alternativas) · fill_blank: false = continua de escolher no Intermediário/Especialista." },
+        "easy_options": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 2, "description": "type_answer: 2 alternativas erradas para o nível Fácil (vira de escolher)." },
         "pairs": {
           "type": "array",
           "minItems": 3,

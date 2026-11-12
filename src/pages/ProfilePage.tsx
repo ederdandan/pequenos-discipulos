@@ -25,6 +25,8 @@ import { InstallCard } from '../components/InstallCard';
 import { ExportButton, ImportButton } from '../components/BackupControls';
 import { LargeTextToggle } from '../components/LargeTextToggle';
 import { VoiceSettings } from '../components/VoiceSettings';
+import { DifficultyPicker } from '../components/DifficultyPicker';
+import { DIFFICULTY, completedIn, difficultyOf, setDifficulty } from '../lib/difficulty';
 
 export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate> }) {
   const { active, updateActive, selectProfile, removeProfile } = useStore();
@@ -50,7 +52,8 @@ export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate
         <div>
           <h1 className="text-2xl font-extrabold">{active.name}</h1>
           <p className="mb-2 text-slate-500">
-            {AGE_GROUPS[active.ageGroup].emoji} {AGE_GROUPS[active.ageGroup].label} ({AGE_GROUPS[active.ageGroup].ages})
+            {AGE_GROUPS[active.ageGroup].emoji} {AGE_GROUPS[active.ageGroup].label} ({AGE_GROUPS[active.ageGroup].ages}) ·{' '}
+            {DIFFICULTY[difficultyOf(active)].icon} {DIFFICULTY[difficultyOf(active)].label}
           </p>
           <button
             onClick={() => setChoosingAvatar(true)}
@@ -146,6 +149,22 @@ export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate
         >
           Comprar por {STREAK_FREEZE_COST} XP
         </Button>
+      </section>
+
+      <section id="nivel" className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+        <h2 className="mb-1 text-lg font-extrabold">Nível de dificuldade</h2>
+        <p className="mb-3 text-sm text-slate-500">
+          As perguntas são as da sua faixa; o nível muda o jeito de responder. Cada nível tem a própria trilha: ao
+          trocar, o progresso do nível atual fica guardado e volta quando você retornar a ele.
+        </p>
+        <DifficultyPicker
+          value={difficultyOf(active)}
+          onChange={(d) => updateActive((p) => setDifficulty(p, d))}
+          progress={(d) => {
+            const n = completedIn(active, d).filter((id) => levels.some((l) => l.id === id)).length;
+            return n === levels.length ? '✅ Trilha concluída' : n > 0 ? `${n}/${levels.length} lições` : null;
+          }}
+        />
       </section>
 
       <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">

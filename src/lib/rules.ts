@@ -1,6 +1,7 @@
-import type { AgeGroup, HistoryEntry, UserProfile } from '../types';
+import type { AgeGroup, Difficulty, HistoryEntry, UserProfile } from '../types';
 import { currentUnit, findLevel, trackLevels, tracks } from '../data/curriculum';
 import { daysBetween, todayKey, weekKey } from './dates';
+import { DIFFICULTY, difficultyOf } from './difficulty';
 
 // Regras do jogo em um único lugar, como funções puras (fáceis de testar).
 
@@ -52,6 +53,7 @@ export function newProfile(
   hearts = MAX_HEARTS,
   photo: string | null = null,
   largeText = false,
+  difficulty: Difficulty = 'normal',
 ): UserProfile {
   const now = Date.now();
   return {
@@ -61,6 +63,7 @@ export function newProfile(
     photo,
     ageGroup,
     largeText,
+    difficulty,
     xp: 0,
     weeklyXp: 0,
     weekId: weekKey(),
@@ -249,7 +252,7 @@ export function completeLesson(p: UserProfile, r: LessonResult): { profile: User
     ? XP_REVIEW
     : r.practice
       ? XP_PRACTICE
-      : XP_PER_LESSON + (r.mistakes === 0 ? XP_PERFECT_BONUS : 0);
+      : XP_PER_LESSON + (r.mistakes === 0 ? XP_PERFECT_BONUS : 0) + DIFFICULTY[difficultyOf(p)].bonusXp;
   const goal = dailyGoal(p);
   const dailyBefore = dailyXpToday(p);
   const dailyXp = dailyBefore + xp;
@@ -274,6 +277,12 @@ export function completeLesson(p: UserProfile, r: LessonResult): { profile: User
       ? p.completedLevels
       : [...p.completedLevels, r.levelId];
   const dailyGoalReached = dailyBefore < goal && dailyXp >= goal;
+  // Acabou de concluir a trilha inteira no nível atual: oferecer a troca de nível.
+  const allIds = trackLevels(p.ageGroup).map((l) => l.id);
+  const finishedTrack =
+    completedLevels !== p.completedLevels &&
+    allIds.every((id) => completedLevels.includes(id)) &&
+    !allIds.every((id) => p.completedLevels.includes(id));
 
   let next: UserProfile = {
     ...p,
@@ -286,6 +295,7 @@ export function completeLesson(p: UserProfile, r: LessonResult): { profile: User
     streakFreezes,
     lastActiveDate: today,
     completedLevels,
+    levelOffer: finishedTrack || p.levelOffer,
     // Treino e revisão recuperam 1 coração: errar não trava o estudo.
     hearts: r.practice || r.review ? Math.min(maxHearts(p), p.hearts + 1) : p.hearts,
     lessonInProgress: r.review ? p.lessonInProgress : null,

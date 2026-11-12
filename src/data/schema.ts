@@ -20,12 +20,37 @@ interface RawBase {
 
 export type RawQuestion = RawBase &
   (
-    | { type: 'multiple_choice'; context?: string; options: string[]; correct_index: number }
+    | {
+        type: 'multiple_choice';
+        context?: string;
+        options: string[];
+        correct_index: number;
+        /** Especialista: a pessoa digita a resposta (só quando faz sentido sem as alternativas). */
+        typed?: boolean;
+        /** Outras respostas aceitas ao digitar. */
+        accept?: string[];
+      }
     | { type: 'true_false'; statement: string; answer: boolean }
     | { type: 'match_pairs'; pairs: Array<{ item: string; match: string }> }
-    | { type: 'fill_blank'; sentence: string; answer: string; wrong_options: string[] }
+    | {
+        type: 'fill_blank';
+        sentence: string;
+        answer: string;
+        wrong_options: string[];
+        /** false: no Intermediário/Especialista continua de escolher (a lacuna aceita várias palavras). */
+        typed?: boolean;
+        /** Outras palavras aceitas ao digitar. */
+        accept?: string[];
+      }
     | { type: 'word_bank'; sentence: string; distractors?: string[] }
-    | { type: 'type_answer'; context?: string; answer: string; accept?: string[] }
+    | {
+        type: 'type_answer';
+        context?: string;
+        answer: string;
+        accept?: string[];
+        /** Fácil: 2 alternativas erradas (a pergunta vira de escolher). */
+        easy_options?: string[];
+      }
     | { type: 'speaking'; phrase: string; hint?: string }
   );
 
@@ -79,7 +104,15 @@ export function toExercise(q: RawQuestion): TaggedExercise {
   let e: Exercise;
   switch (q.type) {
     case 'multiple_choice':
-      e = { ...base, type: 'multiple-choice', prompt: q.prompt ?? '', context: q.context, options: options(q.options, q.correct_index) };
+      e = {
+        ...base,
+        type: 'multiple-choice',
+        prompt: q.prompt ?? '',
+        context: q.context,
+        options: options(q.options, q.correct_index),
+        typed: q.typed,
+        accept: q.accept,
+      };
       break;
     case 'true_false':
       e = {
@@ -105,6 +138,8 @@ export function toExercise(q: RawQuestion): TaggedExercise {
         sentenceParts: [before.trim(), after.trim()],
         correctWord: q.answer,
         options: [q.answer, ...q.wrong_options],
+        typed: q.typed,
+        accept: q.accept,
       };
       break;
     }
@@ -118,7 +153,15 @@ export function toExercise(q: RawQuestion): TaggedExercise {
       };
       break;
     case 'type_answer':
-      e = { ...base, type: 'type-answer', prompt: q.prompt ?? 'Escreva a resposta', context: q.context, answer: q.answer, accept: q.accept };
+      e = {
+        ...base,
+        type: 'type-answer',
+        prompt: q.prompt ?? 'Escreva a resposta',
+        context: q.context,
+        answer: q.answer,
+        accept: q.accept,
+        easyOptions: q.easy_options,
+      };
       break;
     case 'speaking':
       e = { ...base, type: 'speaking', prompt: q.prompt ?? 'Fale em voz alta', targetPhrase: q.phrase, hint: q.hint };
@@ -306,6 +349,8 @@ function checkQuestion(q: RawQuestion, qe: (m: string) => void) {
         if (!Number.isInteger(q.correct_index) || q.correct_index < 0 || q.correct_index >= q.options.length)
           qe(`"correct_index" fora das opções (0 a ${q.options.length - 1})`);
       }
+      if (q.typed !== undefined && typeof q.typed !== 'boolean') qe('"typed" deve ser true ou false');
+      if (q.accept && !q.typed) qe('"accept" só vale com "typed": true');
       break;
     case 'true_false':
       if (!q.statement) qe('sem "statement"');
@@ -323,6 +368,8 @@ function checkQuestion(q: RawQuestion, qe: (m: string) => void) {
       if (!q.answer) qe('sem "answer"');
       if (!Array.isArray(q.wrong_options) || q.wrong_options.length < 1) qe('precisa de "wrong_options"');
       else if (!distinct([q.answer, ...q.wrong_options])) qe('a resposta aparece nas opções erradas');
+      if (q.typed !== undefined && typeof q.typed !== 'boolean') qe('"typed" deve ser true ou false');
+      if (q.accept && q.typed === false) qe('"accept" não vale com "typed": false');
       break;
     case 'word_bank':
       if (!q.sentence) qe('sem "sentence"');
@@ -331,6 +378,10 @@ function checkQuestion(q: RawQuestion, qe: (m: string) => void) {
     case 'type_answer':
       if (!q.prompt) qe('sem "prompt"');
       if (!q.answer) qe('sem "answer"');
+      if (q.easy_options !== undefined) {
+        if (!Array.isArray(q.easy_options) || q.easy_options.length !== 2) qe('"easy_options" deve ter 2 alternativas erradas');
+        else if (!distinct([q.answer, ...q.easy_options])) qe('"easy_options" repete a resposta');
+      }
       break;
     case 'speaking':
       if (!q.phrase) qe('sem "phrase"');

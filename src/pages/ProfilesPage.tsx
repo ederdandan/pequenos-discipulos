@@ -11,6 +11,8 @@ import { Button } from '../components/Button';
 import { ImportButton } from '../components/BackupControls';
 import { Lamb } from '../components/Lamb';
 import { LargeTextToggle } from '../components/LargeTextToggle';
+import { DifficultyPicker } from '../components/DifficultyPicker';
+import type { Difficulty } from '../lib/difficulty';
 
 /** Emoji usado quando o perfil não tem foto nem avatar escolhido. */
 const DEFAULT_AVATAR = '🐑';
@@ -74,11 +76,12 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
   const [largeText, setLargeText] = useState(false);
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [photo, setPhoto] = useState<string | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty>('normal');
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    addProfile(newProfile(name, DEFAULT_AVATAR, ageGroup, hearts, photo, largeText));
+    addProfile(newProfile(name, DEFAULT_AVATAR, ageGroup, hearts, photo, largeText, difficulty));
     onDone();
   }
 
@@ -122,6 +125,14 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
             </button>
           ))}
         </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="mb-1 font-bold text-slate-600">Nível</legend>
+        <p className="mb-2 text-sm text-slate-500">
+          As perguntas são as da faixa; o nível muda o jeito de responder. Dá para mudar depois na tela de Perfil.
+        </p>
+        <DifficultyPicker value={difficulty} onChange={setDifficulty} />
       </fieldset>
 
       <fieldset>

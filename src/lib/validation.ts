@@ -62,9 +62,12 @@ export function speechMatches(transcripts: string[], target: string) {
   });
 }
 
-/** Digitação: exige todas as palavras, mas perdoa pontuação, maiúsculas e 1 letra trocada. */
+/** Artigo no começo não conta: "anjos" = "Os anjos", "o batismo" = "Batismo". */
+const ARTICLE = /^(o|a|os|as|um|uma) (?=\S)/;
+
+/** Digitação: exige todas as palavras, mas perdoa pontuação, maiúsculas, artigo inicial e 1 letra trocada. */
 export function typedMatches(typed: string, target: string) {
-  const a = normalize(typed).split(' ');
-  const b = normalize(target).split(' ');
+  const a = normalize(typed).replace(ARTICLE, '').split(' ');
+  const b = normalize(target).replace(ARTICLE, '').split(' ');
   return a.length === b.length && a.every((w, i) => typoMatch(w, b[i]));
 }

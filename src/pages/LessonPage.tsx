@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { BookOpen, CheckCircle2, ChevronRight, Volume2, X, XCircle } from 'lucide-react';
 import type { AgeGroup, Exercise } from '../types';
-import { findExercise, findLevel } from '../data/curriculum';
+import { findExercise, findLevel, trackLevels } from '../data/curriculum';
 import { useStore } from '../store/AppStore';
 import {
   BADGES,
@@ -30,6 +30,7 @@ import { Lamb, usePreloadLamb, type LambPose } from '../components/Lamb';
 import { FlameIcon, RosaryProgress } from '../components/icons';
 import { BottomSheet } from '../components/BottomSheet';
 import { describeReference, sourceSummary } from '../lib/sources';
+import { adaptExercises, difficultyOf } from '../lib/difficulty';
 
 interface Props {
   /** Lição a jogar (vazio no modo revisão). */
@@ -82,13 +83,17 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
     return !review && s && s.levelId === levelId && s.practice === practice ? s : null;
   });
   const [queue, setQueue] = useState<Exercise[]>(() => {
+    // Nível de dificuldade: as mesmas perguntas, com outro jeito de responder.
+    const d = active ? difficultyOf(active) : 'normal';
+    const pool = active && d !== 'normal' ? trackLevels(active.ageGroup).flatMap((l) => l.exercises) : [];
     if (review && active) {
-      return reviewQueue(active)
+      const due = reviewQueue(active)
         .due.slice(0, REVIEW_SESSION_SIZE)
         .map(findExercise)
         .filter((e): e is Exercise => !!e);
+      return adaptExercises(due, d, pool);
     }
-    const all = level?.exercises ?? [];
+    const all = adaptExercises(level?.exercises ?? [], d, pool);
     if (!saved) return all;
     const restored = saved.queue.map((id) => all.find((e) => e.id === id)).filter((e): e is Exercise => !!e);
     return restored.length ? restored : all;

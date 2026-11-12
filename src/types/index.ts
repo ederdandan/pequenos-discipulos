@@ -4,6 +4,9 @@
 /** Faixa etária do perfil. No JSON de conteúdo aparece em maiúsculas: KIDS, TEENS, ADULTS. */
 export type AgeGroup = 'kids' | 'teens' | 'adults';
 
+/** Nível de dificuldade dentro da faixa (ver lib/difficulty.ts). */
+export type Difficulty = 'facil' | 'normal' | 'intermediario' | 'especialista';
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -29,7 +32,14 @@ export interface UserProfile {
   maxHearts: number;
   /** Momento (ms) da última recarga de corações. */
   heartsUpdatedAt: number;
+  /** Lições concluídas no nível de dificuldade atual. */
   completedLevels: string[];
+  /** Nível de dificuldade (sem valor = normal). */
+  difficulty?: Difficulty;
+  /** Lições concluídas guardadas dos outros níveis (o atual fica em completedLevels). */
+  progressByDifficulty?: Partial<Record<Difficulty, string[]>>;
+  /** Concluiu a trilha toda no nível atual: perguntar se quer mudar de nível. */
+  levelOffer?: boolean;
   badges: string[];
   createdAt: number;
   /** Lição começada e não terminada: ao voltar, continua de onde parou. */
@@ -142,6 +152,10 @@ export interface MultipleChoiceExercise extends BaseExercise {
   /** Texto de apoio mostrado num cartão abaixo da pergunta (ex.: afirmação do verdadeiro ou falso). */
   context?: string;
   options: Option[];
+  /** Especialista: pode virar resposta digitada (marcado à mão no JSON). */
+  typed?: boolean;
+  /** Outras respostas aceitas quando digitada. */
+  accept?: string[];
 }
 
 export interface FillBlankExercise extends BaseExercise {
@@ -149,6 +163,10 @@ export interface FillBlankExercise extends BaseExercise {
   sentenceParts: [string, string];
   correctWord: string;
   options: string[];
+  /** false: continua de escolher no Intermediário/Especialista (lacuna aceita mais de uma palavra). */
+  typed?: boolean;
+  /** Outras palavras aceitas quando digitada. */
+  accept?: string[];
 }
 
 /** Ligar os pares: item da esquerda ↔ item da direita. */
@@ -164,6 +182,8 @@ export interface TypeAnswerExercise extends BaseExercise {
   answer: string;
   /** Outras respostas aceitas. */
   accept?: string[];
+  /** Fácil: 2 alternativas erradas para virar escolha. */
+  easyOptions?: string[];
 }
 
 export type Exercise =

@@ -75,6 +75,16 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   lição 1 de todos os temas, a Etapa 2 a lição 2, e assim por diante (`buildStages` em `schema.ts`). Etapas:
   Primeiros Passos, Conhecendo a Fé, Crescendo na Fé, Aprofundando, Discípulo Missionário.
   Lições com 6 → 7 → 8 → 8 → 9 perguntas por faixa. O desbloqueio é sequencial.
+- **Níveis de dificuldade** (`lib/difficulty.ts`, campo `difficulty` do perfil, padrão `normal`): Fácil, Normal,
+  Intermediário, Especialista. As perguntas são as mesmas da faixa; `adaptExercise` muda só o jeito de responder
+  (Fácil: 2 alternativas, 3 pares, frase sem palavras sobrando, digitar vira escolher com `easy_options`;
+  Intermediário: completar a frase digitando, salvo `typed: false`, palavras a mais no montar frase, +5 XP;
+  Especialista: também digita as múltiplas escolhas marcadas `typed: true`, +10 XP). Esses campos foram revisados
+  pergunta por pergunta (142 escolhas digitáveis, 6 lacunas que continuam de escolher, 65 `easy_options`);
+  pergunta nova precisa da mesma avaliação (guia em `docs/COMO_ADICIONAR_PERGUNTAS.md`, seção Níveis).
+  A digitação ignora artigo inicial (`typedMatches`). O id do exercício não muda. Cada nível tem a própria trilha:
+  `setDifficulty` guarda `completedLevels` em `progressByDifficulty`. Ao concluir a trilha toda, `levelOffer`
+  abre na Trilha a pergunta "quer mudar de nível?" com a dica de onde trocar (Perfil → Nível de dificuldade).
 - **Dentro da lição** as perguntas são ordenadas automaticamente pela dificuldade do tipo
   (`TYPE_RANK`): verdadeiro/falso → escolha → pares → lacuna/fala → montar frase → digitar.
 - **Conteúdo atual:** 8 temas × 5 lições = 40 lições; **304 perguntas por faixa** (878 diferentes).

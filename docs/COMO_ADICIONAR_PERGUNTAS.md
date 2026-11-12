@@ -62,6 +62,20 @@ A trilha é montada por **etapas de dificuldade**, não por módulo. O `level_nu
 Dentro de cada lição, o app ordena sozinho as perguntas da mais fácil para a mais difícil:
 verdadeiro/falso → escolha → pares → lacuna/fala → montar frase → digitar.
 
+## Níveis (Fácil, Normal, Intermediário, Especialista)
+
+Cada perfil escolhe um nível. As perguntas são as mesmas da faixa; o app muda o **jeito de responder**
+(`src/lib/difficulty.ts`). Três campos opcionais dizem o que pode mudar em cada pergunta. Eles foram revisados
+à mão, então, ao criar uma pergunta nova, pense neles:
+
+| Campo | Tipo | Efeito |
+| --- | --- | --- |
+| `"typed": true` | `multiple_choice` | No **Especialista** a pessoa digita a resposta, sem ver as alternativas. Só marque se a pergunta tiver **uma resposta só** e fizer sentido sem as opções (nada de “Qual destes…”, “NÃO é”, citações bíblicas ou frases longas). Use `accept` para outras formas certas. |
+| `"typed": false` | `fill_blank` | A lacuna continua de **escolher** no Intermediário/Especialista. Use quando mais de uma palavra completa bem a frase. Sem o campo, a lacuna é digitada (com `accept`, se houver sinônimos). |
+| `"easy_options": ["…", "…"]` | `type_answer` | No **Fácil** a pergunta vira de escolher com essas 2 alternativas erradas (do mesmo tipo da resposta: número com número, nome com nome). Sem o campo, continua digitada. |
+
+A correção da digitação já ignora o artigo no começo (“anjos” = “Os anjos”).
+
 ## Tipos de pergunta
 
 Todos aceitam `explanation`, `source_reference` e `illustration` (um emoji grande acima da pergunta, ex.: `"illustration": "🍷"`;
@@ -76,6 +90,7 @@ use para ilustrar o **tema**, nunca para entregar a resposta). Os campos marcado
 ```
 `prompt`*, `options`* (2 ou mais), `correct_index`* (começa em **0**; na tela as opções são embaralhadas),
 `context` (texto de apoio num cartão). As opções são só texto; no Infantil o app lê a pergunta e cada opção tocada.
+Opcionais: `typed` e `accept` (ver **Níveis**).
 
 ### `true_false` · Verdadeiro ou falso
 ```json
@@ -97,7 +112,7 @@ Pelo menos 3 pares, sem repetir itens. Até 2 toques errados ainda contam como a
   "sentence": "Ave Maria, cheia de ___, o Senhor é convosco.",
   "answer": "graça", "wrong_options": ["flores", "sono"] }
 ```
-A frase deve ter **exatamente um** `___`.
+A frase deve ter **exatamente um** `___`. Opcionais: `typed: false` e `accept` (ver **Níveis**).
 
 ### `word_bank` · Montar a frase
 ```json
@@ -112,7 +127,8 @@ As palavras da frase são separadas pelos espaços; `distractors` são palavras 
   "prompt": "Quantos são os sacramentos?", "answer": "sete", "accept": ["os sete"] }
 ```
 A correção ignora maiúsculas, acentos, pontuação e 1 letra trocada em palavras longas. Números viram
-palavra (“7” = “sete”). Use `accept` para outras respostas válidas.
+palavra (“7” = “sete”) e o artigo no começo não conta. Use `accept` para outras respostas válidas e
+`easy_options` (2 alternativas erradas) para o nível Fácil.
 
 ### `speaking` · Falar (rezar em voz alta)
 ```json
