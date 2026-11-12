@@ -133,6 +133,91 @@ html[data-mode='leitura'] .font-reading {
   line-height: 1.6;
 }
 
+/*
+ * Modo escuro. As escalas neutras se invertem pelas variáveis (slate claro vira fundo escuro e
+ * slate escuro vira texto claro). Onde a MESMA cor serve de texto e de fundo (brand-700, white),
+ * a troca é feita na classe, fora de @layer, para vencer o utilitário do Tailwind.
+ * Acerto, erro, graça e chamas continuam com o mesmo significado, só em tons para fundo escuro.
+ */
+html[data-mode='escuro'] {
+  color-scheme: dark;
+  --surface: #1b212c;
+  /* Clareia cores de texto vindas do conteúdo (ex.: cor do tema na trilha). */
+  --on-dark-tint: 55%;
+  --color-parchment: #12161e;
+  --color-slate-50: #202734;
+  --color-slate-100: #273040;
+  --color-slate-200: #333d50;
+  --color-slate-300: #475368;
+  --color-slate-500: #a7b1c2;
+  --color-slate-600: #c4cbd7;
+  --color-slate-700: #d9dee7;
+  --color-slate-800: #e9ecf2;
+  --color-brand-50: color-mix(in srgb, var(--color-brand-500) 16%, var(--surface));
+  --color-brand-100: color-mix(in srgb, var(--color-brand-500) 26%, var(--surface));
+  --color-brand-200: color-mix(in srgb, var(--color-brand-500) 40%, var(--surface));
+  --color-gold-50: #2a2313;
+  --color-gold-100: #3a2f15;
+  --color-gold-600: #f6b93b;
+  --color-gold-700: #fbc95a;
+  --color-gold-800: #fdd77e;
+  --color-red-50: #361a1c;
+  --color-red-200: #7a2a2a;
+  --color-red-600: #f87171;
+  --color-red-800: #fca5a5;
+  --color-orange-50: #2f2014;
+  --color-orange-200: #7c4318;
+  --color-orange-800: #fdba74;
+  --color-emerald-50: #11291f;
+  --color-emerald-300: #2c6b50;
+  --color-emerald-700: #4ade80;
+  --color-emerald-800: #86efac;
+  --color-rose-500: #fb7185;
+  --color-rose-600: #fb7185;
+}
+html[data-mode='escuro'] .bg-white { background-color: var(--surface); }
+html[data-mode='escuro'] .bg-white\/95 { background-color: color-mix(in srgb, var(--surface) 95%, transparent); }
+html[data-mode='escuro'] .bg-white\/70 { background-color: color-mix(in srgb, var(--surface) 70%, transparent); }
+html[data-mode='escuro'] .bg-parchment\/95 { background-color: color-mix(in srgb, var(--color-parchment) 95%, transparent); }
+html[data-mode='escuro'] .border-white { border-color: var(--surface); }
+html[data-mode='escuro'] :is(.text-brand-700, .text-brand-800) {
+  color: color-mix(in srgb, var(--color-brand-500) 45%, white);
+}
+html[data-mode='escuro'] :is(.text-brand-600, .text-brand-500) {
+  color: color-mix(in srgb, var(--color-brand-500) 65%, white);
+}
+html[data-mode='escuro'] .border-brand-700 { border-color: var(--color-brand-500); }
+html[data-mode='escuro'] :is(.border-gold-100, .border-gold-200) { border-color: #4a3c1a; }
+html[data-mode='escuro'] :is(.ring-gold-100, .ring-gold-200) { --tw-ring-color: #4a3c1a; }
+html[data-mode='escuro'] .ring-brand-100 { --tw-ring-color: var(--color-brand-200); }
+
+/*
+ * Alto contraste: base clara, fundo branco puro, textos quase pretos, bordas escuras,
+ * destaque sempre no tom mais escuro e foco do teclado bem visível.
+ */
+html[data-mode='contraste'] {
+  --color-parchment: #ffffff;
+  --color-slate-50: #f1f5f9;
+  --color-slate-100: #e2e8f0;
+  --color-slate-200: #64748b;
+  --color-slate-300: #475569;
+  --color-slate-500: #1e293b;
+  --color-slate-600: #0f172a;
+  --color-slate-700: #0b1220;
+  --color-slate-800: #000000;
+  --color-brand-500: var(--color-brand-700);
+  --color-brand-600: var(--color-brand-700);
+  --color-gold-600: #92400e;
+  --color-gold-700: #78350f;
+  --color-gold-800: #5c2a0b;
+  --color-emerald-700: #065f46;
+  --color-red-600: #b91c1c;
+}
+html[data-mode='contraste'] :focus-visible {
+  outline: 3px solid #000;
+  outline-offset: 2px;
+}
+
 .font-reading {
   font-family: var(--font-reading);
 }

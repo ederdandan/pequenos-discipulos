@@ -45,7 +45,7 @@ export interface UserProfile {
   /** Recomeçar a etapa após INACTIVITY_DAYS sem estudar. Sem valor: desligado no Infantil, ligado nas outras faixas. */
   inactivityReset?: boolean;
   /** Aparência: cor de destaque e modo (lib/theme.ts). Sem valor: Clássico, Claro. */
-  appearance?: { color: 'classico' | 'liturgico' | 'lilas' | 'rosa' | 'petroleo'; mode: 'claro' | 'leitura' };
+  appearance?: { color: 'classico' | 'liturgico' | 'lilas' | 'rosa' | 'petroleo'; mode: 'claro' | 'leitura' | 'escuro' | 'contraste' | 'auto' };
   badges: string[];
   createdAt: number;
   /** Lição começada e não terminada: ao voltar, continua de onde parou. */

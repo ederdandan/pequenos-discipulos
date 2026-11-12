@@ -8,7 +8,9 @@ import { liturgicalDay, msToMidnight, type LiturgicalColor } from './liturgy';
 // O CSS de cada cor e modo fica em index.css: html[data-color=...] e html[data-mode=...].
 
 export type ThemeColor = 'classico' | 'liturgico' | 'lilas' | 'rosa' | 'petroleo';
-export type ThemeMode = 'claro' | 'leitura';
+export type ThemeMode = 'claro' | 'leitura' | 'escuro' | 'contraste' | 'auto';
+/** Modo efetivo no <html> ("auto" vira claro ou escuro conforme o aparelho). */
+type ResolvedMode = Exclude<ThemeMode, 'auto'>;
 export interface Appearance {
   color: ThemeColor;
   mode: ThemeMode;
@@ -30,7 +32,14 @@ export const THEME_COLORS: Record<ThemeColor, { label: string; hint: string; swa
 export const THEME_MODES: Record<ThemeMode, { label: string; hint: string; icon: string }> = {
   claro: { label: 'Claro', hint: 'O visual padrão', icon: '☀️' },
   leitura: { label: 'Leitura', hint: 'Fundo de papel, contraste suave e letra de livro', icon: '📖' },
+  escuro: { label: 'Escuro', hint: 'Para estudar à noite, cansa menos a vista', icon: '🌙' },
+  contraste: { label: 'Alto contraste', hint: 'Textos e bordas mais fortes, para enxergar melhor', icon: '🔲' },
+  auto: { label: 'Automático', hint: 'Claro ou escuro, como estiver o aparelho', icon: '🔄' },
 };
+
+/** Cor da barra do navegador no modo escuro (o fundo do app). */
+const DARK_BAR = '#12161e';
+const darkQuery = () => (typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null);
 
 /** Cor litúrgica → paleta. Branco é representado pelo dourado (as vestes douradas substituem o branco nas solenidades). */
 const LITURGICAL_PALETTE: Record<LiturgicalColor, Palette> = {
@@ -69,9 +78,18 @@ export function paletteFor(color: ThemeColor, date = new Date()): Palette {
   }
 }
 
-/** Aplica a aparência no <html>. O tempo litúrgico é reavaliado à meia-noite. */
+/** Aplica a aparência no <html>. O tempo litúrgico é reavaliado à meia-noite; o "auto" segue o aparelho. */
 export function useAppearance(appearance: Appearance) {
   const [today, setToday] = useState(() => new Date().toDateString());
+  const [deviceDark, setDeviceDark] = useState(() => !!darkQuery()?.matches);
+  useEffect(() => {
+    const q = darkQuery();
+    if (appearance.mode !== 'auto' || !q) return;
+    const on = () => setDeviceDark(q.matches);
+    on();
+    q.addEventListener('change', on);
+    return () => q.removeEventListener('change', on);
+  }, [appearance.mode]);
   useEffect(() => {
     if (appearance.color !== 'liturgico') return;
     const t = setTimeout(() => setToday(new Date().toDateString()), msToMidnight());
@@ -82,7 +100,8 @@ export function useAppearance(appearance: Appearance) {
     const html = document.documentElement;
     const palette = paletteFor(appearance.color);
     html.dataset.color = palette;
-    html.dataset.mode = appearance.mode;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', PALETTE_MAIN[palette]);
-  }, [appearance.color, appearance.mode, today]);
+    const mode: ResolvedMode = appearance.mode === 'auto' ? (deviceDark ? 'escuro' : 'claro') : appearance.mode;
+    html.dataset.mode = mode;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', mode === 'escuro' ? DARK_BAR : PALETTE_MAIN[palette]);
+  }, [appearance.color, appearance.mode, today, deviceDark]);
 }

@@ -359,7 +359,7 @@ function LevelRow({
         >
           <span
             className="mb-1 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide"
-            style={{ color: unlocked ? level.theme.color : undefined }}
+            style={{ color: unlocked ? `color-mix(in srgb, ${level.theme.color}, white var(--on-dark-tint, 0%))` : undefined }}
           >
             {level.theme.icon} {level.theme.title}
           </span>

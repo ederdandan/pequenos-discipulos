@@ -36,7 +36,7 @@ export function AppearancePicker({ value, onChange }: { value: Appearance; onCha
       </div>
       <div>
         <h3 className="mb-2 text-sm font-bold text-slate-600">Modo</h3>
-        <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Modo de exibição">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Modo de exibição">
           {(Object.keys(THEME_MODES) as ThemeMode[]).map((m) => {
             const t = THEME_MODES[m];
             const on = value.mode === m;
