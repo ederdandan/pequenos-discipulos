@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Upload } from 'lucide-react';
+import { ChevronDown, Plus, Upload } from 'lucide-react';
 import type { AgeGroup } from '../types';
 import { useStore } from '../store/AppStore';
 import { AGE_GROUPS, MAX_HEARTS, newProfile } from '../lib/rules';
@@ -12,10 +12,13 @@ import { ImportButton } from '../components/BackupControls';
 import { Lamb } from '../components/Lamb';
 import { LargeTextToggle } from '../components/LargeTextToggle';
 import { DifficultyPicker } from '../components/DifficultyPicker';
-import type { Difficulty } from '../lib/difficulty';
+import { DIFFICULTY, type Difficulty } from '../lib/difficulty';
 
 /** Emoji usado quando o perfil não tem foto nem avatar escolhido. */
 const DEFAULT_AVATAR = '🐑';
+
+/** Erros permitidos padrão: criança tem mais folga para não travar no meio da lição. */
+const defaultHearts = (g: AgeGroup) => (g === 'kids' ? 10 : MAX_HEARTS);
 
 export function ProfilesPage() {
   const { state, selectProfile } = useStore();
@@ -74,14 +77,16 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
   const [name, setName] = useState('');
   const [ageGroup, setAgeGroup] = useState<AgeGroup>('kids');
   const [largeText, setLargeText] = useState(false);
-  const [hearts, setHearts] = useState(MAX_HEARTS);
+  // Sem escolha: padrão da faixa (criança erra mais sem travar a lição).
+  const [hearts, setHearts] = useState<number | null>(null);
+  const [more, setMore] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>('normal');
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    addProfile(newProfile(name, DEFAULT_AVATAR, ageGroup, hearts, photo, largeText, difficulty));
+    addProfile(newProfile(name, DEFAULT_AVATAR, ageGroup, hearts ?? defaultHearts(ageGroup), photo, largeText, difficulty));
     onDone();
   }
 
@@ -101,10 +106,6 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
         />
       </label>
 
-      <fieldset>
-        <legend className="mb-2 font-bold text-slate-600">Foto ou avatar</legend>
-        <AvatarChooser profile={{ avatar: DEFAULT_AVATAR, photo, name: name || 'perfil' }} onChange={setPhoto} />
-      </fieldset>
 
       <fieldset>
         <legend className="mb-2 font-bold text-slate-600">Faixa etária</legend>
@@ -127,21 +128,47 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
         </div>
       </fieldset>
 
-      <fieldset>
-        <legend className="mb-1 font-bold text-slate-600">Nível</legend>
-        <p className="mb-2 text-sm text-slate-500">
-          As perguntas são as da faixa; o nível muda o jeito de responder. Dá para mudar depois na tela de Perfil.
-        </p>
-        <DifficultyPicker value={difficulty} onChange={setDifficulty} />
-      </fieldset>
+      {/* O essencial é nome e faixa; o resto já vem com um padrão bom e pode mudar depois em Perfil → Ajustes. */}
+      <button
+        type="button"
+        onClick={() => setMore((m) => !m)}
+        aria-expanded={more}
+        className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-3 text-left"
+      >
+        <span>
+          <span className="block font-bold text-slate-700">{more ? 'Menos opções' : 'Mais opções (opcional)'}</span>
+          <span className="block text-sm text-slate-500">
+            Foto, nível, erros permitidos e letra grande. Padrão: 🐑 · {DIFFICULTY[difficulty].label} ·{' '}
+            {hearts ?? defaultHearts(ageGroup)} erros{largeText ? ' · letra grande' : ''}
+          </span>
+        </span>
+        <ChevronDown className={`size-6 shrink-0 text-slate-500 transition ${more ? 'rotate-180' : ''}`} />
+      </button>
 
-      <fieldset>
-        <legend className="mb-1 font-bold text-slate-600">Erros permitidos</legend>
-        <p className="mb-2 text-sm text-slate-500">Dá para mudar depois na tela de Perfil.</p>
-        <HeartsPicker value={hearts} onChange={setHearts} />
-      </fieldset>
+      {more && (
+        <div className="space-y-6">
+          <fieldset>
+            <legend className="mb-2 font-bold text-slate-600">Foto ou avatar</legend>
+            <AvatarChooser profile={{ avatar: DEFAULT_AVATAR, photo, name: name || 'perfil' }} onChange={setPhoto} />
+          </fieldset>
 
-      <LargeTextToggle value={largeText} onChange={setLargeText} />
+          <fieldset>
+            <legend className="mb-1 font-bold text-slate-600">Nível</legend>
+            <p className="mb-2 text-sm text-slate-500">
+              As perguntas são as da faixa; o nível muda o jeito de responder. Dá para mudar depois em Perfil → Ajustes.
+            </p>
+            <DifficultyPicker value={difficulty} onChange={setDifficulty} />
+          </fieldset>
+
+          <fieldset>
+            <legend className="mb-1 font-bold text-slate-600">Erros permitidos</legend>
+            <p className="mb-2 text-sm text-slate-500">Dá para mudar depois em Perfil → Ajustes.</p>
+            <HeartsPicker value={hearts ?? defaultHearts(ageGroup)} onChange={setHearts} />
+          </fieldset>
+
+          <LargeTextToggle value={largeText} onChange={setLargeText} />
+        </div>
+      )}
 
       <div className="flex gap-3">
         {canCancel && (

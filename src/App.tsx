@@ -10,7 +10,7 @@ import { ProfilesPage } from './pages/ProfilesPage';
 import { PathPage } from './pages/PathPage';
 import { LessonPage } from './pages/LessonPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
-import { ProfilePage } from './pages/ProfilePage';
+import { ProfilePage, type ProfileTab } from './pages/ProfilePage';
 import type { UserProfile } from './types';
 import { applyUpdate, useAppUpdate } from './lib/update';
 import { RefreshCw } from 'lucide-react';
@@ -31,6 +31,8 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('path');
   const [lesson, setLesson] = useState<{ levelId: string; practice: boolean; review?: boolean } | null>(null);
   const [help, setHelp] = useState(false);
+  // Aba que o Perfil abre (o pedido de troca de nível leva direto aos Ajustes).
+  const [profileTab, setProfileTab] = useState<ProfileTab>('progresso');
   // Versão nova do app: atualiza sozinho (se ligado), mas nunca no meio de uma lição.
   const update = useAppUpdate(!!lesson);
   // Conteúdo surge suavemente ao abrir a aba e ao rolar.
@@ -103,20 +105,24 @@ export default function App() {
             onStart={(levelId, practice) => setLesson({ levelId, practice })}
             onReview={() => setLesson({ levelId: '', practice: false, review: true })}
             onChooseLevel={() => {
+              setProfileTab('ajustes');
               setTab('profile');
               setTimeout(() => document.getElementById('nivel')?.scrollIntoView({ block: 'start' }), 80);
             }}
           />
         )}
         {tab === 'ranking' && <LeaderboardPage />}
-        {tab === 'profile' && <ProfilePage update={update} />}
+        {tab === 'profile' && <ProfilePage key={profileTab} update={update} initialTab={profileTab} />}
       </main>
 
       <nav className="sticky bottom-0 grid grid-cols-3 border-t border-gold-200 bg-white/95 backdrop-blur">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
-            onClick={() => setTab(id)}
+            onClick={() => {
+              setProfileTab('progresso');
+              setTab(id);
+            }}
             className={`relative flex flex-col items-center gap-1 py-3 text-xs font-semibold ${
               tab === id ? 'text-brand-700' : 'text-slate-500 hover:text-slate-600'
             }`}

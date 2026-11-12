@@ -84,7 +84,7 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   pergunta nova precisa da mesma avaliação (guia em `docs/COMO_ADICIONAR_PERGUNTAS.md`, seção Níveis).
   A digitação ignora artigo inicial (`typedMatches`). O id do exercício não muda. Cada nível tem a própria trilha:
   `setDifficulty` guarda `completedLevels` em `progressByDifficulty`. Ao concluir a trilha toda, `levelOffer`
-  abre na Trilha a pergunta "quer mudar de nível?" com a dica de onde trocar (Perfil → Nível de dificuldade).
+  abre na Trilha a pergunta "quer mudar de nível?" com a dica de onde trocar (Perfil → Ajustes → Nível de dificuldade).
 - **Dentro da lição** as perguntas são ordenadas automaticamente pela dificuldade do tipo
   (`TYPE_RANK`): verdadeiro/falso → escolha → pares → lacuna/fala → montar frase → digitar.
 - **Conteúdo atual:** 8 temas × 5 lições = 40 lições; **304 perguntas por faixa** (878 diferentes).
@@ -139,6 +139,16 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   `BackupReminder` lembra de salvar backup quando há 3+ lições e nenhum backup em 14 dias ("Depois" adia 7;
   chaves `pequenos_discipulos_last_backup` e `_backup_snooze`, marcadas por `downloadBackup`). Textos usam no mínimo
   `text-slate-500` (contraste WCAG AA); não usar `text-slate-400` em texto.
+- **Perfil em duas abas** (`ProfilePage`, `ProfileTab`): "Meu progresso" (números, conquistas, histórico, bloqueio)
+  e "Ajustes" (nível `#nivel`, faixa, meta, erros, reinício por inatividade, voz, instalar, backup, atualizações,
+  trocar/apagar). Apagar perfil exige digitar o nome (`DeleteProfile`).
+- **Criar perfil** pede só nome e faixa; "Mais opções" guarda foto, nível, erros (padrão 10 no Infantil, 5 nas
+  outras) e letra grande.
+- **Reinício por inatividade** é por perfil (`inactivityReset`; `inactivityResetOn`): sem valor, desligado no
+  Infantil (só mostra "Bem-vindo de volta") e ligado nas outras faixas.
+- **Família** ordena por "XP da semana" ou "Constância" (dias seguidos, depois metas batidas).
+- Verdadeiro/falso no Infantil usa 👍/👎. Explicação e resumo da fonte (`.allow-select`) podem ser copiados no
+  modo app.
 - **Versão do app:** rodapé da aba Perfil mostra `APP_VERSION` (versão do package.json + commit curto, via
   `__APP_VERSION__`/`__COMMIT__` em `vite.config.ts`) e a data do build.
 - No dev, com `base: './'`, abra `http://localhost:5173/` (na raiz): em `/pequenos-discipulos/` os arquivos de

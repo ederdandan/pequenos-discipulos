@@ -8,6 +8,8 @@ import type { HistoryEntry } from '../types';
 import {
   AGE_GROUPS,
   BADGES,
+  INACTIVITY_DAYS,
+  inactivityResetOn,
   MAX_STREAK_FREEZES,
   STREAK_FREEZE_COST,
   buyStreakFreeze,
@@ -28,9 +30,13 @@ import { VoiceSettings } from '../components/VoiceSettings';
 import { DifficultyPicker } from '../components/DifficultyPicker';
 import { DIFFICULTY, completedIn, difficultyOf, setDifficulty } from '../lib/difficulty';
 
-export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate> }) {
+export type ProfileTab = 'progresso' | 'ajustes';
+
+export function ProfilePage({ update, initialTab = 'progresso' }: { update: ReturnType<typeof useAppUpdate>; initialTab?: ProfileTab }) {
   const { active, updateActive, selectProfile, removeProfile } = useStore();
   const [choosingAvatar, setChoosingAvatar] = useState(false);
+  const [tab, setTab] = useState<ProfileTab>(initialTab);
+  const [deleting, setDeleting] = useState(false);
   if (!active) return null;
 
   const canBuy = active.xp >= STREAK_FREEZE_COST && active.streakFreezes < MAX_STREAK_FREEZES;
@@ -39,9 +45,6 @@ export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate
   const totalAnswers = active.answers.correct + active.answers.wrong;
   const accuracy = totalAnswers ? Math.round((active.answers.correct / totalAnswers) * 100) : 0;
 
-  function remove() {
-    if (confirm(`Apagar o perfil de ${active!.name}? O progresso será perdido.`)) removeProfile(active!.id);
-  }
 
   return (
     <div className="space-y-6">
@@ -64,156 +67,203 @@ export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate
         </div>
       </div>
 
+      {deleting && <DeleteProfile name={active.name} onCancel={() => setDeleting(false)} onConfirm={() => removeProfile(active.id)} />}
+
       {choosingAvatar && (
         <BottomSheet title="Foto ou avatar" onClose={() => setChoosingAvatar(false)}>
           <AvatarChooser profile={active} onChange={(photo) => updateActive((p) => ({ ...p, photo }))} />
         </BottomSheet>
       )}
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="XP total" value={active.xp} icon="⚡" />
-        <Stat label="Dias seguidos" value={active.streak} icon="🕯️" />
-        <Stat label="Esta semana" value={active.weeklyXp} icon="📅" />
-        <Stat label="Trilha" value={`${progress}%`} icon="🗺️" />
-        <Stat label="Respostas certas" value={active.answers.correct} icon="✅" />
-        <Stat label="Respostas erradas" value={active.answers.wrong} icon="❌" />
-        <Stat label="Taxa de acerto" value={`${accuracy}%`} icon="🎯" />
-        <Stat label="Lições feitas" value={active.history.filter((h) => h.kind === 'lesson').length} icon="📚" />
-        <Stat label="Metas batidas" value={active.goalDays} icon="🎯" />
-        <Stat label="Para revisar" value={Object.keys(active.reviews).length} icon="🔁" />
-        <Stat label="Erros fixados" value={active.mastered} icon="🧠" />
+      <div className="grid grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1" role="tablist" aria-label="Seções do perfil">
+        {(
+          [
+            ['progresso', '📊 Meu progresso'],
+            ['ajustes', '⚙️ Ajustes'],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            role="tab"
+            aria-selected={tab === id}
+            onClick={() => setTab(id)}
+            className={`rounded-xl py-2.5 font-bold transition ${tab === id ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500'}`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
-      <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
-        <h2 className="mb-1 text-lg font-extrabold">🎯 Meta diária</h2>
-        <p className="mb-3 text-sm text-slate-500">Quanto XP você quer ganhar por dia. Uma lição dá 20 XP.</p>
-        <div className="grid grid-cols-4 gap-2">
-          {DAILY_GOAL_OPTIONS.map((g, i) => (
-            <button
-              key={g}
-              onClick={() => updateActive((p) => ({ ...p, dailyGoal: g }))}
-              className={`rounded-2xl border shadow-sm p-2 text-center transition ${
-                dailyGoal(active) === g ? 'border-gold-400 bg-gold-50 text-gold-800' : 'border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              <span className="block text-xl font-extrabold">{g} XP</span>
-              <span className="text-xs font-bold text-slate-500">{['Leve', 'Regular', 'Sério', 'Intenso'][i]}</span>
-            </button>
-          ))}
+      {tab === 'progresso' && (
+        <>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Stat label="XP total" value={active.xp} icon="⚡" />
+          <Stat label="Dias seguidos" value={active.streak} icon="🕯️" />
+          <Stat label="Esta semana" value={active.weeklyXp} icon="📅" />
+          <Stat label="Trilha" value={`${progress}%`} icon="🗺️" />
+          <Stat label="Respostas certas" value={active.answers.correct} icon="✅" />
+          <Stat label="Respostas erradas" value={active.answers.wrong} icon="❌" />
+          <Stat label="Taxa de acerto" value={`${accuracy}%`} icon="🎯" />
+          <Stat label="Lições feitas" value={active.history.filter((h) => h.kind === 'lesson').length} icon="📚" />
+          <Stat label="Metas batidas" value={active.goalDays} icon="🎯" />
+          <Stat label="Para revisar" value={Object.keys(active.reviews).length} icon="🔁" />
+          <Stat label="Erros fixados" value={active.mastered} icon="🧠" />
         </div>
-      </section>
 
-      <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
-        <h2 className="mb-1 text-lg font-extrabold">🔥 Erros permitidos</h2>
-        <p className="mb-3 text-sm text-slate-500">
-          Quantos erros você pode cometer antes de pausar as lições novas. Cada erro apaga uma chama, e elas voltam a
-          acender com o tempo. Hoje: <b>{maxHearts(active)}</b>.
-        </p>
-        <HeartsPicker value={maxHearts(active)} onChange={(v) => updateActive((p) => setMaxHearts(p, v))} />
-      </section>
+        <section>
+          <h2 className="mb-3 text-lg font-extrabold">Conquistas</h2>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {Object.entries(BADGES).map(([id, b]) => {
+              const has = active.badges.includes(id);
+              return (
+                <div
+                  key={id}
+                  title={b.description}
+                  className={`rounded-2xl border-2 p-3 text-center ${has ? 'border-pentecost/40 bg-red-50' : 'border-slate-200 opacity-60 grayscale'}`}
+                >
+                  <div className="text-3xl">{b.icon}</div>
+                  <p className="text-xs font-extrabold">{b.label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
-      <section>
-        <h2 className="mb-3 text-lg font-extrabold">Conquistas</h2>
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-          {Object.entries(BADGES).map(([id, b]) => {
-            const has = active.badges.includes(id);
-            return (
-              <div
-                key={id}
-                title={b.description}
-                className={`rounded-2xl border-2 p-3 text-center ${has ? 'border-pentecost/40 bg-red-50' : 'border-slate-200 opacity-60 grayscale'}`}
+        <History entries={active.history} />
+
+        <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+          <h2 className="mb-1 flex items-center gap-2 text-lg font-extrabold">
+            <Snowflake className="size-5 text-brand-500" /> Bloqueio de sequência
+          </h2>
+          <p className="mb-3 text-sm text-slate-500">
+            Protege sua sequência se você ficar um dia sem estudar. Você tem {active.streakFreezes}/{MAX_STREAK_FREEZES}.
+          </p>
+          <Button
+            variant="secondary"
+            disabled={!canBuy}
+            onClick={() => updateActive((p) => buyStreakFreeze(p) ?? p)}
+          >
+            Comprar por {STREAK_FREEZE_COST} XP
+          </Button>
+        </section>
+        </>
+      )}
+
+      {tab === 'ajustes' && (
+        <>
+        <section id="nivel" className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+          <h2 className="mb-1 text-lg font-extrabold">Nível de dificuldade</h2>
+          <p className="mb-3 text-sm text-slate-500">
+            As perguntas são as da sua faixa; o nível muda o jeito de responder. Cada nível tem a própria trilha: ao
+            trocar, o progresso do nível atual fica guardado e volta quando você retornar a ele.
+          </p>
+          <DifficultyPicker
+            value={difficultyOf(active)}
+            onChange={(d) => updateActive((p) => setDifficulty(p, d))}
+            progress={(d) => {
+              const n = completedIn(active, d).filter((id) => levels.some((l) => l.id === id)).length;
+              return n === levels.length ? '✅ Trilha concluída' : n > 0 ? `${n}/${levels.length} lições` : null;
+            }}
+          />
+        </section>
+
+        <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+          <h2 className="mb-1 text-lg font-extrabold">Faixa etária</h2>
+          <p className="mb-3 text-sm text-slate-500">
+            A trilha é a mesma para todos, mas as perguntas, a linguagem e as citações mudam conforme a faixa. As lições
+            já concluídas continuam valendo se você trocar.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(Object.keys(AGE_GROUPS) as AgeGroup[]).map((g) => (
+              <button
+                key={g}
+                onClick={() => updateActive((p) => ({ ...p, ageGroup: g }))}
+                className={`rounded-xl border-2 px-3 py-2 font-bold ${
+                  active.ageGroup === g ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-slate-200'
+                }`}
               >
-                <div className="text-3xl">{b.icon}</div>
-                <p className="text-xs font-extrabold">{b.label}</p>
-              </div>
-            );
-          })}
+                {AGE_GROUPS[g].emoji} {AGE_GROUPS[g].label} <span className="text-xs text-slate-500">({AGE_GROUPS[g].ages})</span>
+              </button>
+            ))}
+          </div>
+          <div className="mt-4">
+            <LargeTextToggle value={active.largeText} onChange={(v) => updateActive((p) => ({ ...p, largeText: v }))} />
+          </div>
+        </section>
+
+        <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+          <h2 className="mb-1 text-lg font-extrabold">🎯 Meta diária</h2>
+          <p className="mb-3 text-sm text-slate-500">Quanto XP você quer ganhar por dia. Uma lição dá 20 XP.</p>
+          <div className="grid grid-cols-4 gap-2">
+            {DAILY_GOAL_OPTIONS.map((g, i) => (
+              <button
+                key={g}
+                onClick={() => updateActive((p) => ({ ...p, dailyGoal: g }))}
+                className={`rounded-2xl border shadow-sm p-2 text-center transition ${
+                  dailyGoal(active) === g ? 'border-gold-400 bg-gold-50 text-gold-800' : 'border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                <span className="block text-xl font-extrabold">{g} XP</span>
+                <span className="text-xs font-bold text-slate-500">{['Leve', 'Regular', 'Sério', 'Intenso'][i]}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+          <h2 className="mb-1 text-lg font-extrabold">🔥 Erros permitidos</h2>
+          <p className="mb-3 text-sm text-slate-500">
+            Quantos erros você pode cometer antes de pausar as lições novas. Cada erro apaga uma chama, e elas voltam a
+            acender com o tempo. Hoje: <b>{maxHearts(active)}</b>.
+          </p>
+          <HeartsPicker value={maxHearts(active)} onChange={(v) => updateActive((p) => setMaxHearts(p, v))} />
+        </section>
+
+        <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+          <label className="flex cursor-pointer items-center justify-between gap-4">
+            <span>
+              <span className="block text-lg font-extrabold">⏰ Recomeçar a etapa após {INACTIVITY_DAYS} dias parado</span>
+              <span className="block text-sm text-slate-500">
+                Ligado, quem fica {INACTIVITY_DAYS} dias sem estudar refaz a etapa atual (as anteriores ficam salvas).
+                Desligado, nada se perde e o app só dá as boas-vindas de volta. No Infantil começa desligado.
+              </span>
+            </span>
+            <input
+              type="checkbox"
+              checked={inactivityResetOn(active)}
+              onChange={(e) => updateActive((p) => ({ ...p, inactivityReset: e.target.checked }))}
+              className="size-6 shrink-0 accent-brand-600"
+            />
+          </label>
+        </section>
+
+        <VoiceSettings />
+
+        <InstallCard />
+
+        <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+          <h2 className="mb-1 text-lg font-extrabold">Backup da família</h2>
+          <p className="mb-3 text-sm text-slate-500">
+            Os dados ficam só neste navegador. Exporte um arquivo para guardar ou levar para outro aparelho.
+          </p>
+          <div className="flex flex-wrap gap-4 font-bold text-brand-600">
+            <ExportButton className="underline" />
+            <ImportButton className="underline" />
+          </div>
+        </section>
+
+        <UpdateSettings update={update} />
+
+        <div className="flex flex-wrap gap-3">
+          <Button variant="secondary" onClick={() => selectProfile(null)}>
+            <LogOut className="size-5" /> Trocar de perfil
+          </Button>
+          <Button variant="ghost" onClick={() => setDeleting(true)} className="text-pentecost">
+            <Trash2 className="size-5" /> Apagar perfil
+          </Button>
         </div>
-      </section>
-
-      <InstallCard />
-
-      <History entries={active.history} />
-
-      <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
-        <h2 className="mb-1 flex items-center gap-2 text-lg font-extrabold">
-          <Snowflake className="size-5 text-brand-500" /> Bloqueio de sequência
-        </h2>
-        <p className="mb-3 text-sm text-slate-500">
-          Protege sua sequência se você ficar um dia sem estudar. Você tem {active.streakFreezes}/{MAX_STREAK_FREEZES}.
-        </p>
-        <Button
-          variant="secondary"
-          disabled={!canBuy}
-          onClick={() => updateActive((p) => buyStreakFreeze(p) ?? p)}
-        >
-          Comprar por {STREAK_FREEZE_COST} XP
-        </Button>
-      </section>
-
-      <section id="nivel" className="rounded-3xl border-2 border-slate-200 bg-white p-5">
-        <h2 className="mb-1 text-lg font-extrabold">Nível de dificuldade</h2>
-        <p className="mb-3 text-sm text-slate-500">
-          As perguntas são as da sua faixa; o nível muda o jeito de responder. Cada nível tem a própria trilha: ao
-          trocar, o progresso do nível atual fica guardado e volta quando você retornar a ele.
-        </p>
-        <DifficultyPicker
-          value={difficultyOf(active)}
-          onChange={(d) => updateActive((p) => setDifficulty(p, d))}
-          progress={(d) => {
-            const n = completedIn(active, d).filter((id) => levels.some((l) => l.id === id)).length;
-            return n === levels.length ? '✅ Trilha concluída' : n > 0 ? `${n}/${levels.length} lições` : null;
-          }}
-        />
-      </section>
-
-      <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
-        <h2 className="mb-1 text-lg font-extrabold">Faixa etária</h2>
-        <p className="mb-3 text-sm text-slate-500">
-          A trilha é a mesma para todos, mas as perguntas, a linguagem e as citações mudam conforme a faixa. As lições
-          já concluídas continuam valendo se você trocar.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {(Object.keys(AGE_GROUPS) as AgeGroup[]).map((g) => (
-            <button
-              key={g}
-              onClick={() => updateActive((p) => ({ ...p, ageGroup: g }))}
-              className={`rounded-xl border-2 px-3 py-2 font-bold ${
-                active.ageGroup === g ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-slate-200'
-              }`}
-            >
-              {AGE_GROUPS[g].emoji} {AGE_GROUPS[g].label} <span className="text-xs text-slate-500">({AGE_GROUPS[g].ages})</span>
-            </button>
-          ))}
-        </div>
-        <div className="mt-4">
-          <LargeTextToggle value={active.largeText} onChange={(v) => updateActive((p) => ({ ...p, largeText: v }))} />
-        </div>
-      </section>
-
-      <VoiceSettings />
-
-      <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
-        <h2 className="mb-1 text-lg font-extrabold">Backup da família</h2>
-        <p className="mb-3 text-sm text-slate-500">
-          Os dados ficam só neste navegador. Exporte um arquivo para guardar ou levar para outro aparelho.
-        </p>
-        <div className="flex flex-wrap gap-4 font-bold text-brand-600">
-          <ExportButton className="underline" />
-          <ImportButton className="underline" />
-        </div>
-      </section>
-
-      <UpdateSettings update={update} />
-
-      <div className="flex flex-wrap gap-3">
-        <Button variant="secondary" onClick={() => selectProfile(null)}>
-          <LogOut className="size-5" /> Trocar de perfil
-        </Button>
-        <Button variant="ghost" onClick={remove} className="text-pentecost">
-          <Trash2 className="size-5" /> Apagar perfil
-        </Button>
-      </div>
+        </>
+      )}
 
       <footer className="border-t border-slate-200 pt-4 pb-2 text-center text-xs text-slate-500">
         <p className="font-semibold text-slate-500">Pequenos Discípulos</p>
@@ -312,5 +362,40 @@ function UpdateSettings({ update }: { update: ReturnType<typeof useAppUpdate> })
         {status === 'latest' && <span className="text-sm font-semibold text-emerald-700">Você já está na versão mais nova.</span>}
       </div>
     </section>
+  );
+}
+
+/**
+ * Apagar perfil exige digitar o nome: evita que uma criança apague o progresso de alguém sem querer.
+ * Não há como desfazer (a não ser com um backup).
+ */
+function DeleteProfile({ name, onCancel, onConfirm }: { name: string; onCancel: () => void; onConfirm: () => void }) {
+  const [typed, setTyped] = useState('');
+  const ok = typed.trim().toLowerCase() === name.trim().toLowerCase();
+  return (
+    <BottomSheet title="Apagar perfil" onClose={onCancel}>
+      <p className="text-slate-600">
+        Isso apaga <b>{name}</b> e todo o progresso deste perfil neste aparelho. Não dá para desfazer, a não ser que
+        exista um backup.
+      </p>
+      <label className="mt-4 block">
+        <span className="mb-1 block text-sm font-bold text-slate-600">Para confirmar, digite o nome do perfil:</span>
+        <input
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          placeholder={name}
+          autoFocus
+          className="w-full rounded-2xl border-2 border-slate-200 p-3 text-lg outline-none focus:border-pentecost"
+        />
+      </label>
+      <div className="mt-4 flex gap-3">
+        <Button variant="secondary" onClick={onCancel} className="flex-1">
+          Cancelar
+        </Button>
+        <Button variant="danger" disabled={!ok} onClick={onConfirm} className="flex-1">
+          Apagar
+        </Button>
+      </div>
+    </BottomSheet>
   );
 }

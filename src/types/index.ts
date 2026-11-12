@@ -42,6 +42,8 @@ export interface UserProfile {
   levelOffer?: boolean;
   /** Já viu a explicação de boas-vindas (o que são velas, meta, graça e chamas). */
   introSeen?: boolean;
+  /** Recomeçar a etapa após INACTIVITY_DAYS sem estudar. Sem valor: desligado no Infantil, ligado nas outras faixas. */
+  inactivityReset?: boolean;
   badges: string[];
   createdAt: number;
   /** Lição começada e não terminada: ao voltar, continua de onde parou. */

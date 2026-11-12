@@ -65,6 +65,8 @@ export function MatchPairs({ exercise, ageGroup, ttsRate, audio, locked, onReady
                 key={i}
                 onClick={() => tap(side, i)}
                 disabled={locked || matched.has(i)}
+                aria-pressed={selected?.side === side && selected.i === i}
+                aria-label={matched.has(i) ? `${text} (já ligado)` : text}
                 className={`w-full rounded-2xl border shadow-sm px-3 font-bold transition ${size} ${cls(side, i)}`}
               >
                 {text}
@@ -73,7 +75,7 @@ export function MatchPairs({ exercise, ageGroup, ttsRate, audio, locked, onReady
           </div>
         ))}
       </div>
-      <p className="text-center text-sm text-slate-500">
+      <p className="text-center text-sm text-slate-500" role="status" aria-live="polite">
         {done ? 'Todos os pares ligados!' : 'Toque num item da esquerda e depois no par dele à direita.'}
         {misses > 0 && ` · ${misses} ${misses === 1 ? 'erro' : 'erros'}`}
       </p>

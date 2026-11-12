@@ -20,6 +20,10 @@ export const MAX_STREAK_FREEZES = 2;
 export const INACTIVITY_DAYS = 5;
 const MAX_HISTORY = 300;
 
+/** O reinício por inatividade vale para este perfil? Criança não perde progresso por ficar dias sem estudar. */
+export const inactivityResetOn = (p: Pick<UserProfile, 'inactivityReset' | 'ageGroup'>) =>
+  p.inactivityReset ?? p.ageGroup !== 'kids';
+
 export const AGE_GROUPS: Record<AgeGroup, { label: string; emoji: string; ttsRate: number; ages: string; hint: string }> = {
   kids: { label: 'Infantil', emoji: '🧸', ttsRate: 0.9, ages: 'até 9 anos', hint: 'Histórias, orações e santos' },
   teens: { label: 'Juvenil', emoji: '🎒', ttsRate: 1, ages: '10 a 16 anos', hint: 'Virtudes, mandamentos e Bíblia' },
@@ -104,6 +108,14 @@ export function applyInactivityReset(p: UserProfile, now = Date.now()): UserProf
   if (!p.lastActiveDate || p.inactivityResetFor === p.lastActiveDate) return p;
   const missed = daysBetween(p.lastActiveDate, todayKey(new Date(now))) - 1;
   if (missed < INACTIVITY_DAYS) return p;
+  if (!inactivityResetOn(p)) {
+    // Sem reinício: só um "bem-vindo de volta", uma vez.
+    return {
+      ...p,
+      inactivityResetFor: p.lastActiveDate,
+      notice: `Que bom ter você de volta depois de ${missed} dias! Seu progresso está todo guardado. Que tal uma revisão para relembrar? 🙏`,
+    };
+  }
 
   const unit = currentUnit(p.ageGroup, p.completedLevels);
   const unitLevelIds = new Set(unit?.levels.map((l) => l.id) ?? []);

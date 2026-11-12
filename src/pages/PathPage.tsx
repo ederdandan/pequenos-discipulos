@@ -1,7 +1,7 @@
 import { Check, Dumbbell, Lock, Play, X } from 'lucide-react';
 import { findLevel, isLevelUnlocked, trackLevels, tracks } from '../data/curriculum';
 import { useStore } from '../store/AppStore';
-import { AGE_GROUPS, INACTIVITY_DAYS } from '../lib/rules';
+import { AGE_GROUPS, INACTIVITY_DAYS, inactivityResetOn } from '../lib/rules';
 import type { AgeGroup, Level, Unit } from '../types';
 import { DailyPanel } from '../components/DailyPanel';
 import { QuestsPanel } from '../components/QuestsPanel';
@@ -52,7 +52,7 @@ export function PathPage({ onStart, onReview, onChooseLevel }: Props) {
 
       {active.notice && (
         <div className="relative rounded-2xl border-2 border-gold-300 bg-gold-50 p-4 pr-10 text-gold-800">
-          <p className="font-extrabold">⏰ Etapa reiniciada</p>
+          <p className="font-extrabold">{active.notice.includes('recomeçou') ? '⏰ Etapa reiniciada' : '👋 Bem-vindo de volta'}</p>
           <p className="text-sm">{active.notice}</p>
           <button
             onClick={() => updateActive((p) => ({ ...p, notice: null }))}
@@ -86,7 +86,7 @@ export function PathPage({ onStart, onReview, onChooseLevel }: Props) {
         </div>
       )}
 
-      <TrackHeader g={g} difficulty={difficultyOf(active)} done={doneCount} total={levels.length} questions={questions} />
+      <TrackHeader g={g} resetOn={inactivityResetOn(active)} difficulty={difficultyOf(active)} done={doneCount} total={levels.length} questions={questions} />
 
       {tracks[g].map((unit) => (
         <section key={unit.id}>
@@ -204,7 +204,7 @@ function LevelOffer({
           </Button>
         </div>
         <p className="rounded-2xl bg-brand-50 p-3 text-sm text-brand-700">
-          💡 Você pode mudar de nível quando quiser em <b>Perfil → Nível de dificuldade</b>.
+          💡 Você pode mudar de nível quando quiser em <b>Perfil → Ajustes → Nível de dificuldade</b>.
         </p>
       </div>
     </BottomSheet>
@@ -213,12 +213,14 @@ function LevelOffer({
 
 function TrackHeader({
   g,
+  resetOn,
   difficulty,
   done,
   total,
   questions,
 }: {
   g: AgeGroup;
+  resetOn: boolean;
   difficulty: Difficulty;
   done: number;
   total: number;
@@ -238,8 +240,11 @@ function TrackHeader({
         <div className="h-full rounded-full bg-gold-500 transition-all" style={{ width: `${(done / total) * 100}%` }} />
       </div>
       <p className="mt-2 text-sm text-slate-500">
-        Cada etapa passa por todos os temas e é um pouco mais difícil que a anterior. Fique {INACTIVITY_DAYS} dias sem
-        estudar e a etapa atual recomeça (as anteriores ficam salvas). O nível de dificuldade muda em Perfil.
+        Cada etapa passa por todos os temas e é um pouco mais difícil que a anterior.{' '}
+        {resetOn
+          ? `Fique ${INACTIVITY_DAYS} dias sem estudar e a etapa atual recomeça (as anteriores ficam salvas). `
+          : ''}
+        O nível de dificuldade muda em Perfil → Ajustes.
       </p>
     </div>
   );

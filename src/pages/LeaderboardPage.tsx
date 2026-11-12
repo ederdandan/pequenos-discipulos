@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Trophy } from 'lucide-react';
 import { useStore } from '../store/AppStore';
 import { Avatar } from '../components/Avatar';
@@ -6,9 +7,18 @@ import { daysUntilWeekReset } from '../lib/dates';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
+/**
+ * Dois jeitos de ver a família: XP da semana (quem estudou mais) ou constância (dias seguidos e
+ * metas batidas). Na constância, quem estuda um pouco todo dia — como uma criança — fica no topo.
+ */
+type Sort = 'xp' | 'constancia';
+
 export function LeaderboardPage() {
   const { state, active } = useStore();
-  const ranking = [...state.profiles].sort((a, b) => b.weeklyXp - a.weeklyXp);
+  const [sort, setSort] = useState<Sort>('xp');
+  const ranking = [...state.profiles].sort((a, b) =>
+    sort === 'xp' ? b.weeklyXp - a.weeklyXp : b.streak - a.streak || b.goalDays - a.goalDays,
+  );
   const days = daysUntilWeekReset();
   const tier = active ? leagueTier(active.weeklyXp) : null;
 
@@ -26,6 +36,30 @@ export function LeaderboardPage() {
           </p>
         )}
       </div>
+
+      <div className="grid grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1" role="tablist" aria-label="Ordenar a família">
+        {(
+          [
+            ['xp', '⚡ XP da semana'],
+            ['constancia', '🕯️ Constância'],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            role="tab"
+            aria-selected={sort === id}
+            onClick={() => setSort(id)}
+            className={`rounded-xl py-2 text-sm font-bold transition ${sort === id ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500'}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <p className="-mt-3 text-center text-sm text-slate-500">
+        {sort === 'xp'
+          ? 'Toda lição vale o mesmo XP em qualquer faixa: conta o quanto cada um estudou.'
+          : 'Dias seguidos estudando e metas batidas: quem estuda um pouco todo dia fica na frente.'}
+      </p>
 
       {ranking.length < 2 && (
         <p className="rounded-2xl bg-brand-50 p-4 text-center text-brand-700">
@@ -51,7 +85,16 @@ export function LeaderboardPage() {
                   {t.icon} {t.name} · 🕯️ {p.streak}
                 </p>
               </div>
-              <span className="font-extrabold text-gold-600">{p.weeklyXp} XP</span>
+              <span className="text-right font-extrabold text-gold-600">
+                {sort === 'xp' ? (
+                  `${p.weeklyXp} XP`
+                ) : (
+                  <>
+                    🕯️ {p.streak} {p.streak === 1 ? 'dia' : 'dias'}
+                    <span className="block text-xs font-semibold text-slate-500">{p.goalDays} metas</span>
+                  </>
+                )}
+              </span>
             </li>
           );
         })}

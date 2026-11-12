@@ -354,7 +354,7 @@ function Explanation({ exercise, age, audio, ttsRate }: { exercise: Exercise; ag
   if (!exercise.explanation && !source) return null;
   return (
     <div className="mt-2 space-y-2">
-      {exercise.explanation && <p className="font-reading leading-snug text-slate-700">{exercise.explanation}</p>}
+      {exercise.explanation && <p className="allow-select font-reading leading-snug text-slate-700">{exercise.explanation}</p>}
       {source && (
         <button
           onClick={() => setOpen(true)}
@@ -401,7 +401,7 @@ function SourceSheet({ source, audio, ttsRate, onClose }: { source: string; audi
               </button>
             )}
           </p>
-          <p className="font-reading text-lg leading-relaxed">{summary}</p>
+          <p className="allow-select font-reading text-lg leading-relaxed">{summary}</p>
           <p className="mt-3 text-xs text-slate-500">Resumo em palavras simples, não é citação literal.</p>
         </div>
       )}

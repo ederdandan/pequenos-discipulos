@@ -39,12 +39,16 @@ export function MultipleChoice({ exercise, ageGroup, ttsRate, audio, locked, onR
             key={o.text}
             onClick={() => pick(i)}
             disabled={locked}
+            aria-pressed={picked === i}
             className={`flex items-center gap-3 rounded-xl border-2 p-4 text-left font-semibold shadow-sm transition ${
               trueFalse ? 'justify-center' : ''
             } ${optionClass(picked === i)}`}
           >
             {trueFalse ? (
-              <span className="text-2xl">{o.text === 'Verdadeiro' ? '✓' : '✗'}</span>
+              // Infantil: polegar para cima/baixo, que a criança entende antes de saber ler.
+              <span className={kids ? 'text-3xl' : 'text-2xl'} aria-hidden="true">
+                {o.text === 'Verdadeiro' ? (kids ? '👍' : '✓') : kids ? '👎' : '✗'}
+              </span>
             ) : (
               <span
                 className={`flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-bold ${
