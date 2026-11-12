@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Camera, LogOut, Snowflake, Trash2 } from 'lucide-react';
+import { Camera, LogOut, RefreshCw, Snowflake, Trash2 } from 'lucide-react';
+import { BUILD_DATE, applyUpdate, type useAppUpdate } from '../lib/update';
 import type { AgeGroup } from '../types';
 import { useStore } from '../store/AppStore';
 import { trackLevels } from '../data/curriculum';
@@ -25,7 +26,7 @@ import { ExportButton, ImportButton } from '../components/BackupControls';
 import { LargeTextToggle } from '../components/LargeTextToggle';
 import { VoiceSettings } from '../components/VoiceSettings';
 
-export function ProfilePage() {
+export function ProfilePage({ update }: { update: ReturnType<typeof useAppUpdate> }) {
   const { active, updateActive, selectProfile, removeProfile } = useStore();
   const [choosingAvatar, setChoosingAvatar] = useState(false);
   if (!active) return null;
@@ -184,6 +185,8 @@ export function ProfilePage() {
         </div>
       </section>
 
+      <UpdateSettings update={update} />
+
       <div className="flex flex-wrap gap-3">
         <Button variant="secondary" onClick={() => selectProfile(null)}>
           <LogOut className="size-5" /> Trocar de perfil
@@ -240,5 +243,46 @@ function Stat({ label, value, icon }: { label: string; value: number | string; i
       </p>
       <p className="text-xs font-bold uppercase text-slate-400">{label}</p>
     </div>
+  );
+}
+
+/** Perfil → Atualizações: atualizar sozinho ao abrir (vale para este aparelho) e procurar agora. */
+function UpdateSettings({ update }: { update: ReturnType<typeof useAppUpdate> }) {
+  const [status, setStatus] = useState<'idle' | 'checking' | 'latest'>('idle');
+
+  async function checkNow() {
+    setStatus('checking');
+    const has = await update.check();
+    if (has) applyUpdate();
+    else setStatus('latest');
+  }
+
+  return (
+    <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">
+      <h2 className="mb-1 flex items-center gap-2 text-lg font-extrabold">
+        <RefreshCw className="size-5 text-brand-500" /> Atualizações
+      </h2>
+      <p className="mb-3 text-sm text-slate-500">Versão de {BUILD_DATE}.</p>
+      <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border-2 border-slate-200 bg-white p-3">
+        <span>
+          <span className="block font-bold text-slate-700">Atualizar automaticamente</span>
+          <span className="block text-sm text-slate-500">
+            Ao abrir o app, instala a versão nova sozinho (nunca no meio de uma lição). Desligado, aparece um aviso.
+          </span>
+        </span>
+        <input
+          type="checkbox"
+          checked={update.auto}
+          onChange={(e) => update.setAuto(e.target.checked)}
+          className="size-6 shrink-0 accent-brand-600"
+        />
+      </label>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <Button variant="secondary" onClick={checkNow} disabled={status === 'checking'}>
+          {status === 'checking' ? 'Procurando…' : 'Procurar atualização'}
+        </Button>
+        {status === 'latest' && <span className="text-sm font-semibold text-emerald-700">Você já está na versão mais nova.</span>}
+      </div>
+    </section>
   );
 }

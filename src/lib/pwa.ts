@@ -13,6 +13,8 @@ const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((l) => l());
 
 export function setupPwa() {
+  // iPhone antigo não entende o "display-mode" do CSS: marca o <html> para desligar a seleção de texto.
+  if (isStandalone()) document.documentElement.dataset.standalone = '';
   // O evento pode chegar antes do React montar, então ouvimos desde o início.
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();

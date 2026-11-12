@@ -6,7 +6,7 @@
 // Prefixo próprio: no GitHub Pages vários apps do mesmo usuário dividem a mesma origem
 // (e o mesmo Cache Storage). Só apagamos caches nossos de versões antigas.
 const PREFIX = 'pequenos-discipulos-';
-const CACHE = `${PREFIX}v2`; // v2: ícones novos (Cordeirinho)
+const CACHE = `${PREFIX}v3`; // v3: verificação de atualização
 const MATCH = { ignoreVary: true, ignoreSearch: false };
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
@@ -58,6 +58,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+  // Verificação de versão nova (src/lib/update.ts): vai direto à rede, sem cache.
+  if (req.cache === 'no-store') return;
   const url = new URL(req.url);
 
   if (req.mode === 'navigate') {
@@ -65,7 +67,8 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         const cache = await caches.open(CACHE);
         try {
-          const fresh = await fetch(req);
+          // "no-cache": revalida com o servidor, para não abrir uma versão velha do cache HTTP.
+          const fresh = await fetch(new Request(req, { cache: 'no-cache' })).catch(() => fetch(req));
           if (fresh.ok) event.waitUntil(cacheIndex(cache, fresh.clone()));
           return fresh;
         } catch {

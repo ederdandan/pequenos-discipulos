@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useReveal } from './lib/reveal';
 import { FamilyIcon, PathIcon, ProfileIcon } from './components/icons';
 import { useStore } from './store/AppStore';
 import { setVoicePrefs } from './lib/speech';
@@ -10,6 +11,8 @@ import { LessonPage } from './pages/LessonPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import type { UserProfile } from './types';
+import { applyUpdate, useAppUpdate } from './lib/update';
+import { RefreshCw } from 'lucide-react';
 
 type Tab = 'path' | 'ranking' | 'profile';
 
@@ -26,6 +29,11 @@ export default function App() {
   const { active } = useStore();
   const [tab, setTab] = useState<Tab>('path');
   const [lesson, setLesson] = useState<{ levelId: string; practice: boolean; review?: boolean } | null>(null);
+  // Versão nova do app: atualiza sozinho (se ligado), mas nunca no meio de uma lição.
+  const update = useAppUpdate(!!lesson);
+  // Conteúdo surge suavemente ao abrir a aba e ao rolar.
+  const mainRef = useRef<HTMLElement>(null);
+  useReveal(mainRef, [tab, active?.id, !!lesson]);
 
   // Faixa etária no <html>: o CSS ajusta a tipografia (Adulto usa fonte de leitura serifada).
   useEffect(() => {
@@ -46,7 +54,7 @@ export default function App() {
 
   // Cada tela nova começa do topo.
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [tab, lesson]);
 
   if (!active) return <ProfilesPage />;
@@ -63,7 +71,19 @@ export default function App() {
         <StatsBar profile={active} />
       </header>
 
-      <main className="flex-1 px-4 py-6">
+      {update.available && (
+        <div className="mx-4 mt-3 flex items-center justify-between gap-3 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm">
+          <span className="font-semibold text-brand-800">Há uma versão nova do app.</span>
+          <button
+            onClick={applyUpdate}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-3 py-1.5 font-bold text-white hover:bg-brand-700"
+          >
+            <RefreshCw className="size-4" /> Atualizar
+          </button>
+        </div>
+      )}
+
+      <main ref={mainRef} className="flex-1 px-4 py-6">
         {tab === 'path' && (
           <PathPage
             onStart={(levelId, practice) => setLesson({ levelId, practice })}
@@ -71,7 +91,7 @@ export default function App() {
           />
         )}
         {tab === 'ranking' && <LeaderboardPage />}
-        {tab === 'profile' && <ProfilePage />}
+        {tab === 'profile' && <ProfilePage update={update} />}
       </main>
 
       <nav className="sticky bottom-0 grid grid-cols-3 border-t border-gold-200 bg-white/95 backdrop-blur">

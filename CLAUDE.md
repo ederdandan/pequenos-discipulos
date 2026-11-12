@@ -112,5 +112,16 @@ imagens/               artes de referência (faixas etárias e grades de avatare
   (todas as faixas), no fim da lição, sem chamas, sem revisão e na `CheerScreen` (`LessonPage.tsx`): tela
   rápida entre perguntas só em marcos (3/5/8 seguidas, acerto após erro, metade, falta uma), nunca duas seguidas,
   some em 1,8 s ou com um toque. Animações por pose em `index.css` (`.lamb-<pose>`; prop `animated`/`once`).
+- **Atualização do app** (`lib/update.ts`): compara o `assets/index-<hash>.js` em uso com o do `index.html`
+  publicado (fetch `no-store`, que o `sw.js` deixa passar). Verifica ao abrir, ao voltar para o app e a cada 30 min.
+  "Atualizar automaticamente" (Perfil → Atualizações, por aparelho, chave `pequenos_discipulos_auto_update`,
+  ligado por padrão) recarrega sozinho, nunca durante uma lição; desligado, mostra um aviso com "Atualizar".
+  A data do build vem de `__BUILD_DATE__` (`vite.config.ts`). Só funciona no build de produção (`vite preview`).
+- **Conteúdo que surge ao rolar** (`lib/reveal.ts` + `.reveal` em `index.css`): blocos da página e lições da
+  trilha aparecem com fade ao entrar na tela; a pergunta nova da lição entra deslizando (`.animate-question`).
+  Tudo desligado com "reduzir movimento". Em teste automatizado a aba sem foco pausa a renderização: confira
+  com rolagem real + screenshot, não só com `scrollTo` por script.
+- **Modo app sem seleção de texto** (`index.css`): com `display-mode: standalone` (ou `html[data-standalone]`,
+  marcado em `lib/pwa.ts` para iPhone antigo) o texto não é selecionável e some o menu "copiar"; campos continuam.
 - No dev, com `base: './'`, abra `http://localhost:5173/` (na raiz): em `/pequenos-discipulos/` os arquivos de
   `public/` caem no fallback do index.html. Em produção funciona normalmente.

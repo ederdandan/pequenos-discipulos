@@ -275,7 +275,7 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
         )}
       </header>
 
-      <main key={`${idx}-${exercise.id}`} className="flex-1 py-6">
+      <main key={`${idx}-${exercise.id}`} className="animate-question flex-1 py-6">
         {exercise.type === 'multiple-choice' && <MultipleChoice exercise={exercise} {...props} />}
         {exercise.type === 'fill-blank' && <FillBlank exercise={exercise} {...props} />}
         {exercise.type === 'word-bank' && <WordBank exercise={exercise} {...props} />}

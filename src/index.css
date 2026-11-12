@@ -147,6 +147,36 @@ body {
 /* No rodapé (pequeno): só a entrada e um movimento, sem ficar repetindo. */
 .lamb-once { animation-iteration-count: 1, 1; }
 
+/* Conteúdo que surge ao rolar (src/lib/reveal.ts). */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.45s ease-out,
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.reveal-in { opacity: 1; transform: none; }
+
+/* Troca de pergunta na lição: a nova entra deslizando de leve. */
+@keyframes question-in {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-question { animation: question-in 0.35s ease-out; }
+
+html { scroll-behavior: smooth; }
+
+/* Instalado como app: sem seleção de texto nem o menu "copiar" ao segurar o dedo (iPhone).
+   Campos de digitar continuam funcionando. No navegador comum nada muda. */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+}
+html[data-standalone] body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input, textarea, select, [contenteditable='true'] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+
 @media (prefers-reduced-motion: reduce) {
-  .lamb-anim { animation: none !important; }
+  .lamb-anim, .animate-question { animation: none !important; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
 }

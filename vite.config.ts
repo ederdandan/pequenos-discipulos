@@ -7,4 +7,10 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss()],
+  define: {
+    // Mostrada em Perfil → Atualizações.
+    __BUILD_DATE__: JSON.stringify(
+      new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }),
+    ),
+  },
 });
