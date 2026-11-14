@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useStore } from '../store/AppStore';
+import { trackEvent } from '../lib/analytics';
 import { downloadBackup, mergeStates, parseState } from '../store/storage';
 
 export function ExportButton({ className }: { className?: string }) {
@@ -23,6 +24,7 @@ export function ImportButton({ className }: { className?: string }) {
     try {
       const incoming = parseState(JSON.parse(await file.text()));
       setState((s) => mergeStates(s, incoming));
+      trackEvent('backup/importado', 'Backup importado');
       alert(`Backup importado: ${incoming.profiles.length} perfil(is).`);
     } catch (err) {
       alert((err as Error).message || 'Não foi possível ler o arquivo.');

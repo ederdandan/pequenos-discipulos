@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Camera, LogOut, RefreshCw, Snowflake, Trash2 } from 'lucide-react';
+import { trackEvent, trackPage } from '../lib/analytics';
 import { APP_VERSION, BUILD_DATE, applyUpdate, type useAppUpdate } from '../lib/update';
 import type { AgeGroup } from '../types';
 import { useStore } from '../store/AppStore';
@@ -38,6 +39,7 @@ export function ProfilePage({ update, initialTab = 'progresso' }: { update: Retu
   const { active, updateActive, selectProfile, removeProfile } = useStore();
   const [choosingAvatar, setChoosingAvatar] = useState(false);
   const [tab, setTab] = useState<ProfileTab>(initialTab);
+  useEffect(() => trackPage(`/perfil/${tab}`, tab === 'ajustes' ? 'Perfil · Ajustes' : 'Perfil · Meu progresso'), [tab]);
   const [deleting, setDeleting] = useState(false);
   if (!active) return null;
 
@@ -161,7 +163,10 @@ export function ProfilePage({ update, initialTab = 'progresso' }: { update: Retu
           </p>
           <DifficultyPicker
             value={difficultyOf(active)}
-            onChange={(d) => updateActive((p) => setDifficulty(p, d))}
+            onChange={(d) => {
+              trackEvent(`nivel/${d}`, 'Nível de dificuldade escolhido');
+              updateActive((p) => setDifficulty(p, d));
+            }}
             progress={(d) => {
               const n = completedIn(active, d).filter((id) => levels.some((l) => l.id === id)).length;
               return n === levels.length ? '✅ Trilha concluída' : n > 0 ? `${n}/${levels.length} lições` : null;
@@ -198,7 +203,10 @@ export function ProfilePage({ update, initialTab = 'progresso' }: { update: Retu
           <p className="mb-3 text-sm text-slate-500">
             Só deste perfil. As cores que têm significado (verde de acerto, vermelho de erro, chamas e graça) não mudam.
           </p>
-          <AppearancePicker value={appearanceOf(active)} onChange={(a) => updateActive((p) => ({ ...p, appearance: a }))} />
+          <AppearancePicker value={appearanceOf(active)} onChange={(a) => {
+            trackEvent(`aparencia/${a.color}-${a.mode}`, 'Aparência escolhida');
+            updateActive((p) => ({ ...p, appearance: a }));
+          }} />
         </section>
 
         <section className="rounded-3xl border-2 border-slate-200 bg-white p-5">

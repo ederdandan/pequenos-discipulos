@@ -166,6 +166,11 @@ imagens/               artes de referência (faixas etárias e grades de avatare
 - **Família** ordena por "XP da semana" ou "Constância" (dias seguidos, depois metas batidas).
 - Verdadeiro/falso no Infantil usa 👍/👎. Explicação e resumo da fonte (`.allow-select`) podem ser copiados no
   modo app.
+- **Estatísticas (GoatCounter)** (`lib/analytics.ts`, código `pequenos-dicipulos`): sem cookies e sem dados pessoais
+  (nunca nome/foto/id). Só no build de produção. Telas como páginas virtuais (`trackPage`: `/perfis`, `/trilha`,
+  `/familia`, `/perfil/progresso|ajustes`, `/licao`, `/treino`, `/revisao`) e ações como eventos (`trackEvent`:
+  lição início/retomada/concluída/sem-erros/sem-chamas com etapa e faixa, perfil criado, nível, aparência, backup,
+  atualização, app instalado, abertura app × navegador). Evento novo: caminho curto, em pt-BR, sem dado pessoal.
 - **Versão do app:** rodapé da aba Perfil mostra `APP_VERSION` (versão do package.json + commit curto, via
   `__APP_VERSION__`/`__COMMIT__` em `vite.config.ts`) e a data do build.
 - No dev, com `base: './'`, abra `http://localhost:5173/` (na raiz): em `/pequenos-discipulos/` os arquivos de

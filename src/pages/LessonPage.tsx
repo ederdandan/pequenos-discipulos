@@ -16,6 +16,7 @@ import {
   type LessonReward,
 } from '../lib/rules';
 import { sounds } from '../lib/sounds';
+import { ageSlug, trackEvent } from '../lib/analytics';
 import { newlyCompleted, questsAfterAnswer, questsAfterLesson, type Quest } from '../lib/quests';
 import { speak } from '../lib/speech';
 import { Button } from '../components/Button';
@@ -119,6 +120,11 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
   // Depois de um incentivo, a resposta seguinte não ganha outro.
   const [cheerCooldown, setCheerCooldown] = useState(false);
   usePreloadLamb();
+  // Estatísticas: que lição começa (etapa + faixa), sem nenhum dado pessoal.
+  const kind = review ? 'revisao' : practice ? 'treino' : 'licao';
+  const where = review ? '' : `/etapa-${level?.stage ?? 0}`;
+  const age = active ? `/${ageSlug(active.ageGroup)}` : '';
+  useEffect(() => trackEvent(`${kind}/${saved ? 'retomada' : 'inicio'}${where}${age}`, 'Lição iniciada'), []);
   const endCheer = useCallback(() => {
     setCheer(null);
     setPendingCheer(null);
@@ -182,6 +188,8 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
       let base = questsAfterAnswer(recordAnswer(active!, true), exercise.type, true, nextCombo);
       if (firstTry) base = gradeReview(base, exercise.id, true);
       const out = completeLesson(base, { levelId, mistakes: nextMistakes, practice, review });
+      trackEvent(`${kind}/concluida${where}${age}`, 'Lição concluída');
+      if (!review && nextMistakes === 0) trackEvent(`${kind}/sem-erros${where}`, 'Lição sem erros');
       const finalProfile = questsAfterLesson(out.profile, { mistakes: nextMistakes, practice, review });
       updateActive(() => finalProfile);
       setQuestsDone(newlyCompleted(active!, finalProfile));
@@ -212,7 +220,10 @@ export function LessonPage({ levelId, practice, review = false, onExit }: Props)
         },
       };
     });
-    if (!correct && !safe && active!.hearts - 1 <= 0) setOutOfHearts(true);
+    if (!correct && !safe && active!.hearts - 1 <= 0) {
+      trackEvent(`licao/sem-chamas${where}${age}`, 'Chamas acabaram');
+      setOutOfHearts(true);
+    }
   }
 
   function next() {

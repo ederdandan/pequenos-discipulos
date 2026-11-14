@@ -1,3 +1,4 @@
+import { trackEvent } from './analytics';
 import { useCallback, useEffect, useState } from 'react';
 
 // Atualização do app: compara o arquivo de código em uso (assets/index-<hash>.js) com o do
@@ -56,6 +57,7 @@ export async function checkForUpdate(): Promise<boolean> {
 
 /** Recarrega já com a versão nova (o service worker busca o index.html na rede). */
 export async function applyUpdate() {
+  trackEvent('atualizacao/aplicada', 'App atualizado para a versão nova');
   try {
     sessionStorage.setItem(RELOAD_KEY, `${currentScript()}|${Date.now()}`);
     await (await navigator.serviceWorker?.getRegistration())?.update();

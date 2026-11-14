@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, Plus, Upload } from 'lucide-react';
 import type { AgeGroup } from '../types';
 import { useStore } from '../store/AppStore';
+import { ageSlug, trackEvent } from '../lib/analytics';
 import { AGE_GROUPS, MAX_HEARTS, newProfile } from '../lib/rules';
 import { HeartsPicker } from '../components/HeartsPicker';
 import { Avatar } from '../components/Avatar';
@@ -86,6 +87,7 @@ function CreateProfile({ onDone, canCancel }: { onDone: () => void; canCancel: b
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
+    trackEvent(`perfil/criado/${ageSlug(ageGroup)}`, 'Perfil criado');
     addProfile(newProfile(name, DEFAULT_AVATAR, ageGroup, hearts ?? defaultHearts(ageGroup), photo, largeText, difficulty));
     onDone();
   }

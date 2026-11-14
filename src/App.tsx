@@ -15,6 +15,7 @@ import { ProfilePage, type ProfileTab } from './pages/ProfilePage';
 import type { UserProfile } from './types';
 import { applyUpdate, useAppUpdate } from './lib/update';
 import { RefreshCw } from 'lucide-react';
+import { trackPage } from './lib/analytics';
 
 type Tab = 'path' | 'ranking' | 'profile';
 
@@ -58,6 +59,14 @@ export default function App() {
     setTab('path');
     setLesson(null);
   }, [active?.id]);
+
+  // Estatísticas (GoatCounter): cada tela conta como uma página. A aba Perfil conta as sub-abas nela mesma.
+  useEffect(() => {
+    if (!active) trackPage('/perfis', 'Escolher perfil');
+    else if (lesson) trackPage(lesson.review ? '/revisao' : lesson.practice ? '/treino' : '/licao', lesson.review ? 'Revisão de erros' : lesson.practice ? 'Treino' : 'Lição');
+    else if (tab === 'path') trackPage('/trilha', 'Trilha');
+    else if (tab === 'ranking') trackPage('/familia', 'Família');
+  }, [!!active, tab, lesson]);
 
   // Cada tela nova começa do topo.
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { trackEvent } from '../lib/analytics';
 import type { AgeGroup, AppState, UserProfile } from '../types';
 import { MAX_HEARTS } from '../lib/rules';
 import { weekKey } from '../lib/dates';
@@ -84,6 +85,7 @@ function migrateAgeGroup(p: UserProfile): UserProfile {
 }
 
 export function downloadBackup(state: AppState) {
+  trackEvent('backup/exportado', 'Backup exportado');
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

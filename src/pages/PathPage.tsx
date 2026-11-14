@@ -11,6 +11,7 @@ import { BottomSheet } from '../components/BottomSheet';
 import { BackupReminder } from '../components/BackupReminder';
 import { Button } from '../components/Button';
 import { Lamb } from '../components/Lamb';
+import { trackEvent } from '../lib/analytics';
 import { DIFFICULTY, difficultyOf, nextDifficulty, setDifficulty, type Difficulty } from '../lib/difficulty';
 
 interface Props {
@@ -42,7 +43,10 @@ export function PathPage({ onStart, onReview, onChooseLevel }: Props) {
         <LevelOffer
           name={active.name}
           current={difficultyOf(active)}
-          onAnswer={(d) => updateActive((p) => (d ? setDifficulty(p, d) : { ...p, levelOffer: false }))}
+          onAnswer={(d) => {
+            trackEvent(d ? `trilha-completa/mudou-para-${d}` : 'trilha-completa/manteve-nivel', 'Trilha concluída: oferta de nível');
+            updateActive((p) => (d ? setDifficulty(p, d) : { ...p, levelOffer: false }));
+          }}
           onChooseLevel={() => {
             updateActive((p) => ({ ...p, levelOffer: false }));
             onChooseLevel();
